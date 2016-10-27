@@ -2,4 +2,4 @@
 
 Projet Java - 2016-2017.
 
-Système de réservation de tickets de cinéma.
+Système d'achat de tickets de cinéma.
