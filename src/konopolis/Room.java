@@ -8,7 +8,7 @@ public class Room {
     private int totSits;
     private int rows;
     private int sitsByRow;
-    private ArrayList<Sit> sits = new ArrayList<Sit>();
+    private ArrayList<ArrayList<Sit>> sits = new ArrayList<ArrayList<Sit>>();
     private double cost;
     private static double income;
 
@@ -28,12 +28,11 @@ public class Room {
         this.totSits = rows * sitsByRow;
 
         // Init the sits (ArrayList) with all the coordinates of the sits
-        for (int i = 1; i <= totSits; i++) {
-            sits[i] = new Sit(i * 10 + 3, i * 10 + 3);
-            //sits[i].setX(i * 10 + 3); // x position of the sit, 10 is for the size of the sit, 3 is for the margin between 2 sits
-            //sits[i].setY(i * 10 + 3); // x position of the sit, 10 is for the size of the sit, 3 is for the margin between 2 sits
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < sitsByRow; j++) {
+                sits.get(i).add(j, new Sit(i + 1, j + 1)); // i + 1, j + 1 => a sit does not have a place 0
+            }
         }
-
     }
 
     /**
@@ -45,9 +44,11 @@ public class Room {
      * @param sit, un siège donné
      */
     public void giveSit(Sit sit) {
-        if (sits.contains(sit)) { // If the sits ArrayList contains the sit
-            final int index = sits.indexOf(sit); // Index of the sit
-            sits[index].isTaken = true; // The sit is reserved
+        for (ArrayList<Sit> sitsRow : sits) { // For every row
+            if (sitsRow.contains(sit)) { // If the row ArrayList contains the sit
+                final int index = sitsRow.indexOf(sit); // Index of the sit
+                sitsRow.get(index).setTaken(true); // The sit is reserved
+            }
         }
     }
 
@@ -56,9 +57,11 @@ public class Room {
      * @param sit, un siège donné
      */
     public void cancelSit(Sit sit) {
-        if (sits.contains(sit)) { // If the sits ArrayList contains the sit
-            final int index = sits.indexOf(sit); // Index of the sit
-            sits[index].isTaken = false; // The sit is NOT reserved anymore
+        for (ArrayList<Sit> sitsRow : sits) { // For every row
+            if (sitsRow.contains(sit)) { // If the row ArrayList contains the sit
+                final int index = sitsRow.indexOf(sit); // Index of the sit
+                sitsRow.get(index).setTaken(false); // The sit is NOT reserved anymore
+            }
         }
     }
 
@@ -66,8 +69,10 @@ public class Room {
      * Vide la salle, c'est à dire qu'aucun siège n'est réservé
      */
     public void emptyRoom() {
-        for (sit : sits) { // For Each sit
-            sit.isTaken = false; // The sit is not reserved
+        for (ArrayList<Sit> sitsRow : sits) { // For Each sit
+            for (Sit sit : sitsRow) {
+                sit.setTaken(false); // The sit is not reserved
+            }
         }
     }
 
@@ -75,7 +80,13 @@ public class Room {
      * Affiche la représentation console de la salle
      */
     public void displayRoom() {
-
+        for (ArrayList<Sit> sitsRow : sits) {
+            for (Sit sit : sitsRow) {
+                if (sit.isTaken()) System.out.print("[X]");
+                else System.out.print("[O]");
+            }
+            System.out.print("\n"); // Turn back to the line for every row
+        }
 
     }
 
@@ -101,6 +112,14 @@ public class Room {
         this.totSits = totSits;
     }
 
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
     public int getSitsByRow() {
         return sitsByRow;
     }
@@ -109,11 +128,11 @@ public class Room {
         this.sitsByRow = sitsByRow;
     }
 
-    public ArrayList<Sit> getSits() {
+    public ArrayList<ArrayList<Sit>> getSits() {
         return sits;
     }
 
-    public void setSits(ArrayList<Sit> sits) {
+    public void setSits(ArrayList<ArrayList<Sit>> sits) {
         this.sits = sits;
     }
 
@@ -170,5 +189,12 @@ public class Room {
                 ", sits=" + sits +
                 ", cost=" + cost +
                 '}';
+    }
+
+    public static void main(String[] args) {
+        Room room = new Room(10, 20);
+        room.displayRoom();
+        room.giveSit(new Sit(1, 2));
+        room.displayRoom();
     }
 }

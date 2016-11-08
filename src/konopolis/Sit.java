@@ -3,22 +3,23 @@ package konopolis;
 public class Sit {
 
     /**
-     * x, coordinate in x of the sit
-     * y, coordinate in y of the sit
+     * row, row of the sit
+     * column, column of the sit in the row
      * isTaken, boolean, to know if the sit is taken
      */
-    private int x;
-    private int y;
+    private int row;
+    private int column;
     private boolean isTaken;
 
     /**
      * constructor
-     * @param x, coordinate in x of the sit
-     * @param y, coordinate in y of the sit
+     * @param row, row of the sit
+     * @param column, column of the sit in the row
+     * By default, the sit is available
      */
-    public Sit(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Sit(int row, int column) {
+        this.row = row;
+        this.column = column;
         this.isTaken = false;
     }
 
@@ -26,20 +27,20 @@ public class Sit {
      * Getters and Setters
      */
 
-    public int getX() {
-        return x;
+    public int getRow() {
+        return row;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setRow(int row) {
+        this.row = row;
     }
 
-    public int getY() {
-        return y;
+    public int getColumn() {
+        return column;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setColumn(int column) {
+        this.column = column;
     }
 
     public boolean isTaken() {
@@ -61,27 +62,15 @@ public class Sit {
 
         Sit sit = (Sit) o;
 
-        if (x != sit.x) return false;
-        return y == sit.y;
+        if (row != sit.row) return false;
+        return column == sit.column;
 
     }
 
     @Override
     public int hashCode() {
-        int result = x;
-        result = 31 * result + y;
+        int result = row;
+        result = 31 * result + column;
         return result;
-    }
-
-    /**
-     * toString
-     */
-
-    @Override
-    public String toString() {
-        return "Sit{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
     }
 }
