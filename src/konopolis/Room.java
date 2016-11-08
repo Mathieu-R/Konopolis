@@ -29,9 +29,12 @@ public class Room {
 
         // Init the sits (ArrayList) with all the coordinates of the sits
         for (int i = 0; i < rows; i++) {
+            ArrayList<Sit> tempList = new ArrayList<Sit>();
             for (int j = 0; j < sitsByRow; j++) {
-                sits.get(i).add(j, new Sit(i + 1, j + 1)); // i + 1, j + 1 => a sit does not have a place 0
+                tempList.add(j, new Sit(i + 1, j+ 1));
+                //sits.(i).set(j, new Sit(i + 1, j + 1)); // i + 1, j + 1 => a sit does not have a place 0
             }
+            sits.add(tempList);
         }
     }
 
@@ -194,6 +197,7 @@ public class Room {
     public static void main(String[] args) {
         Room room = new Room(10, 20);
         room.displayRoom();
+        System.out.println("================");
         room.giveSit(new Sit(1, 2));
         room.displayRoom();
     }
