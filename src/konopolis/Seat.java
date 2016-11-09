@@ -1,6 +1,6 @@
 package konopolis;
 
-public class Sit {
+public class Seat {
 
     /**
      * row, row of the sit
@@ -17,7 +17,7 @@ public class Sit {
      * @param column, column of the sit in the row
      * By default, the sit is available
      */
-    public Sit(int row, int column) {
+    public Seat(int row, int column) {
         this.row = row;
         this.column = column;
         this.isTaken = false;
@@ -60,7 +60,7 @@ public class Sit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Sit sit = (Sit) o;
+        Seat sit = (Seat) o;
 
         if (row != sit.row) return false;
         return column == sit.column;

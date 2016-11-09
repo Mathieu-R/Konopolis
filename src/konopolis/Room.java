@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class Room {
 
     private static int id;
-    private int totSits;
+    private int totSeats;
     private int rows;
-    private int sitsByRow;
-    private ArrayList<ArrayList<Sit>> sits = new ArrayList<ArrayList<Sit>>();
+    private int seatsByRow;
+    private ArrayList<ArrayList<Seat>> seats = new ArrayList<ArrayList<Seat>>();
     private double cost;
     private static double income;
 
@@ -23,18 +23,18 @@ public class Room {
         }
 
         this.rows = rows;
-        this.sitsByRow = sitsByRow;
+        this.seatsByRow = sitsByRow;
 
-        this.totSits = rows * sitsByRow;
+        this.totSeats = rows * sitsByRow;
 
-        // Init the sits (ArrayList) with all the coordinates of the sits
+        // Init the seats (ArrayList) with all the coordinates of the seats
         for (int i = 0; i < rows; i++) {
-            ArrayList<Sit> tempList = new ArrayList<Sit>();
+            ArrayList<Seat> tempList = new ArrayList<Seat>();
             for (int j = 0; j < sitsByRow; j++) {
-                tempList.add(j, new Sit(i + 1, j+ 1));
-                //sits.(i).set(j, new Sit(i + 1, j + 1)); // i + 1, j + 1 => a sit does not have a place 0
+                tempList.add(j, new Seat(i + 1, j+ 1));
+                //seats.(i).set(j, new Seat(i + 1, j + 1)); // i + 1, j + 1 => a sit does not have a place 0
             }
-            sits.add(tempList);
+            seats.add(tempList);
         }
     }
 
@@ -46,8 +46,8 @@ public class Room {
      * Réserve un siège si celui-ci existe bien dans la salle
      * @param sit, un siège donné
      */
-    public void giveSit(Sit sit) {
-        for (ArrayList<Sit> sitsRow : sits) { // For every row
+    public void giveSit(Seat sit) {
+        for (ArrayList<Seat> sitsRow : seats) { // For every row
             if (sitsRow.contains(sit)) { // If the row ArrayList contains the sit
                 final int index = sitsRow.indexOf(sit); // Index of the sit
                 sitsRow.get(index).setTaken(true); // The sit is reserved
@@ -59,8 +59,8 @@ public class Room {
      * Annule la réservation d'un siège
      * @param sit, un siège donné
      */
-    public void cancelSit(Sit sit) {
-        for (ArrayList<Sit> sitsRow : sits) { // For every row
+    public void cancelSit(Seat sit) {
+        for (ArrayList<Seat> sitsRow : seats) { // For every row
             if (sitsRow.contains(sit)) { // If the row ArrayList contains the sit
                 final int index = sitsRow.indexOf(sit); // Index of the sit
                 sitsRow.get(index).setTaken(false); // The sit is NOT reserved anymore
@@ -72,8 +72,8 @@ public class Room {
      * Vide la salle, c'est à dire qu'aucun siège n'est réservé
      */
     public void emptyRoom() {
-        for (ArrayList<Sit> sitsRow : sits) { // For Each sit
-            for (Sit sit : sitsRow) {
+        for (ArrayList<Seat> sitsRow : seats) { // For Each sit
+            for (Seat sit : sitsRow) {
                 sit.setTaken(false); // The sit is not reserved
             }
         }
@@ -83,8 +83,8 @@ public class Room {
      * Affiche la représentation console de la salle
      */
     public void displayRoom() {
-        for (ArrayList<Sit> sitsRow : sits) {
-            for (Sit sit : sitsRow) {
+        for (ArrayList<Seat> sitsRow : seats) {
+            for (Seat sit : sitsRow) {
                 if (sit.isTaken()) System.out.print("[X]");
                 else System.out.print("[O]");
             }
@@ -107,12 +107,12 @@ public class Room {
         Room.id = id;
     }
 
-    public int getTotSits() {
-        return totSits;
+    public int getTotSeats() {
+        return totSeats;
     }
 
-    public void setTotSits(int totSits) {
-        this.totSits = totSits;
+    public void setTotSeats(int totSeats) {
+        this.totSeats = totSeats;
     }
 
     public int getRows() {
@@ -123,20 +123,20 @@ public class Room {
         this.rows = rows;
     }
 
-    public int getSitsByRow() {
-        return sitsByRow;
+    public int getSeatsByRow() {
+        return seatsByRow;
     }
 
-    public void setSitsByRow(int sitsByRow) {
-        this.sitsByRow = sitsByRow;
+    public void setSeatsByRow(int seatsByRow) {
+        this.seatsByRow = seatsByRow;
     }
 
-    public ArrayList<ArrayList<Sit>> getSits() {
-        return sits;
+    public ArrayList<ArrayList<Seat>> getSeats() {
+        return seats;
     }
 
-    public void setSits(ArrayList<ArrayList<Sit>> sits) {
-        this.sits = sits;
+    public void setSeats(ArrayList<ArrayList<Seat>> seats) {
+        this.seats = seats;
     }
 
     public double getCost() {
@@ -166,17 +166,17 @@ public class Room {
 
         Room room = (Room) o;
 
-        if (totSits != room.totSits) return false;
-        if (sitsByRow != room.sitsByRow) return false;
-        return sits.equals(room.sits);
+        if (totSeats != room.totSeats) return false;
+        if (seatsByRow != room.seatsByRow) return false;
+        return seats.equals(room.seats);
 
     }
 
     @Override
     public int hashCode() {
-        int result = totSits;
-        result = 31 * result + sitsByRow;
-        result = 31 * result + sits.hashCode();
+        int result = totSeats;
+        result = 31 * result + seatsByRow;
+        result = 31 * result + seats.hashCode();
         return result;
     }
 
@@ -187,9 +187,9 @@ public class Room {
     @Override
     public String toString() {
         return "Room{" +
-                "totSits=" + totSits +
-                ", sitsByRow=" + sitsByRow +
-                ", sits=" + sits +
+                "totSeats=" + totSeats +
+                ", seatsByRow=" + seatsByRow +
+                ", seats=" + seats +
                 ", cost=" + cost +
                 '}';
     }
@@ -198,7 +198,7 @@ public class Room {
         Room room = new Room(10, 20);
         room.displayRoom();
         System.out.println("================");
-        room.giveSit(new Sit(1, 2));
+        room.giveSit(new Seat(1, 2));
         room.displayRoom();
     }
 }
