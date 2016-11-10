@@ -44,26 +44,26 @@ public class Room {
 
     /**
      * Réserve un siège si celui-ci existe bien dans la salle
-     * @param sit, un siège donné
+     * @param seat, un siège donné
      */
-    public void giveSit(Seat sit) {
-        for (ArrayList<Seat> sitsRow : seats) { // For every row
-            if (sitsRow.contains(sit)) { // If the row ArrayList contains the sit
-                final int index = sitsRow.indexOf(sit); // Index of the sit
-                sitsRow.get(index).setTaken(true); // The sit is reserved
+    public void giveSit(Seat seat) {
+        for (ArrayList<Seat> seatsRow : seats) { // For every row
+            if (seatsRow.contains(seat)) { // If the row ArrayList contains the sit
+                final int index = seatsRow.indexOf(seat); // Index of the sit
+                seatsRow.get(index).setTaken(true); // The sit is reserved
             }
         }
     }
 
     /**
      * Annule la réservation d'un siège
-     * @param sit, un siège donné
+     * @param seat, un siège donné
      */
-    public void cancelSit(Seat sit) {
-        for (ArrayList<Seat> sitsRow : seats) { // For every row
-            if (sitsRow.contains(sit)) { // If the row ArrayList contains the sit
-                final int index = sitsRow.indexOf(sit); // Index of the sit
-                sitsRow.get(index).setTaken(false); // The sit is NOT reserved anymore
+    public void cancelSit(Seat seat) {
+        for (ArrayList<Seat> seatsRow : seats) { // For every row
+            if (seatsRow.contains(seat)) { // If the row ArrayList contains the seat
+                final int index = seatsRow.indexOf(seat); // Index of the seat
+                seatsRow.get(index).setTaken(false); // The seat is NOT reserved anymore
             }
         }
     }
@@ -73,8 +73,8 @@ public class Room {
      */
     public void emptyRoom() {
         for (ArrayList<Seat> sitsRow : seats) { // For Each sit
-            for (Seat sit : sitsRow) {
-                sit.setTaken(false); // The sit is not reserved
+            for (Seat seat : sitsRow) {
+                seat.setTaken(false); // The seat is not reserved
             }
         }
     }
