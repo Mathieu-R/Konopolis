@@ -2,7 +2,7 @@
  * 
  */
 package konopolis;
-
+import java.util.Date;
 /**
  * @author natha
  *
@@ -11,15 +11,20 @@ public class Movie {
 	private String title;
 	private String description;
 	private String []  genre;
-	private String dateShow;
+	private Date dateShow;
 	private String director;
 	private String [] casting;
 	private int time;
 	private String lang;
 	private double price;	
+	public Movie(String title,Date dateshow,double price){
+			this.title=title;
+			this.dateShow=dateShow;
+			this.price=price;	
+	}
 	
-	public Movie(String titre, String description, String[] genre, String dateShow, String director, String[] casting,int time, String lang,double price) {
-		title = titre;
+	public Movie(String titre, String description, String[] genre, Date dateShow, String director, String[] casting,int time, String lang,double price) {
+		this.title = titre;
 		this.description = description;
 		this.genre = genre;
 		this.dateShow = dateShow;
@@ -54,11 +59,11 @@ public class Movie {
 		this.genre = genre;
 	}
 	
-	public String getDateSeance() {
+	public Date getDateSeance() {
 		return dateShow;
 	}
 	
-	public void setDateSeance(String dateShow) {
+	public void setDateSeance(Date dateShow) {
 		this.dateShow = dateShow;
 	}
 	
@@ -93,11 +98,11 @@ public class Movie {
 		this.lang = lang;
 	}
 	
-	public double getPrix() {
+	public double getPrice() {
 		return price;
 	}
 	
-	public void setPrix(double price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}	
 

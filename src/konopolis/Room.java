@@ -16,7 +16,7 @@ public class Room {
 	    private int sitsByRow;
 	    private ArrayList<ArrayList<Seat>> sits = new ArrayList<ArrayList<Seat>>();
 	    private double cost;
-	    private static double income;
+	    private static double income=0.0;
 	    private Movie movie;
 
 	    /**
@@ -63,7 +63,31 @@ public class Room {
 	        }
 	    }
 
-	    /**
+	    public int getSitsByRow() {
+			return sitsByRow;
+		}
+
+		public void setSitsByRow(int sitsByRow) {
+			this.sitsByRow = sitsByRow;
+		}
+
+		public ArrayList<ArrayList<Seat>> getSits() {
+			return sits;
+		}
+
+		public void setSits(ArrayList<ArrayList<Seat>> sits) {
+			this.sits = sits;
+		}
+
+		public Movie getMovie() {
+			return movie;
+		}
+
+		public void setMovie(Movie movie) {
+			this.movie = movie;
+		}
+
+		/**
 	     * Annule la réservation d'un siège
 	     * @param sit, un siège donné
 	     */
