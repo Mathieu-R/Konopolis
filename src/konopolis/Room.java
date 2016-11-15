@@ -10,7 +10,7 @@ public class Room {
     private int seatsByRow;
     private ArrayList<ArrayList<Seat>> seats = new ArrayList<ArrayList<Seat>>();
     private double cost;
-    private static double income;
+    private static double income = 0.0;
 
     /**
      * Constructors
@@ -42,30 +42,47 @@ public class Room {
      * Methods
      */
 
-    /**
-     * Réserve un siège si celui-ci existe bien dans la salle
-     * @param seat, un siège donné
-     */
-    public void giveSit(Seat seat) {
+
+    /*public void giveSeat(Seat seat) {
         for (ArrayList<Seat> seatsRow : seats) { // For every row
             if (seatsRow.contains(seat)) { // If the row ArrayList contains the sit
                 final int index = seatsRow.indexOf(seat); // Index of the sit
                 seatsRow.get(index).setTaken(true); // The sit is reserved
             }
         }
+    }*/
+    /**
+     * Réserve un siège si celui-ci existe bien dans la salle et n'est pas déjà prit
+     * @param x, rangée du siège
+     * @param y, colonne du siège
+     */
+    public void giveSeat(int x, int y) {
+        if ((y-1) > rows || (x-1) > seatsByRow) {
+            System.out.println("Ce siège n'existe pas");
+            return;
+        }
+        if (seats.get(x-1).get(y-1).isTaken()) {
+            System.out.println("Ce siège est déjà prit");
+            return;
+        }
+        seats.get(x-1).get(y-1).setTaken(true);
     }
 
     /**
-     * Annule la réservation d'un siège
-     * @param seat, un siège donné
+     * Annule la réservation d'un siège si celui-ci existe et est réservé
+     * @param x, rangée du siège
+     * @param y, colonne du siège
      */
-    public void cancelSit(Seat seat) {
-        for (ArrayList<Seat> seatsRow : seats) { // For every row
-            if (seatsRow.contains(seat)) { // If the row ArrayList contains the seat
-                final int index = seatsRow.indexOf(seat); // Index of the seat
-                seatsRow.get(index).setTaken(false); // The seat is NOT reserved anymore
-            }
+    public void cancelSeat(int x, int y) {
+        if ((y-1) > rows || (x-1) > seatsByRow) {
+            System.out.println("Ce siège n'existe pas");
+            return;
         }
+        if (!seats.get(x-1).get(y-1).isTaken()) {
+            System.out.println("Ce siège n'est pas encore prit");
+            return;
+        }
+        seats.get(x-1).get(y-1).setTaken(false);
     }
 
     /**
@@ -84,8 +101,8 @@ public class Room {
      */
     public void displayRoom() {
         for (ArrayList<Seat> sitsRow : seats) {
-            for (Seat sit : sitsRow) {
-                if (sit.isTaken()) System.out.print("[X]");
+            for (Seat seat : sitsRow) {
+                if (seat.isTaken()) System.out.print("[X]");
                 else System.out.print("[O]");
             }
             System.out.print("\n"); // Turn back to the line for every row
@@ -198,7 +215,7 @@ public class Room {
         Room room = new Room(10, 20);
         room.displayRoom();
         System.out.println("================");
-        room.giveSit(new Seat(1, 2));
+        room.giveSeat(1, 2);
         room.displayRoom();
     }
 }
