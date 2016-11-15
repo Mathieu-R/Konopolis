@@ -1,0 +1,25 @@
+/**
+ * 
+ */
+package konopolis;
+import java.util.Date;
+/**
+ * @author natha
+ *
+ */
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String [] genre=new String[5];
+		genre[0]="Amour";
+		Date date=new Date(23,2,2015);
+		
+		Movie mov=new Movie("Chabada",genre,15);
+		Room ro =new Room(10,10,)
+	}
+
+}

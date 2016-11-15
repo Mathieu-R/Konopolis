@@ -1,0 +1,23 @@
+/**
+ * 
+ */
+package konopolis;
+
+/**
+ * @author natha
+ *
+ */
+public class Main {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String [] genre=new String[5];
+		genre[0]="Amour";
+		String date="25/11/95";
+		Room ro =new Room(10,10,)
+	}
+
+}
