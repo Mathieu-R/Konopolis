@@ -16,6 +16,7 @@ public class Customer {
 	private Room ro;
 	private int age;
 	private ArrayList<Customer> listCustomers = new ArrayList<Customer>();
+
 	public Customer(){
 		place.setRow(0);
 		place.setColumn(0);
@@ -23,20 +24,22 @@ public class Customer {
 		reduction=0.0;
 		type='C';
 	}
+
 	public Customer(Seat pla,Room ro){
 		reduction=0.0;
 		if(!(ro.getSeat(pla.getRow(),pla.getColumn()).isTaken())){
-			place=new Seat(pla.getRow(),pla.getColumn());
-			this.ro=ro;
+			place = new Seat(pla.getRow(),pla.getColumn());
+			this.ro = ro;
 			this.ro.giveSeat(place);
 			this.ro.setIncome(this.ro.getIncome()+ro.getMovie().getPrice()*this.reduction);
 			listCustomers.add(this);
 		}
 	}
+
 	public Customer(Seat pla,Room ro,int age){
-		place=new Seat(pla.getRow(),pla.getColumn());
-		this.ro=ro;
-		this.age=age;
+		place = new Seat(pla.getRow(),pla.getColumn());
+		this.ro = ro;
+		this.age = age;
 		if(age>60){
 			this.reduction=0.7;
 		}else if(age<12){
