@@ -14,6 +14,7 @@ public class Seat {
     private int row;
     private int column;
     private boolean isTaken;
+    private Customer customer;
 
     /**
      * constructor
@@ -55,6 +56,14 @@ public class Seat {
         isTaken = taken;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     /**
      * HashCode and Equals
      */
@@ -76,5 +85,19 @@ public class Seat {
         int result = row;
         result = 31 * result + column;
         return result;
+    }
+
+    /**
+     * toString
+     * @return
+     */
+    @Override
+    public String toString() {
+        return "Seat{" +
+                "row=" + row +
+                ", column=" + column +
+                ", isTaken=" + isTaken +
+                ", customer=" + customer +
+                '}';
     }
 }

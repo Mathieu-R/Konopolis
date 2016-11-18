@@ -14,12 +14,18 @@ public class Room {
     private int seatsByRow;
     private ArrayList<ArrayList<Seat>> seats = new ArrayList<ArrayList<Seat>>();
     private double cost;
+    private Movie movie;
     private static double income = 0.0;
 
     /**
      * Constructors
      */
 
+    /**
+     * Constructor without movie
+     * @param rows
+     * @param sitsByRow
+     */
     public Room(int rows, int sitsByRow) {
         if (rows > 20 || sitsByRow > 35) {
             System.out.println("Trop de rangées et/ou de sièges par rangée");
@@ -30,6 +36,35 @@ public class Room {
         this.seatsByRow = sitsByRow;
 
         this.totSeats = rows * sitsByRow;
+
+        // Init the seats (ArrayList) with all the coordinates of the seats
+        for (int i = 0; i < rows; i++) {
+            ArrayList<Seat> tempList = new ArrayList<Seat>();
+            for (int j = 0; j < sitsByRow; j++) {
+                tempList.add(j, new Seat(i + 1, j+ 1)); // i + 1, j + 1 => a sit does not have a place in 0
+            }
+            seats.add(tempList);
+        }
+    }
+
+    /**
+     * Constructor without movie
+     * @param rows
+     * @param sitsByRow
+     * @param movie
+     */
+    public Room(int rows, int sitsByRow, Movie movie) {
+        if (rows > 20 || sitsByRow > 35) {
+            System.out.println("Trop de rangées et/ou de sièges par rangée");
+            return;
+        }
+
+        this.rows = rows;
+        this.seatsByRow = sitsByRow;
+
+        this.totSeats = rows * sitsByRow;
+
+        this.movie = movie;
 
         // Init the seats (ArrayList) with all the coordinates of the seats
         for (int i = 0; i < rows; i++) {
@@ -166,6 +201,14 @@ public class Room {
         Room.income = income;
     }
 
+    public Movie getMovie() {
+        return movie;
+    }
+
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+    }
+
     /**
      * HashCode and Equals
      */
@@ -195,13 +238,16 @@ public class Room {
      * toString
      */
 
+
     @Override
     public String toString() {
         return "Room{" +
                 "totSeats=" + totSeats +
+                ", rows=" + rows +
                 ", seatsByRow=" + seatsByRow +
                 ", seats=" + seats +
                 ", cost=" + cost +
+                ", movie=" + movie +
                 '}';
     }
 
