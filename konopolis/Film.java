@@ -1,80 +1,111 @@
-package konopolis;
-
+	package konopolis;
+	
+	
+	import java.util.Date;
+/**
+ * 
+ * @author Sebastien.H - Groupe 3
+ *
+ */
 public class Film  {
 	private String Titre;
 	private String description;
 	private String []  genre;
-	private String dateSeance;
+	private Date dateSeanceDebut;
+	private Date dateSeanceFin;
 	private String real;
 	private String [] casting;
 	private int temps;
 	private String langue;
-	private double prix;	
+	
+	/* constructor */
+	public Film(String titre, String description, String[] genre, Date dateSeanceDebut, Date dateSeanceFin, String real, String[] casting,
+			int temps, String langue) {
+		this.Titre = titre;
+		this.description = description;
+		this.genre = genre;
+		this.dateSeanceDebut = dateSeanceDebut;
+		this.dateSeanceFin = dateSeanceFin;
+		this.real = real;
+		this.casting = casting;
+		this.temps = temps;
+		this.langue = langue;
+	}
+
+	
+	/* All Getters and Setters */
+	
 	public String getTitre() {
 		return Titre;
 	}
+
 	public void setTitre(String titre) {
 		Titre = titre;
 	}
+
 	public String getDescription() {
 		return description;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	public String[] getGenre() {
 		return genre;
 	}
+
 	public void setGenre(String[] genre) {
 		this.genre = genre;
 	}
-	public String getDateSeance() {
-		return dateSeance;
+
+	public Date getDateSeanceDebut() {
+		return dateSeanceDebut;
 	}
-	public void setDateSeance(String dateSeance) {
-		this.dateSeance = dateSeance;
+
+	public void setDateSeanceDebut(Date dateSeanceDebut) {
+		this.dateSeanceDebut = dateSeanceDebut;
 	}
+
+	public Date getDateSeanceFin() {
+		return dateSeanceFin;
+	}
+
+	public void setDateSeanceFin(Date dateSeanceFin) {
+		this.dateSeanceFin = dateSeanceFin;
+	}
+
 	public String getReal() {
 		return real;
 	}
+
 	public void setReal(String real) {
 		this.real = real;
 	}
+
 	public String[] getCasting() {
 		return casting;
 	}
+
 	public void setCasting(String[] casting) {
 		this.casting = casting;
 	}
+
 	public int getTemps() {
 		return temps;
 	}
+
 	public void setTemps(int temps) {
 		this.temps = temps;
 	}
+
 	public String getLangue() {
 		return langue;
 	}
+
 	public void setLangue(String langue) {
 		this.langue = langue;
 	}
-	public double getPrix() {
-		return prix;
-	}
-	public void setPrix(double prix) {
-		this.prix = prix;
-	}	
-		public Film(String titre, String description, String[] genre, String dateSeance, String real, String[] casting,
-			int temps, String langue,double prix) {
-		super();
-		Titre = titre;
-		this.description = description;
-		this.genre = genre;
-		this.dateSeance = dateSeance;
-		this.real = real;
-		this.casting = casting;
-		this.temps = temps;
-		this.langue = langue;
-		this.prix = prix;
-	}
+	
+
 }
