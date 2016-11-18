@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * @author Mathieu R. - Groupe 3
+ */
+
 public class DB {
 
     private final String DB_DRIVER = "com.mysql.jdbc.Driver";
@@ -16,8 +20,8 @@ public class DB {
     }
 
     /**
-     * Chargement du driver mysql
-     * A faire une seule fois ! Au lancement de l'app.
+     * loading of the mysql driver
+     * To do only once ! During the app launching.
      * @throws ClassNotFoundException
      */
     public void registerDriver() {
@@ -29,7 +33,7 @@ public class DB {
     }
 
     /**
-     * Crée la connection à la db Konopolis
+     * Create the connection the the DB (Konopolis)
      */
     public void createConnection() {
         System.out.println("Connecting to Konopolis DB...");

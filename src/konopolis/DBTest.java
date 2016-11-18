@@ -2,11 +2,15 @@ package konopolis;
 
 import org.junit.Test;
 
+/**
+ * @author Mathieu R. - Groupe 3
+ */
+
 public class DBTest {
 
     @Test
     public void registerDriver() throws Exception {
-        // registerDriver est appelé dans le constructeur
+        // registerDriver is called in the constructor
         DB db = new DB();
     }
 

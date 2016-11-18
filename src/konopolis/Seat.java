@@ -1,5 +1,9 @@
 package konopolis;
 
+/**
+ * @author Mathieu R. - Groupe 3
+ */
+
 public class Seat {
 
     /**

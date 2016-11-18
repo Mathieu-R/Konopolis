@@ -2,6 +2,10 @@ package konopolis;
 
 import java.util.ArrayList;
 
+/**
+ * @author Mathieu R. - Groupe 3
+ */
+
 public class Room {
 
     private static int id;
@@ -31,8 +35,7 @@ public class Room {
         for (int i = 0; i < rows; i++) {
             ArrayList<Seat> tempList = new ArrayList<Seat>();
             for (int j = 0; j < sitsByRow; j++) {
-                tempList.add(j, new Seat(i + 1, j+ 1));
-                //seats.(i).set(j, new Seat(i + 1, j + 1)); // i + 1, j + 1 => a sit does not have a place 0
+                tempList.add(j, new Seat(i + 1, j+ 1)); // i + 1, j + 1 => a sit does not have a place in 0
             }
             seats.add(tempList);
         }
@@ -42,68 +45,59 @@ public class Room {
      * Methods
      */
 
-
-    /*public void giveSeat(Seat seat) {
-        for (ArrayList<Seat> seatsRow : seats) { // For every row
-            if (seatsRow.contains(seat)) { // If the row ArrayList contains the sit
-                final int index = seatsRow.indexOf(seat); // Index of the sit
-                seatsRow.get(index).setTaken(true); // The sit is reserved
-            }
-        }
-    }*/
     /**
-     * Réserve un siège si celui-ci existe bien dans la salle et n'est pas déjà prit
-     * @param x, rangée du siège
-     * @param y, colonne du siège
+     * Book a seat if it exists and is not already taken
+     * @param x, row of the seat
+     * @param y, column of the seat
      */
     public void giveSeat(int x, int y) {
-        if ((y-1) > rows || (x-1) > seatsByRow) {
-            System.out.println("Ce siège n'existe pas");
+        if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
+            System.out.println("This seat doesn't exist");
             return;
         }
-        if (seats.get(x-1).get(y-1).isTaken()) {
-            System.out.println("Ce siège est déjà prit");
+        if (seats.get(x-1).get(y-1).isTaken()) { // If the seat is taken
+            System.out.println("This seat is already taken");
             return;
         }
         seats.get(x-1).get(y-1).setTaken(true);
     }
 
     /**
-     * Annule la réservation d'un siège si celui-ci existe et est réservé
-     * @param x, rangée du siège
-     * @param y, colonne du siège
+     * Cancel the booking of a seat if it exists and it is already taken
+     * @param x, row of the seat
+     * @param y, column of the seat
      */
     public void cancelSeat(int x, int y) {
-        if ((y-1) > rows || (x-1) > seatsByRow) {
-            System.out.println("Ce siège n'existe pas");
+        if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
+            System.out.println("This seat doesn't exist");
             return;
         }
-        if (!seats.get(x-1).get(y-1).isTaken()) {
-            System.out.println("Ce siège n'est pas encore prit");
+        if (!seats.get(x-1).get(y-1).isTaken()) { // If the seat is not taken
+            System.out.println("This seat is already taken");
             return;
         }
         seats.get(x-1).get(y-1).setTaken(false);
     }
 
     /**
-     * Vide la salle, c'est à dire qu'aucun siège n'est réservé
+     * Empty the room, which means that no seats are taken
      */
     public void emptyRoom() {
-        for (ArrayList<Seat> sitsRow : seats) { // For Each sit
-            for (Seat seat : sitsRow) {
+        for (ArrayList<Seat> sitsRow : seats) { // For Each row
+            for (Seat seat : sitsRow) { // For Each sit
                 seat.setTaken(false); // The seat is not reserved
             }
         }
     }
 
     /**
-     * Affiche la représentation console de la salle
+     * Show the console representation of the room
      */
     public void displayRoom() {
-        for (ArrayList<Seat> sitsRow : seats) {
-            for (Seat seat : sitsRow) {
-                if (seat.isTaken()) System.out.print("[X]");
-                else System.out.print("[O]");
+        for (ArrayList<Seat> sitsRow : seats) { // For Each row
+            for (Seat seat : sitsRow) { // For Each seat
+                if (seat.isTaken()) System.out.print("[X]"); // If the seat is taken
+                else System.out.print("[O]"); // Otherwise, if the seat is available
             }
             System.out.print("\n"); // Turn back to the line for every row
         }
