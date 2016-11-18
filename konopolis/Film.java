@@ -1,6 +1,5 @@
 	package konopolis;
 	
-	
 	import java.util.Date;
 /**
  * 
