@@ -26,7 +26,7 @@ CREATE table tbMoviesGenres (
 	movie_id int,
 	genre_id int,
 	FOREIGN KEY (movie_id) REFERENCES tbMovies(movie_id) ON UPDATE CASCADE,
-	FOREIGN KEY (genre_id) REFERENCES tbMovies(genre_id) ON UPDATE CASCADE
+	FOREIGN KEY (genre_id) REFERENCES tbGenres(genre_id) ON UPDATE CASCADE
 )
 
 CREATE table tbCasts (
@@ -70,8 +70,7 @@ CREATE table tbSeats (
   CONSTRAINT chkRow CHECK (sRow between 1 and 20),
   CONSTRAINT chkColumn CHECK (sColumn between 1 and 35),
   CONSTRAINT chkIsTaken CHECK (isTaken in (0, 1)),
-  FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE,
-  #FOREIGN KEY (customer_id) REFERENCES tbCustomersSeats(customer_id) ON UPDATE CASCADE
+  FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE
 )
 
 CREATE table tbCustomers (
@@ -79,7 +78,6 @@ CREATE table tbCustomers (
 	seat_id int,
 	customer_type_id int,
 	reduction double,
-	#FOREIGN KEY (seat_id) REFERENCES tbCustomersSeats(seat_id) ON UPDATE CASCADE,
 	FOREIGN KEY (customer_type_id) REFERENCES tbCustomersType(customer_type_id) ON UPDATE CASCADE
 )
 
