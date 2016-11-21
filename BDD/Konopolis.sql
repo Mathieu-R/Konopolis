@@ -49,30 +49,38 @@ CREATE table tbRooms (
 	FOREIGN KEY (movie_id) REFERENCES tbMovies(movie_id) ON UPDATE CASCADE
 )
 
-CREATE table tbClients (
-	client_id int auto_increment PRIMARY KEY,
-	seat_id int,
-	client_type_id int,
-	reduction double,
-	FOREIGN KEY (seat_id) REFERENCES tbSeats(seat_id) ON UPDATE CASCADE,
-	FOREIGN KEY (client_type_id) REFERENCES tbClientsType(client_type_id) ON UPDATE CASCADE
+CREATE table tbCustomersType (
+  customer_type_id int auto_increment PRIMARY KEY,
+  customer_type CHAR(30)
 )
 
 CREATE table tbSeats (
-	seat_id int auto_increment PRIMARY KEY,
-	room_id int,
-	client_id int,
-	sRow int,
-	sColumn int,
-	isTaken tinyint,
-	CONSTRAINT chkRow CHECK (sRow between 1 and 20),
-	CONSTRAINT chkColumn CHECK (sColumn between 1 and 35),
-	CONSTRAINT chkIsTaken CHECK (isTaken in (0, 1)),
-	FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE,
-	FOREIGN KEY (client_id) REFERENCES tbClients(client_id) ON UPDATE CASCADE
+  seat_id int auto_increment PRIMARY KEY,
+  room_id int,
+  customer_id int,
+  sRow int,
+  sColumn int,
+  isTaken tinyint,
+  CONSTRAINT chkRow CHECK (sRow between 1 and 20),
+  CONSTRAINT chkColumn CHECK (sColumn between 1 and 35),
+  CONSTRAINT chkIsTaken CHECK (isTaken in (0, 1)),
+  FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE,
+  #FOREIGN KEY (customer_id) REFERENCES tbCustomersSeats(customer_id) ON UPDATE CASCADE
 )
 
-CREATE table tbClientsType (
-	client_type_id int auto_increment PRIMARY KEY,
-	client_type CHAR(30)
+CREATE table tbCustomers (
+	customer_id int auto_increment PRIMARY KEY,
+	seat_id int,
+	customer_type_id int,
+	reduction double,
+	#FOREIGN KEY (seat_id) REFERENCES tbCustomersSeats(seat_id) ON UPDATE CASCADE,
+	FOREIGN KEY (customer_type_id) REFERENCES tbCustomersType(customer_type_id) ON UPDATE CASCADE
+)
+
+CREATE table tbCustomersSeats (
+  customer_id int,
+  seat_id int,
+  PRIMARY KEY (customer_id, seat_id), # Composite Key
+  FOREIGN KEY (customer_id) REFERENCES tbCustomers(customer_id) ON UPDATE CASCADE,
+  FOREIGN KEY (seat_id) REFERENCES tbSeats(seat_id) ON UPDATE CASCADE
 )
