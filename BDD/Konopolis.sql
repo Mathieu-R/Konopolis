@@ -1,3 +1,8 @@
+CREATE table tbLanguages (
+  language_id int auto_increment PRIMARY KEY,
+  language char(30)
+)
+
 CREATE table tbMovies (
 	movie_id int auto_increment PRIMARY KEY,
 	title CHAR(30),
@@ -5,7 +10,8 @@ CREATE table tbMovies (
 	director CHAR(30),
 	time int,
 	language_id int,
-	price double
+	price double,
+  FOREIGN KEY (language_id) REFERENCES tbLanguages(language_id) ON UPDATE CASCADE
 )
 
 -- Associations avec la table Movies --

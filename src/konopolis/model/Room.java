@@ -1,4 +1,4 @@
-package konopolis;
+package src.konopolis.model;
 
 import java.util.ArrayList;
 

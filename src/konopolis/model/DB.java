@@ -1,8 +1,6 @@
-package konopolis;
+package src.konopolis.model;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * @author Mathieu R. - Groupe 3
@@ -14,6 +12,9 @@ public class DB {
     private final String DB_URL = "jdbc:mysql://localhost/Konopolis";
     private final String USER = "root";
     private final String PWD = "root";
+
+    Connection conn = null;
+    Statement stmt = null;
 
     public DB() {
         registerDriver();
@@ -38,10 +39,58 @@ public class DB {
     public void createConnection() {
         System.out.println("Connecting to Konopolis DB...");
         try {
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PWD);
+            this.conn = DriverManager.getConnection(DB_URL, USER, PWD);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Init of app
+     * Retrive all the informations to make the app work
+     */
+    public void init() {
+        try {
+            this.stmt = conn.createStatement();
+            retrieveMovies();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    public void retrieveMovies() {
+        String sql = "SELECT movie_id, title, description, director, time, language, price" +
+                     "FROM tbmovies join tblanguages";
+
+        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
+
+        while (rs.next()) { // While there're still results
+
+            int movie_id  = rs.getInt("movie_id");
+            String title = rs.getString("title");
+            String description = rs.getString("description");
+            String director = rs.getString("director");
+            String language = rs.getString("language");
+            double price = rs.getDouble("price");
+
+        }
+        rs.close();
     }
 
     public String getDB_DRIVER() {
