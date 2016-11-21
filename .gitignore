@@ -1,6 +1,8 @@
 # .idea directory
 .idea
 bin
+out
+.metadata
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Java template

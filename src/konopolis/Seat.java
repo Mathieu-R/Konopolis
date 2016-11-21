@@ -1,4 +1,4 @@
-package konopolis;
+package src.konopolis;
 
 /**
  * @author Mathieu R. - Groupe 3

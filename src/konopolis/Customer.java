@@ -1,7 +1,7 @@
 /**
  * 
  */
-package konopolis;
+package src.konopolis;
 
 import java.util.ArrayList;
 
@@ -11,50 +11,67 @@ import java.util.ArrayList;
  */
 public class Customer {
 	private Seat place;
-	double reduction=0.0;
-	char type;
+	private double reduction=0.0;
+	private char type;
+	private Room ro;
+	private int age;
 	private ArrayList<Customer> listCustomers = new ArrayList<Customer>();
+
 	public Customer(){
 		place.setRow(0);
 		place.setColumn(0);
 		place.setTaken(false);
-		reduction=0.0;
-		type='C';
+		reduction = 0.0;
+		type = 'C';
 	}
-	public Customer(Seat pla){
-		place=new Seat(pla.getRow(),pla.getColumn());
-		reduction=0.0;
-		type='C';
-	}
-	public void addGroup(Customer client){
-		listCustomers.add(client);
-	}
-	public void bookSeats(Room ro){
-		if(listCustomers.size()==0){
-			System.out.println("La liste de clients eest vide");
-			return;
-		}else{
-			for(int c=0;c<listCustomers.size();c++){
-				for(int i=0;i<ro.getRows();i++){
-					for(int j=0;j<ro.getSeatsByRow();j++){
-						if(ro.getAllSeats().get(listCustomers.get(c).place.getRow()).get(listCustomers.get(c).place.getColumn()).isTaken()){
-							System.out.println("Siège"+listCustomers.get(c).place.getRow()+","+listCustomers.get(c).place.getColumn()+" déja pris");
-							return;
-						}else{
-							System.out.println("OK");
-						}
-					}
-				}
-			}
-			for(int c=0;c<listCustomers.size();c++){
-				for(int i=0;i<ro.getRows();i++){
-					for(int j=0;j<ro.getSeatsByRow();j++)
-						ro.getAllSeats().get(listCustomers.get(c).place.getRow()).get(listCustomers.get(c).place.getColumn()).setTaken(true);
-				}
-			}
-			
+
+	public Customer(Seat pla, Room ro){
+
+		reduction = 0.0;
+
+
+
+		if(!(ro.getSeat(pla.getRow(),pla.getColumn()).isTaken())){
+			place = new Seat(pla.getRow(),pla.getColumn());
+			this.ro = ro;
+			this.ro.giveSeat(place);
+			this.ro.setIncome(this.ro.getIncome() + ro.getMovie().getPrice() * this.reduction);
+			listCustomers.add(this);
 		}
+	}
+
+	public Customer(Seat pla, Room ro, int age){
+		place = new Seat(pla.getRow(),pla.getColumn());
+		this.ro = ro;
+		this.age = age;
+		if(age>60){
+			this.reduction = 0.7;
+		} else if(age<12) {
+			this.reduction=0.5;
+		} else{
+			this.reduction=0.0;
+		}
+		listCustomers.add(this);
 		
+	}
+
+	public Room getRoom() {
+		return ro;
+	}
+	public void setRoom(Room ro) {
+		this.ro = ro;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public ArrayList<Customer> getListCustomers() {
+		return listCustomers;
+	}
+	public void setListCustomers(ArrayList<Customer> listCustomers) {
+		this.listCustomers = listCustomers;
 	}
 	public Seat getPlace() {
 		return place;
