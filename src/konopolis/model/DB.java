@@ -1,6 +1,7 @@
 package src.konopolis.model;
 
 import java.sql.*;
+import java.time.LocalDate;
 
 /**
  * @author Mathieu R. - Groupe 3
@@ -74,9 +75,13 @@ public class DB {
 
     }
 
+    /**
+     * Retrieve all the movies from the db
+     * That's what we want at the launching of our app
+     */
     public void retrieveMovies() {
-        String sql = "SELECT movie_id, title, description, director, time, language, price" +
-                     "FROM tbmovies join tblanguages";
+        String sql = "SELECT movie_id, title, description, director, cast, genre, time, language, price" +
+                     "FROM tbmovies join tblanguages join tbmoviescasts join tbcasts join tbmoviesgenres join tb genres";
 
         ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
 
@@ -86,9 +91,59 @@ public class DB {
             String title = rs.getString("title");
             String description = rs.getString("description");
             String director = rs.getString("director");
+            String cast = rs.getString("cast");
+            String genre = rs.getString("genre");
             String language = rs.getString("language");
             double price = rs.getDouble("price");
 
+        }
+        rs.close();
+    }
+
+    /**
+     * Retrieve all the rooms that publish a movie
+     * @param movie_id
+     */
+    public void retrieveRooms(int movie_id) {
+
+        String sql = "SELECT room_id, rows, seats_by_row, incomes" +
+                "FROM tbrooms" +
+                "WHERE movie_id = " + movie_id;
+
+        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
+
+        while (rs.next()) { // While there're still results
+
+            int room_id = rs.getInt("room_id");
+            int rows = rs.getInt("rows");
+            int seats_by_row = rs.getInt("seats_by_row");
+            double incomes = rs.getDouble("incomes");
+
+        }
+        rs.close();
+
+    }
+
+    /**
+     * Retrieve all the customers of a [movie] that happens in a [room] at a time given ([show_start])
+     * @param room_id
+     * @param movie_id
+     * @param show_start
+     */
+    public void retrieveCustomers(int room_id, int movie_id, LocalDate show_start) {
+        String sql = "SELECT customer_id, customer_type, sRow, sColumn, isTaken" +
+                "FROM tbcustomers join tbcustomersseats join tbseats join tbcustomerstype join tbrooms" +
+                "WHERE room_id = " + room_id + "and movie_id = " + movie_id + "and show_start = " + show_start;
+
+        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
+
+        while (rs.next()) { // While there're still results
+
+            int customer_id = rs.getInt("customer_id");
+            String customer_type = rs.getString("customer_type");
+            int row = rs.getInt("sRow");
+            int column = rs.getInt("sColumn");
+            boolean isTaken = rs.getBoolean("isTaken");
         }
         rs.close();
     }

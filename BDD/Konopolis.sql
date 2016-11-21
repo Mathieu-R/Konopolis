@@ -47,6 +47,8 @@ CREATE table tbMoviesCasts (
 CREATE table tbRooms (
 	room_id int auto_increment PRIMARY KEY,
 	movie_id int NOT NULL,
+	show_start DATETIME,
+	show_end DATETIME,
 	rows int, 
 	seats_by_row int,
 	incomes double,
