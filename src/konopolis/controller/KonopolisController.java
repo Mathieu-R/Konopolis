@@ -25,7 +25,7 @@ public class KonopolisController {
      * Add a view to the controller
      * @param view, the view
      */
-    public addView(KonopolisView view) {
+    public void addView(KonopolisView view) {
         this.view = view;
     }
 

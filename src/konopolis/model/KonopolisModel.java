@@ -16,6 +16,8 @@ public abstract class KonopolisModel implements Observable {
      * 3) Creation of the rooms, movies, movie shows, filling the rooms,...)
      */
     public KonopolisModel() {
-        new DB();
+        final DB db = new DB();
+        db.createConnection();
+
     }
 }

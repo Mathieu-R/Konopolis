@@ -35,7 +35,7 @@ public class DB {
     }
 
     /**
-     * Create the connection the the DB (Konopolis)
+     * Create the connection to the DB (Konopolis)
      */
     public void createConnection() {
         System.out.println("Connecting to Konopolis DB...");
@@ -48,7 +48,7 @@ public class DB {
 
     /**
      * Init of app
-     * Retrive all the informations to make the app work
+     * Retrieve all the informations to make the app work
      */
     public void init() {
         try {
