@@ -8,7 +8,7 @@ import java.util.ArrayList;
  */
 public class Customer {
 	private Seat place;
-	private double reduction=0.0;
+	private double reduction = 0.0;
 	private char type;
 	private Room ro;
 	private int age;
