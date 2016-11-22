@@ -11,7 +11,7 @@ public class Movie {
 	private int id = 0;
 	private String title;
 	private String description;
-	private String [] genre;
+	private String [] genres;
     private ArrayList<Show> shows = new ArrayList<Show>();
 	private String director;
 	private String [] casting;
