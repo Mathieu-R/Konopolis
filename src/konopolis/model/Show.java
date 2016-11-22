@@ -9,6 +9,8 @@ public class Show {
 
     private LocalDate show_start;
     private LocalDate show_end;
+    private Movie movie;
+    private Room room;
 
     public Show() {
         //
