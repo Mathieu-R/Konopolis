@@ -25,7 +25,7 @@ public class Customer {
 	public Customer(Seat pla, Room ro){
 
 		reduction = 0.0;
-        
+
 		if(!(ro.getSeat(pla.getRow(),pla.getColumn()).isTaken())){
 			place = new Seat(pla.getRow(),pla.getColumn());
 			this.ro = ro;
