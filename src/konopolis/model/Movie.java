@@ -17,6 +17,7 @@ public class Movie {
 	private String [] casting;
 	private int time;
 	private String language;
+    private double price;
 	
 	/* constructor */
 	public Movie(int id, String title, String description, String[] genre, LocalDate dateSeanceDebut, LocalDate dateSeanceFin, String director, String[] casting,
