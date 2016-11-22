@@ -8,7 +8,7 @@ import java.util.Observable;
  * Implements Observer
  * It informs the modifications to the view
  */
-public abstract class KonopolisModel implements Observable {
+public class KonopolisModel extends Observable {
 
     /**
      * 1) Connection to the DB
