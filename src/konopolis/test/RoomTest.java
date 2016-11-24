@@ -1,10 +1,11 @@
 package src.konopolis.test;
 
+import src.konopolis.model.Room;
+import src.konopolis.model.Seat;
+
 import java.util.ArrayList;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Mathieu R. - Groupe 3

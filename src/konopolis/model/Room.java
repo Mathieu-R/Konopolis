@@ -85,14 +85,14 @@ public class Room {
      * @param x, row of the seat
      * @param y, column of the seat
      */
-    public void giveSeat(int x, int y) {
+    public void giveSeat(int x, int y) throws SeatUnknownException, SeatTakenException {
         if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
             System.out.println("This seat doesn't exist");
-            return;
+            throw new SeatUnknownException("Ce siège n'existe pas");
         }
         if (seats.get(x-1).get(y-1).isTaken()) { // If the seat is taken
             System.out.println("This seat is already taken");
-            return;
+            throw new SeatTakenException("Ce siège est déjà pris");
         }
         seats.get(x-1).get(y-1).setTaken(true);
     }
@@ -102,14 +102,13 @@ public class Room {
      * @param x, row of the seat
      * @param y, column of the seat
      */
-    public void cancelSeat(int x, int y) {
+    public void cancelSeat(int x, int y) throws SeatUnknownException, SeatNotTakenException {
         if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
             System.out.println("This seat doesn't exist");
-            return;
+            throw new SeatUnknownException("Ce siège n'existe pas");
         }
         if (!seats.get(x-1).get(y-1).isTaken()) { // If the seat is not taken
-            System.out.println("This seat is already taken");
-            return;
+            throw new SeatNotTakenException("Ce siège n'est pas encore pris, pourquoi vouloir annuler sa réservation ?");
         }
         seats.get(x-1).get(y-1).setTaken(false);
     }

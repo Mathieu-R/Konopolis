@@ -7,37 +7,41 @@ import java.util.ArrayList;
  *
  */
 public class Customer {
-	private Seat place;
+	private Seat seat;
 	private double reduction = 0.0;
 	private char type;
-	private Room ro;
+	private Room room;
 	private int age;
 	private ArrayList<Customer> listCustomers = new ArrayList<Customer>();
 
-	public Customer(){
-		place.setRow(0);
-		place.setColumn(0);
-		place.setTaken(false);
+	public Customer() {
+		seat.setRow(0);
+		seat.setColumn(0);
+		seat.setTaken(false);
 		reduction = 0.0;
 		type = 'C';
 	}
 
-	public Customer(Seat pla, Room ro){
+	public Customer(int x, int y, Room room){
 
 		reduction = 0.0;
+        this.room = room;
 
-		if(!(ro.getSeat(pla.getRow(),pla.getColumn()).isTaken())){
-			place = new Seat(pla.getRow(),pla.getColumn());
-			this.ro = ro;
-			this.ro.giveSeat(place);
-			this.ro.setIncome(this.ro.getIncome() + ro.getMovie().getPrice() * this.reduction);
-			listCustomers.add(this);
-		}
+		try {
+            this.room.giveSeat(x, y);
+            this.room.setIncome(this.room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+            listCustomers.add(this);
+        } catch (SeatUnknownException e) {
+            System.out.println(e.getMessage());
+		} catch (SeatTakenException e) {
+            System.out.println(e.getMessage());
+        }
+
 	}
 
-	public Customer(Seat pla, Room ro, int age){
+	public Customer(Seat pla, Room room, int age){
 		place = new Seat(pla.getRow(),pla.getColumn());
-		this.ro = ro;
+		this.room = room;
 		this.age = age;
 		if(age>60){
 			this.reduction = 0.7;
@@ -51,10 +55,10 @@ public class Customer {
 	}
 
 	public Room getRoom() {
-		return ro;
+		return room;
 	}
 	public void setRoom(Room ro) {
-		this.ro = ro;
+		this.room = ro;
 	}
 	public int getAge() {
 		return age;
