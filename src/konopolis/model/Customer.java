@@ -29,7 +29,7 @@ public class Customer {
 
 		try {
             this.room.giveSeat(x, y);
-            this.room.setIncome(this.room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+            Room.income = this.room.getIncome() + this.room.getMovie().getPrice() * this.reduction;
             listCustomers.add(this);
         } catch (SeatUnknownException e) {
             System.out.println(e.getMessage());
@@ -39,17 +39,26 @@ public class Customer {
 
 	}
 
-	public Customer(Seat pla, Room room, int age){
-		place = new Seat(pla.getRow(),pla.getColumn());
+	public Customer(int x,int y, Room room, int age){
 		this.room = room;
-		this.age = age;
-		if(age>60){
-			this.reduction = 0.7;
-		} else if(age<12) {
-			this.reduction=0.5;
-		} else{
-			this.reduction=0.0;
-		}
+		
+		try {
+            this.room.giveSeat(x, y);
+            this.age = age;
+        	if(age>60){
+    			this.reduction = 0.7;
+    		} else if(age<12) {
+    			this.reduction=0.5;
+    		} else{
+    			this.reduction=0.0;
+    		}
+            Room.income = this.room.getIncome() + this.room.getMovie().getPrice() * this.reduction;
+            listCustomers.add(this);
+        } catch (SeatUnknownException e) {
+            System.out.println(e.getMessage());
+		} catch (SeatTakenException e) {
+            System.out.println(e.getMessage());
+        }
 		listCustomers.add(this);
 		
 	}
