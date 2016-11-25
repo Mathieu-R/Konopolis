@@ -1,5 +1,6 @@
 package src.konopolis.model;
 
+import java.util.HashMap;
 import java.util.Observable;
 
 /**
@@ -10,14 +11,19 @@ import java.util.Observable;
  */
 public class KonopolisModel extends Observable {
 
+    private DB db = null; // will contain an instance of DB Class
+
     /**
      * 1) Connection to the DB
      * 2) Retrieve all the informations (rooms, movies, movie shows, customers,...)
      * 3) Creation of the rooms, movies, movie shows, filling the rooms,...)
      */
     public KonopolisModel() {
-        final DB db = new DB();
+        db = new DB();
         db.createConnection();
+    }
 
+    public HashMap<Integer, String> retrieveAllMoviesTitles() {
+        return db.retrieveAllMoviesTitles();
     }
 }

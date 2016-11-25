@@ -2,6 +2,7 @@ package src.konopolis.model;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.HashMap;
 
 /**
  * @author Mathieu R. - Groupe 3
@@ -76,12 +77,36 @@ public class DB {
     }
 
     /**
-     * Retrieve all the movies from the db
+     * Retrieve all the movies titles from the db
      * That's what we want at the launching of our app
+     * Stored in a HashMap (movies)
+     * @return HashMap that contains the id and the title of the movies
      */
-    public void retrieveMovies() {
-        String sql = "SELECT movie_id, title, description, director, cast, genre, time, language, price" +
-                     "FROM tbmovies join tblanguages join tbmoviescasts join tbcasts join tbmoviesgenres join tb genres";
+    public HashMap<Integer, String> retrieveAllMoviesTitles() {
+        HashMap<Integer, String> movies = new HashMap<Integer, String>(); // Local HashMap for movies
+
+        String sql = "SELECT movie_id, title" +
+                     "FROM tbmovies";
+
+        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
+
+        while (rs.next()) { // While there're still results
+            int movie_id  = rs.getInt("movie_id");
+            String title = rs.getString("title");
+
+            movies.put(movie_id, title);
+        }
+        rs.close();
+        return movies;
+    }
+
+    /**
+     * Retrieve movie's info from the db
+     */
+    public void retrieveMovie(int movie_id) {
+        String sql = "SELECT /*movie_id,*/ title, description, director, cast, genre, time, language, price" +
+                "FROM tbmovies join tblanguages join tbmoviescasts join tbcasts join tbmoviesgenres join tb genres" +
+                "WHERE movie_id = " + movie_id;
 
         ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
 

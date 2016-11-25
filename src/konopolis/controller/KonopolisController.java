@@ -3,6 +3,8 @@ package src.konopolis.controller;
 import src.konopolis.model.KonopolisModel;
 import src.konopolis.vue.KonopolisView;
 
+import java.util.HashMap;
+
 /**
  * Controller
  * It applies the modifications to the model
@@ -19,6 +21,14 @@ public class KonopolisController {
      */
     public KonopolisController(KonopolisModel model) {
         this.model = model;
+    }
+
+    public HashMap<Integer, String> getAllMoviesTitles() {
+        return model.retrieveAllMoviesTitles();
+    }
+
+    public void getMovieInfo() {
+
     }
 
     /**
