@@ -54,7 +54,7 @@ public class DB {
     public void init() {
         try {
             this.stmt = conn.createStatement();
-            retrieveMovies();
+            //retrieveMovies();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -112,7 +112,7 @@ public class DB {
 
         while (rs.next()) { // While there're still results
 
-            int movie_id  = rs.getInt("movie_id");
+            int id  = rs.getInt("movie_id");
             String title = rs.getString("title");
             String description = rs.getString("description");
             String director = rs.getString("director");

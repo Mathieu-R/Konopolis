@@ -2,6 +2,7 @@ package src.konopolis.model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author Sebastien.H - Groupe 3
@@ -20,14 +21,13 @@ public class Movie {
     private double price;
 	
 	/* constructor */
-	public Movie(int id, String title, String description, String[] genre, LocalDate dateSeanceDebut, LocalDate dateSeanceFin, String director, String[] casting,
-                 int time, String language) {
+	public Movie(int id, String title, String description, String[] genres, ArrayList<Show> shows, String director, String[] casting,
+				 int time, String language) {
         this.id = id;
 		this.title = title;
 		this.description = description;
-		this.genre = genre;
-		this.dateSeanceDebut = dateSeanceDebut;
-		this.dateSeanceFin = dateSeanceFin;
+		this.genres = genres;
+		this.shows = shows;
 		this.director = director;
 		this.casting = casting;
 		this.time = time;
@@ -36,7 +36,15 @@ public class Movie {
 
 	
 	/* All Getters and Setters */
-	
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -53,28 +61,20 @@ public class Movie {
 		this.description = description;
 	}
 
-	public String[] getGenre() {
-		return genre;
+	public String[] getGenres() {
+		return genres;
 	}
 
-	public void setGenre(String[] genre) {
-		this.genre = genre;
+	public void setGenres(String[] genres) {
+		this.genres = genres;
 	}
 
-	public LocalDate getDateSeanceDebut() {
-		return dateSeanceDebut;
+	public ArrayList<Show> getShows() {
+		return shows;
 	}
 
-	public void setDateSeanceDebut(LocalDate dateSeanceDebut) {
-		this.dateSeanceDebut = dateSeanceDebut;
-	}
-
-	public LocalDate getDateSeanceFin() {
-		return dateSeanceFin;
-	}
-
-	public void setDateSeanceFin(LocalDate dateSeanceFin) {
-		this.dateSeanceFin = dateSeanceFin;
+	public void setShows(ArrayList<Show> shows) {
+		this.shows = shows;
 	}
 
 	public String getDirector() {
@@ -108,6 +108,47 @@ public class Movie {
 	public void setLanguage(String language) {
 		this.language = language;
 	}
-	
 
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movie movie = (Movie) o;
+
+        if (!title.equals(movie.title)) return false;
+        return description.equals(movie.description);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        result = 31 * result + description.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", genres=" + Arrays.toString(genres) +
+                ", shows=" + shows +
+                ", director='" + director + '\'' +
+                ", casting=" + Arrays.toString(casting) +
+                ", time=" + time +
+                ", language='" + language + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }

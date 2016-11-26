@@ -22,14 +22,14 @@ public class Customer {
 		type = 'C';
 	}
 
-	public Customer(int x, int y, Room room){
+	public Customer(int x, int y, Room room) {
 
 		reduction = 0.0;
         this.room = room;
 
 		try {
             this.room.giveSeat(x, y);
-            Room.income = this.room.getIncome() + this.room.getMovie().getPrice() * this.reduction;
+            Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
             listCustomers.add(this);
         } catch (SeatUnknownException e) {
             System.out.println(e.getMessage());
@@ -39,64 +39,107 @@ public class Customer {
 
 	}
 
-	public Customer(int x,int y, Room room, int age){
+	public Customer(int x,int y, Room room, int age) {
 		this.room = room;
 		
 		try {
             this.room.giveSeat(x, y);
             this.age = age;
-        	if(age>60){
+        	if (age > 60) {
     			this.reduction = 0.7;
-    		} else if(age<12) {
-    			this.reduction=0.5;
-    		} else{
-    			this.reduction=0.0;
+    		} else if (age < 12) {
+    			this.reduction = 0.5;
+    		} else {
+    			this.reduction = 0.0;
     		}
-            Room.income = this.room.getIncome() + this.room.getMovie().getPrice() * this.reduction;
+			Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
             listCustomers.add(this);
         } catch (SeatUnknownException e) {
             System.out.println(e.getMessage());
 		} catch (SeatTakenException e) {
             System.out.println(e.getMessage());
         }
-		listCustomers.add(this);
 		
+	}
+
+	public Seat getSeat() {
+		return seat;
+	}
+
+	public void setSeat(Seat seat) {
+		this.seat = seat;
+	}
+
+	public double getReduction() {
+		return reduction;
+	}
+
+	public void setReduction(double reduction) {
+		this.reduction = reduction;
+	}
+
+	public char getType() {
+		return type;
+	}
+
+	public void setType(char type) {
+		this.type = type;
 	}
 
 	public Room getRoom() {
 		return room;
 	}
-	public void setRoom(Room ro) {
-		this.room = ro;
+
+	public void setRoom(Room room) {
+		this.room = room;
 	}
+
 	public int getAge() {
 		return age;
 	}
+
 	public void setAge(int age) {
 		this.age = age;
 	}
+
 	public ArrayList<Customer> getListCustomers() {
 		return listCustomers;
 	}
+
 	public void setListCustomers(ArrayList<Customer> listCustomers) {
 		this.listCustomers = listCustomers;
 	}
-	public Seat getPlace() {
-		return place;
-	}
-	public void setPlace(Seat place) {
-		this.place = place;
-	}
-	public double getReduction() {
-		return reduction;
-	}
-	public void setReduction(double reduction) {
-		this.reduction = reduction;
-	}
-	public char getType() {
-		return type;
-	}
-	public void setType(char type) {
-		this.type = type;
-	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Customer customer = (Customer) o;
+
+        if (type != customer.type) return false;
+        if (age != customer.age) return false;
+        return seat.equals(customer.seat);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = seat.hashCode();
+        result = 31 * result + (int) type;
+        result = 31 * result + age;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "seat=" + seat +
+                ", reduction=" + reduction +
+                ", type=" + type +
+                ", room=" + room +
+                ", age=" + age +
+                ", listCustomers=" + listCustomers +
+                '}';
+    }
 }
