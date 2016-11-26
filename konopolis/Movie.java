@@ -1,7 +1,7 @@
 	package konopolis;
 	
 	import java.time.LocalDate;
-
+	import java.util.ArrayList;
 /**
  * @author Sebastien.H - Groupe 3
  */
@@ -9,25 +9,25 @@ public class Movie {
 	private String title;
 	private String description;
 	private String [] kind;
-	private LocalDate dateShowStart;
-	private LocalDate dateShowEnd;
+	private ArrayList<ArrayList<DateShow>> DateShow	= new ArrayList<ArrayList<DateShow>>();
+
 	private String director;
 	private String [] casting;
 	private int time;	
 	private String language;
-	
+	private double price;
 	/* constructor */
-	public Movie(String title, String description, String[] kind, LocalDate dateShowStart, LocalDate dateShowEnd, String director, String[] casting,
-                 int time, String language) {
+	public Movie(String title, String description, String[] kind, LocalDate dateShow, String director, String[] casting,
+                 int time, String language, double price, ArrayList<ArrayList<konopolis.DateShow>> DateShow) {
 		this.title = title;
 		this.description = description;
 		this.kind = kind;
-		this.dateShowStart = dateShowStart;
-		this.dateShowEnd = dateShowEnd;
+		this.DateShow = DateShow;
 		this.director = director;
 		this.casting = casting;
 		this.time = time;
 		this.language = language;
+		this.price = price;
 	}
 
 	
@@ -49,30 +49,13 @@ public class Movie {
 		this.description = description;
 	}
 
-	public String[] getkind() {
-		return kind;
-	}
+    public ArrayList<ArrayList<DateShow>> getDateShow() {
+        return DateShow;
+    }
 
-	public void setGenre(String[] kind) {
-		this.kind = kind;
-	}
-
-	public LocalDate getDateShowStart() {
-		return dateShowStart;
-	}
-
-	public void setDateSeanceDebut(LocalDate dateShowStart) {
-		this.dateShowStart = dateShowStart;
-	}
-
-	public LocalDate getDateShowEnd() {
-		return dateShowEnd;
-	}
-
-	public void setDateShowEnd(LocalDate dateShowEnd) {
-		this.dateShowEnd = dateShowEnd;
-	}
-
+    public void setDateShow(ArrayList<ArrayList<DateShow>> DateShow) {
+        this.DateShow = DateShow;
+    }
 	public String getDirector() {
 		return director;
 	}
@@ -103,6 +86,26 @@ public class Movie {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+
+	public String[] getKind() {
+		return kind;
+	}
+
+
+	public void setKind(String[] kind) {
+		this.kind = kind;
+	}
+
+
+	public double getPrice() {
+		return price;
+	}
+
+
+	public void setPrice(double price) {
+		this.price = price;
 	}
 	
 
