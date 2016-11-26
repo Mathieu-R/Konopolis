@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class DB {
 
     private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost/Konopolis";
+    private final String DB_URL = "jdbc:mysql://localhost:3306/Konopolis";
     private final String USER = "root";
     private final String PWD = "root";
 
@@ -88,15 +88,28 @@ public class DB {
         String sql = "SELECT movie_id, title" +
                      "FROM tbmovies";
 
-        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
-
-        while (rs.next()) { // While there're still results
-            int movie_id  = rs.getInt("movie_id");
-            String title = rs.getString("title");
-
-            movies.put(movie_id, title);
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        rs.close();
+
+        try {
+            while (rs.next()) { // While there're still results
+                int movie_id  = rs.getInt("movie_id");
+                String title = rs.getString("title");
+
+                movies.put(movie_id, title);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return movies;
     }
 
@@ -108,21 +121,34 @@ public class DB {
                 "FROM tbmovies join tblanguages join tbmoviescasts join tbcasts join tbmoviesgenres join tb genres" +
                 "WHERE movie_id = " + movie_id;
 
-        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
-
-        while (rs.next()) { // While there're still results
-
-            int id  = rs.getInt("movie_id");
-            String title = rs.getString("title");
-            String description = rs.getString("description");
-            String director = rs.getString("director");
-            String cast = rs.getString("cast");
-            String genre = rs.getString("genre");
-            String language = rs.getString("language");
-            double price = rs.getDouble("price");
-
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        rs.close();
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                int id  = rs.getInt("movie_id");
+                String title = rs.getString("title");
+                String description = rs.getString("description");
+                String director = rs.getString("director");
+                String cast = rs.getString("cast");
+                String genre = rs.getString("genre");
+                String language = rs.getString("language");
+                double price = rs.getDouble("price");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -135,17 +161,30 @@ public class DB {
                 "FROM tbrooms" +
                 "WHERE movie_id = " + movie_id;
 
-        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
-
-        while (rs.next()) { // While there're still results
-
-            int room_id = rs.getInt("room_id");
-            int rows = rs.getInt("rows");
-            int seats_by_row = rs.getInt("seats_by_row");
-            double incomes = rs.getDouble("incomes");
-
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        rs.close();
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                int room_id = rs.getInt("room_id");
+                int rows = rs.getInt("rows");
+                int seats_by_row = rs.getInt("seats_by_row");
+                double incomes = rs.getDouble("incomes");
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -160,17 +199,30 @@ public class DB {
                 "FROM tbcustomers join tbcustomersseats join tbseats join tbcustomerstype join tbrooms" +
                 "WHERE room_id = " + room_id + "and movie_id = " + movie_id + "and show_start = " + show_start;
 
-        ResultSet rs = stmt.executeQuery(sql); // Execute the sql query and put the results in the results set
-
-        while (rs.next()) { // While there're still results
-
-            int customer_id = rs.getInt("customer_id");
-            String customer_type = rs.getString("customer_type");
-            int row = rs.getInt("sRow");
-            int column = rs.getInt("sColumn");
-            boolean isTaken = rs.getBoolean("isTaken");
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        rs.close();
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                int customer_id = rs.getInt("customer_id");
+                String customer_type = rs.getString("customer_type");
+                int row = rs.getInt("sRow");
+                int column = rs.getInt("sColumn");
+                boolean isTaken = rs.getBoolean("isTaken");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getDB_DRIVER() {
