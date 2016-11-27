@@ -30,6 +30,7 @@ public class DB {
     public void registerDriver() {
         try {
             Class.forName(DB_DRIVER);
+            System.out.println("Driver OK");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -265,5 +266,9 @@ public class DB {
                 ", USER='" + USER + '\'' +
                 ", PWD='" + PWD + '\'' +
                 '}';
+    }
+
+    public static void main(String[] args) {
+        new DB();
     }
 }
