@@ -23,7 +23,6 @@ public class Customer {
 	}
 
 	public Customer(int x, int y, Room room){
-
 		reduction = 0.0;
         this.room = room;
 
