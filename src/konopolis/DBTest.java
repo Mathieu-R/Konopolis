@@ -1,6 +1,7 @@
-package konopolis;
+package src.konopolis.test;
 
 import org.junit.Test;
+import src.konopolis.model.DB;
 
 /**
  * @author Mathieu R. - Groupe 3

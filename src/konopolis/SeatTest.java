@@ -1,9 +1,10 @@
-package konopolis;
+package src.konopolis.test;
 
 import org.junit.Test;
+import src.konopolis.model.Seat;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.testng.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 /**
  * @author Mathieu R. - Groupe 3

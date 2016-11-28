@@ -12,7 +12,10 @@ public class Show {
     private Movie movie;
     private Room room;
 
-    public Show() {
-        //
+    public Show(LocalDate show_start, LocalDate show_end, Movie movie, Room room) {
+        this.show_start = show_start;
+        this.show_end = show_end;
+        this.movie = movie;
+        this.room = room;
     }
 }
