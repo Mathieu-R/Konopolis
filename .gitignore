@@ -1,5 +1,7 @@
 # .idea directory
 .idea
+.metadata
+.recommenders
 bin
 
 # Created by .ignore support plugin (hsz.mobi)
