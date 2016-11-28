@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Konopolis">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/AppData/Roaming/RazorSQL/mysql/mysql-connector-java-5.1.34-bin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$" />
+    </SOURCES>
+  </library>
+</component>

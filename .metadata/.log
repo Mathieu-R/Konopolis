@@ -1,0 +1,198 @@
+!SESSION 2016-11-28 10:27:12.320 -----------------------------------------------
+eclipse.buildId=4.6.1.M20160907-1200
+java.version=1.8.0_111
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=fr_BE
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.egit.ui 2 0 2016-11-28 10:28:41.100
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\matte'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.ui.ide 4 0 2016-11-28 10:29:52.699
+!MESSAGE Could not import project located at C:\Users\matte\Documents\Lab\Projets\Konopolis
+!STACK 0
+org.eclipse.ui.internal.wizards.datatransfer.CouldNotImportProjectException: Could not import project located at C:\Users\matte\Documents\Lab\Projets\Konopolis
+	at org.eclipse.ui.internal.wizards.datatransfer.SmartImportJob.toExistingOrNewProject(SmartImportJob.java:518)
+	at org.eclipse.ui.internal.wizards.datatransfer.SmartImportJob.run(SmartImportJob.java:239)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Caused by: org.eclipse.core.internal.resources.ResourceException: Invalid project description.
+	at org.eclipse.core.internal.resources.Project.checkDescription(Project.java:169)
+	at org.eclipse.core.internal.resources.Project.assertCreateRequirements(Project.java:53)
+	at org.eclipse.core.internal.resources.Project.create(Project.java:263)
+	at org.eclipse.core.internal.resources.Project.create(Project.java:247)
+	at org.eclipse.ui.internal.wizards.datatransfer.SmartImportJob.createOrImportProject(SmartImportJob.java:553)
+	at org.eclipse.ui.internal.wizards.datatransfer.SmartImportJob.toExistingOrNewProject(SmartImportJob.java:505)
+	... 2 more
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.181
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\segments_1 (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.188
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\segments_1 (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\segments_1 (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.201
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fdt (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.210
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fdt (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fdt (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.222
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fdx (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.232
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fdx (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fdx (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.242
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fnm (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.252
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fnm (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.fnm (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.263
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.frq (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.273
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.frq (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.frq (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.283
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.nrm (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.293
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.nrm (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.nrm (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.304
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.tii (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.314
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.tii (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.tii (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.324
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.tis (Le fichier spécifié est introuvable)
+
+!ENTRY org.eclipse.ui.ide 4 4 2016-11-28 10:34:07.334
+!MESSAGE C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.tis (Le fichier spécifié est introuvable)
+!STACK 0
+java.io.FileNotFoundException: C:\Users\matte\Documents\Lab\Projets\Konopolis\.metadata\.plugins\org.eclipse.epp.logging.aeri.ide\org.eclipse.epp.logging.aeri.ide.server\remote-history\_0.tis (Le fichier spécifié est introuvable)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at org.eclipse.ui.internal.ide.filesystem.FileSystemStructureProvider.getContents(FileSystemStructureProvider.java:76)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFile(ImportOperation.java:527)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importRecursivelyFrom(ImportOperation.java:751)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.importFileSystemObjects(ImportOperation.java:646)
+	at org.eclipse.ui.wizards.datatransfer.ImportOperation.execute(ImportOperation.java:388)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.lambda$0(WorkspaceModifyOperation.java:107)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2240)
+	at org.eclipse.core.internal.resources.Workspace.run(Workspace.java:2267)
+	at org.eclipse.ui.actions.WorkspaceModifyOperation.run(WorkspaceModifyOperation.java:128)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
