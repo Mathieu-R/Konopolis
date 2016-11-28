@@ -21,7 +21,7 @@ public class Movie {
 	
 	/* constructor */
 	public Movie(int id, String title, String description, String[] genres, ArrayList<Show> shows, String director, String[] casting,
-				 int time, String language) {
+				 int time, String language, double price) {
         this.id = id;
 		this.title = title;
 		this.description = description;
@@ -31,6 +31,7 @@ public class Movie {
 		this.casting = casting;
 		this.time = time;
 		this.language = language;
+		this.price = price;
 	}
 
 	
