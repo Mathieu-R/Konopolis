@@ -9,13 +9,13 @@ public class Show {
 
     private LocalDate show_start;
     private LocalDate show_end;
-    private Movie movie;
-    private Room room;
+    private int movie_id;
+    private int room_id;
 
-    public Show(LocalDate show_start, LocalDate show_end, Movie movie, Room room) {
+    public Show(LocalDate show_start, LocalDate show_end, int movie_id, int room_id) {
         this.show_start = show_start;
         this.show_end = show_end;
-        this.movie = movie;
-        this.room = room;
+        this.movie_id = movie_id;
+        this.room_id = room_id;
     }
 }

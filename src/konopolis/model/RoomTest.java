@@ -11,14 +11,14 @@ import static org.junit.Assert.*;
 public class RoomTest {
     @org.junit.Test
     public void constructor() throws Exception {
-        Room overRows = new Room(21, 35);
-        Room overSitsByRow = new Room(20, 36);
-        Room room1 = new Room(20, 35);
+        Room overRows = new Room(21, 35, 1);
+        Room overSitsByRow = new Room(20, 36, 1);
+        Room room1 = new Room(20, 35, 1);
         assertEquals(20, room1.getRows()); // The room1 should have 20 rows
         assertEquals(35, room1.getSeatsByRow()); // The room1 should have 35 columns / seats by row
         assertEquals(700, room1.getTotSeats()); // The room1 should have 700 seats
 
-        Room room2 = new Room(15, 10);
+        Room room2 = new Room(15, 10, 1);
         assertFalse(room1.equals(room2)); // The seats are not the same
 
         for (ArrayList<Seat> rows: room1.getSeats()) {
@@ -37,14 +37,14 @@ public class RoomTest {
 
     @org.junit.Test
     public void giveSit() throws Exception {
-        Room room1 = new Room(10, 10);
+        Room room1 = new Room(10, 10, 1);
         room1.giveSeat(5, 10);
         assertTrue(room1.getSeats().get(4).get(9).isTaken()); // The seat should be taken
     }
 
     @org.junit.Test
     public void cancelSit() throws Exception {
-        Room room1 = new Room(10, 10);
+        Room room1 = new Room(10, 10, 1);
         room1.giveSeat(5, 10);
         room1.cancelSeat(5, 10);
         assertFalse(room1.getSeats().get(4).get(9).isTaken()); // The seat shouldn't be taken
@@ -52,7 +52,7 @@ public class RoomTest {
 
     @org.junit.Test
     public void emptyRoom() throws Exception {
-        Room room1 = new Room(10, 10);
+        Room room1 = new Room(10, 10, 1);
         room1.giveSeat(1, 1);
         room1.giveSeat(5, 10);
         room1.giveSeat(10, 10);
@@ -66,7 +66,7 @@ public class RoomTest {
 
     @org.junit.Test
     public void displayRoom() throws Exception {
-        Room room1 = new Room(10, 10);
+        Room room1 = new Room(10, 10, 1);
         room1.giveSeat(1, 1);
         room1.displayRoom();
         /* No Test */

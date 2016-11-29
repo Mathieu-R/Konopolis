@@ -6,6 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -110,7 +114,7 @@ public class DB {
                 + "inner join tbgenres as g on mg.genre_id = g.genre_id" 
         		+ "WHERE m.movie_id = " + movie_id;
         
-        String sql2 = "SELECT m.movie_id, title, description, director," 
+        String sql2 = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(c.cast) " 
 					+ "from tbmoviescasts as mc "
 					+ "left join tbcasts as c on mc.cast_id = c.cast_id) as casting,"
@@ -118,11 +122,17 @@ public class DB {
 					+ "from tbmoviesgenres as mg "
 					+ "left join tbgenres as g on mg.genre_id = g.genre_id) as genres,"
 					+ "(select group_concat(show_start) "
-					+ "from tbrooms as r on m.movie_id = r.movie_id) as shows"
+					+ "from tbmovies as m "
+					+ "left join tbmoviesrooms as mr on m.movie_id = mr.movie_id) as shows,"
 			        + "time, language, price "
 			        + "from tbmovies as m "
 			        + "left join tblanguages as l on m.language_id = l.language_id "
-			        + "where m.movie_id = " + movie_id;
+			        + "left join tbmoviesrooms as mr on m.movie_id = mr.room_id "
+			        + "where m.movie_id = " + movie_id + " "
+        			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
+        
+        			// What about 2 rooms for one same movie ?
+        			// Consider Group By
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -135,22 +145,43 @@ public class DB {
             while (rs.next()) { // While there're still results
 
                 int id  = rs.getInt("movie_id");
+                int room_id = rs.getInt("room_id");
                 String title = rs.getString("title");
                 String description = rs.getString("description");
                 String director = rs.getString("director");
                 // Split the string of casting ("act1, act2, act3") into Array ["act1", "act2", "act3"]
                 String[] casting = rs.getString("casting").split(","); // Several actors
                 String[] genres = rs.getString("genres").split(","); // Several genres
-                String shows = rs.getString("shows");
+                //String[] shows = rs.getString("shows").split(",");
+                String[] shows = rs.getString("shows").split(",");
                 int time = rs.getInt("time");
                 String language = rs.getString("language");
                 double price = rs.getDouble("price");
+                
+                // ArrayList of Shows => contain all instance of shows for a specific movie
+                ArrayList<Show> shows_al = new ArrayList<Show>();
+                
+                // For every date String
+                for (String show : shows) {
+                	// Parse it in LocalDate
+                	DateTimeFormatter format_date = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                	DateTimeFormatter format_time = DateTimeFormatter.ofPattern("kk:mm:ss");
+            		// start of the show
+                	LocalDate show_start_date = LocalDate.parse(show, format_date); // Date (yyyy-MM-dd)
+                	LocalTime show_start_time = LocalTime.format(show, format_time); // Time (hh:mm:ss)
+                	LocalDateTime show_start = show_start_date.of(show_start_date, show_start_time);
+            		// end of the show => start of the show + time in minutes
+            		final LocalDate show_end = LocalDate.parse(show, format).plus(time, ChronoUnit.MINUTES);
+            		
+            		// Add an instance of show => id = movie_id
+            		shows_al.add(new Show(show_start, show_end, id, room_id));
+                }
                 
                 // ArrayList of movies to be able to manage them
                 ArrayList<Movie> movies = new ArrayList<Movie>();
                 
                 // Push every Movie' instance in this ArrayList
-                movies.add(new Movie(id, title, description, genres, /* shows ,*/ director, casting, time, language, price));
+                movies.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
                 
 
             }
@@ -282,7 +313,7 @@ public class DB {
 
     public static void main(String[] args) {
         final DB db = new DB();
-        db.registerDriver();
+        //db.registerDriver();
         db.createConnection();
         db.retrieveMovie(1);
     }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Room {
 
-    private static int id;
+    private int id;
     private int totSeats;
     private int rows;
     private int seatsByRow;
@@ -26,11 +26,13 @@ public class Room {
      * @param rows
      * @param sitsByRow
      */
-    public Room(int rows, int sitsByRow) {
+    public Room(int rows, int sitsByRow, int id) {
         if (rows > 20 || sitsByRow > 35) {
             System.out.println("Trop de rangées et/ou de sièges par rangée");
             return;
         }
+        
+        this.id = id;
 
         this.rows = rows;
         this.seatsByRow = sitsByRow;
@@ -53,11 +55,13 @@ public class Room {
      * @param sitsByRow
      * @param movie
      */
-    public Room(int rows, int sitsByRow, Movie movie) {
+    public Room(int rows, int sitsByRow, Movie movie, int id) {
         if (rows > 20 || sitsByRow > 35) {
             System.out.println("Trop de rangées et/ou de sièges par rangée");
             return;
         }
+        
+        this.id = id;
 
         this.rows = rows;
         this.seatsByRow = sitsByRow;
@@ -144,12 +148,12 @@ public class Room {
      * Getters and Setters
      */
 
-    public static int getId() {
+    public int getId() {
         return id;
     }
 
-    public static void setId(int id) {
-        Room.id = id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getTotSeats() {
@@ -242,7 +246,7 @@ public class Room {
     }
 
     public static void main(String[] args) {
-        Room room = new Room(10, 20);
+        Room room = new Room(10, 20, 1);
         room.displayRoom();
         System.out.println("================");
         //room.giveSeat(1, 2);
