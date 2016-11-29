@@ -117,6 +117,8 @@ public class DB {
 			        + "(select group_concat(g.genre) " 
 					+ "from tbmoviesgenres as mg "
 					+ "left join tbgenres as g on mg.genre_id = g.genre_id) as genres,"
+					+ "(select group_concat(show_start) "
+					+ "from tbrooms as r on m.movie_id = r.movie_id) as shows"
 			        + "time, language, price "
 			        + "from tbmovies as m "
 			        + "left join tblanguages as l on m.language_id = l.language_id "
@@ -139,8 +141,9 @@ public class DB {
                 // Split the string of casting ("act1, act2, act3") into Array ["act1", "act2", "act3"]
                 String[] casting = rs.getString("casting").split(","); // Several actors
                 String[] genres = rs.getString("genres").split(","); // Several genres
-                String language = rs.getString("language");
+                String shows = rs.getString("shows");
                 int time = rs.getInt("time");
+                String language = rs.getString("language");
                 double price = rs.getDouble("price");
                 
                 // ArrayList of movies to be able to manage them

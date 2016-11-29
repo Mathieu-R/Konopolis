@@ -15,7 +15,7 @@ public class Room {
     private ArrayList<ArrayList<src.konopolis.model.Seat>> seats = new ArrayList<ArrayList<Seat>>();
     /*private double cost;*/
     private Movie movie;
-    private static double income = 0.0;
+    private static double income = 0.0; // Revenus du cinéma
 
     /**
      * Constructors

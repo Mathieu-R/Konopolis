@@ -1,3 +1,7 @@
+CREATE table tbIncomes (
+	incomes DOUBLE PRIMARY KEY
+)
+
 CREATE table tbLanguages (
   language_id int auto_increment PRIMARY KEY,
   language char(30)
@@ -44,17 +48,21 @@ CREATE table tbMoviesCasts (
 
 -- fin --
 
+CREATE table tbMoviesRooms(
+	movie_room_id int auto_increment NOT NULL PRIMARY KEY ,
+	movie_id int NOT NULL,
+	room_id int NOT NULL,
+	show_start DATETIME,
+	FOREIGN KEY (movie_id) REFERENCES tbMovies(movie_id) ON UPDATE CASCADE,
+	FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE
+)
+
 CREATE table tbRooms (
 	room_id int auto_increment PRIMARY KEY,
-	movie_id int NOT NULL,
-	show_start DATETIME,
-	show_end DATETIME,
 	rows int, 
 	seats_by_row int,
-	incomes double,
 	CONSTRAINT chkRow CHECK (rows between 1 and 20),
-	CONSTRAINT chkColumn CHECK (seats_by_row between 1 and 35),
-	FOREIGN KEY (movie_id) REFERENCES tbMovies(movie_id) ON UPDATE CASCADE
+	CONSTRAINT chkColumn CHECK (seats_by_row between 1 and 35)
 )
 
 CREATE table tbCustomersType (
