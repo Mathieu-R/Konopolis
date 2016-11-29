@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/konopolis/model/Room.java
 package src.konopolis.model;
+=======
+package src.konopolis;
+>>>>>>> 933e33cc87ead141c1cf3e295f2055861a7444fe:src/konopolis/Room.java
 
 import java.util.ArrayList;
 
