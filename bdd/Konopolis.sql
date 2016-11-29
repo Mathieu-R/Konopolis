@@ -67,27 +67,25 @@ CREATE table tbRooms (
 
 CREATE table tbCustomersType (
   customer_type_id int auto_increment PRIMARY KEY,
-  customer_type CHAR(30)
+  customer_type CHAR(30),
+	reduction double
 )
 
 CREATE table tbSeats (
   seat_id int auto_increment PRIMARY KEY,
-  room_id int,
+  movie_room_id int,
   customer_id int,
   sRow int,
   sColumn int,
-  isTaken tinyint,
   CONSTRAINT chkRow CHECK (sRow between 1 and 20),
   CONSTRAINT chkColumn CHECK (sColumn between 1 and 35),
-  CONSTRAINT chkIsTaken CHECK (isTaken in (0, 1)),
-  FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE
+  FOREIGN KEY (movie_room_id) REFERENCES tbMoviesRooms(movie_room_id) ON UPDATE CASCADE
 )
 
 CREATE table tbCustomers (
 	customer_id int auto_increment PRIMARY KEY,
 	seat_id int,
 	customer_type_id int,
-	reduction double,
 	FOREIGN KEY (customer_type_id) REFERENCES tbCustomersType(customer_type_id) ON UPDATE CASCADE
 )
 

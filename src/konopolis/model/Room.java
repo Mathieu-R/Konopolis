@@ -13,8 +13,7 @@ public class Room {
     private int rows;
     private int seatsByRow;
     private ArrayList<ArrayList<src.konopolis.model.Seat>> seats = new ArrayList<ArrayList<Seat>>();
-    /*private double cost;*/
-    private Movie movie;
+    private int movie_id;
     private static double income = 0.0; // Revenus du cin�ma
 
     /**
@@ -25,10 +24,11 @@ public class Room {
      * Constructor without movie
      * @param rows
      * @param sitsByRow
+     * @param id, id of the room
      */
     public Room(int rows, int sitsByRow, int id) {
         if (rows > 20 || sitsByRow > 35) {
-            System.out.println("Trop de rangées et/ou de sièges par rangée");
+            System.out.println("Too much rows or seats by row");
             return;
         }
         
@@ -39,25 +39,19 @@ public class Room {
 
         this.totSeats = rows * sitsByRow;
 
-        // Init the seats (ArrayList) with all the coordinates of the seats
-        for (int i = 0; i < rows; i++) {
-            ArrayList<Seat> tempList = new ArrayList<Seat>();
-            for (int j = 0; j < sitsByRow; j++) {
-                tempList.add(j, new Seat(i + 1, j+ 1)); // i + 1, j + 1 => a sit does not have a place in 0
-            }
-            seats.add(tempList);
-        }
+        initRoom();
     }
 
     /**
-     * Constructor without movie
+     * Constructor with movie
      * @param rows
      * @param sitsByRow
-     * @param movie
+     * @param movie_id, id of the movie at a given show
+     * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, Movie movie, int id) {
+    public Room(int rows, int sitsByRow, int movie_id, int id) {
         if (rows > 20 || sitsByRow > 35) {
-            System.out.println("Trop de rangées et/ou de sièges par rangée");
+            System.out.println("Too much rows or seats by row");
             return;
         }
         
@@ -68,21 +62,27 @@ public class Room {
 
         this.totSeats = rows * sitsByRow;
 
-        this.movie = movie;
+        this.movie_id = movie_id;
 
-        // Init the seats (ArrayList) with all the coordinates of the seats
-        for (int i = 0; i < rows; i++) {
-            ArrayList<Seat> tempList = new ArrayList<Seat>();
-            for (int j = 0; j < sitsByRow; j++) {
-                tempList.add(j, new Seat(i + 1, j+ 1)); // i + 1, j + 1 => a sit does not have a place in 0
-            }
-            seats.add(tempList);
-        }
+        initRoom();
     }
 
     /**
      * Methods
      */
+    
+    /**
+     * Init the seats (ArrayList) with all the coordinates of the seats
+     */
+    public void initRoom() {
+        for (int i = 0; i < rows; i++) {
+            ArrayList<Seat> tempList = new ArrayList<Seat>();
+            for (int j = 0; j < seatsByRow; j++) {
+                tempList.add(j, new Seat(i + 1, j+ 1)); // i + 1, j + 1 => a sit does not have a place in 0
+            }
+            seats.add(tempList);
+        }
+    }
 
     /**
      * Book a seat if it exists and is not already taken
@@ -91,12 +91,10 @@ public class Room {
      */
     public void giveSeat(int x, int y) throws SeatUnknownException, SeatTakenException {
         if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
-            System.out.println("This seat doesn't exist");
-            throw new SeatUnknownException("Ce siège n'existe pas");
+            throw new SeatUnknownException("This seat doesn't exist");
         }
         if (seats.get(x-1).get(y-1).isTaken()) { // If the seat is taken
-            System.out.println("This seat is already taken");
-            throw new SeatTakenException("Ce siège est déjà pris");
+            throw new SeatTakenException("This seat is already taken");
         }
         seats.get(x-1).get(y-1).setTaken(true);
     }
@@ -108,11 +106,10 @@ public class Room {
      */
     public void cancelSeat(int x, int y) throws SeatUnknownException, SeatNotTakenException {
         if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
-            System.out.println("This seat doesn't exist");
-            throw new SeatUnknownException("Ce siège n'existe pas");
+            throw new SeatUnknownException("This seat doesn't exist");
         }
         if (!seats.get(x-1).get(y-1).isTaken()) { // If the seat is not taken
-            throw new SeatNotTakenException("Ce siège n'est pas encore pris, pourquoi vouloir annuler sa réservation ?");
+            throw new SeatNotTakenException("This seat is not taken yet, why cancel this reservation ?, it doesn't make sens !");
         }
         seats.get(x-1).get(y-1).setTaken(false);
     }
@@ -188,12 +185,12 @@ public class Room {
         this.seats = seats;
     }
 
-    public Movie getMovie() {
-        return movie;
+    public int getMovie() {
+        return movie_id;
     }
 
-    public void setMovie(Movie movie) {
-        this.movie = movie;
+    public void setMovie(int movie_id) {
+        this.movie_id = movie_id;
     }
 
     public static double getIncome() {
@@ -241,7 +238,7 @@ public class Room {
                 ", rows=" + rows +
                 ", seatsByRow=" + seatsByRow +
                 ", seats=" + seats +
-                ", movie=" + movie +
+                ", movie_id=" + movie_id +
                 '}';
     }
 

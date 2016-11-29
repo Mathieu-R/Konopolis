@@ -23,7 +23,14 @@ public class DB {
     private final String DB_URL = "jdbc:mysql://localhost:3306/Konopolis";
     private final String USER = "root";
     private final String PWD = "root";
+    
+    
 
+    private ArrayList<Movie> movies = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
+    private ArrayList<Show> shows_al = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
+    private ArrayList<Customer> customers = new ArrayList<Customer>(); // ArrayList of Customers to be able to manage them
+    private ArrayList<Room> rooms = new ArrayList<Room>(); // ArrayList of Rooms to be able to manage them
+    
     Connection conn = null;
     Statement stmt = null;
 
@@ -106,15 +113,8 @@ public class DB {
      * Retrieve movie's info from the db
      */
     public void retrieveMovie(int movie_id) {
-        String sql = "SELECT m.movie_id, title, description, director, cast, genre, time, language, price" 
-        		+ "FROM tbmovies as m inner join tblanguages as l on m.language_id = l.language_id"
-                + "inner join tbmoviescasts as mc on m.movie_id = mc.movie_id"
-                + "inner join tbcasts as c on mc.cast_id = c.cast_id "
-                + "inner join tbmoviesgenres as mg on m.movie_id = mg.movie_id"
-                + "inner join tbgenres as g on mg.genre_id = g.genre_id" 
-        		+ "WHERE m.movie_id = " + movie_id;
         
-        String sql2 = "SELECT m.movie_id, mr.room_id, title, description, director," 
+        String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(c.cast) " 
 					+ "from tbmoviescasts as mc "
 					+ "left join tbcasts as c on mc.cast_id = c.cast_id) as casting,"
@@ -136,7 +136,7 @@ public class DB {
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
-            rs = stmt.executeQuery(sql2);
+            rs = stmt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -157,10 +157,7 @@ public class DB {
                 int time = rs.getInt("time");
                 String language = rs.getString("language");
                 double price = rs.getDouble("price");
-                
-                // ArrayList of Shows => contain all instance of shows for a specific movie
-                ArrayList<Show> shows_al = new ArrayList<Show>();
-                
+  
                 // For every date String
                 for (String show : shows) {
                 	// Formatters for date + time
@@ -175,18 +172,15 @@ public class DB {
             		// Add an instance of show => id = movie_id
             		shows_al.add(new Show(show_start, show_end, id, room_id));
                 }
-                
-                // ArrayList of movies to be able to manage them
-                ArrayList<Movie> movies = new ArrayList<Movie>();
+
                 
                 // Push every Movie' instance in this ArrayList
-                movies.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
-                
-
+                movies.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));     
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
         try {
             rs.close();
         } catch (SQLException e) {
@@ -195,14 +189,14 @@ public class DB {
     }
 
     /**
-     * Retrieve all the rooms that publish a movie
+     * Retrieve the room based on a room_id
      * @param movie_id
      */
-    public void retrieveRooms(int movie_id) {
+    public void retrieveRooms(int room_id, /*int movie_id, LocalDateTime show_start*/) {
 
-        String sql = "SELECT room_id, rows, seats_by_row, incomes" +
-                "FROM tbrooms" +
-                "WHERE movie_id = " + movie_id;
+        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
+        		   + "FROM tbmoviesrooms natural join tbrooms "
+        		   + "WHERE room_id = " + room_id;
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -214,15 +208,23 @@ public class DB {
         try {
             while (rs.next()) { // While there're still results
 
-                int room_id = rs.getInt("room_id");
+                int id = rs.getInt("room_id");
+                int movie_id = rs.getInt("movie_id");
                 int rows = rs.getInt("rows");
                 int seats_by_row = rs.getInt("seats_by_row");
-                double incomes = rs.getDouble("incomes");
+                String show_start = rs.getString("show_start");
+                
+                // Push every Movie' instance in this ArrayList
+                // New Room => we initialize all the room (empty for now !)
+                rooms.add(new Room(rows, seats_by_row, movie_id, id));  
+                
+                retrieveCustomers(id, movie_id, show_start);
 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
         try {
             rs.close();
         } catch (SQLException e) {
@@ -232,15 +234,25 @@ public class DB {
     }
 
     /**
-     * Retrieve all the customers of a [movie] that happens in a [room] at a time given ([show_start])
+     * Retrieve all the customers of a [movie] that happens in a [room] at a time given [show_start]
      * @param room_id
      * @param movie_id
      * @param show_start
      */
-    public void retrieveCustomers(int room_id, int movie_id, LocalDate show_start) {
-        String sql = "SELECT customer_id, customer_type, sRow, sColumn, isTaken" +
-                "FROM tbcustomers join tbcustomersseats join tbseats join tbcustomerstype join tbrooms" +
-                "WHERE room_id = " + room_id + "and movie_id = " + movie_id + "and show_start = " + show_start;
+    public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
+    	// customer_id should be unique key ?
+    	// Supprimer le booléen isTaken de la BDD ?
+    	// Redondance entre les tables seats et customers ?
+    	
+        String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn, isTaken "
+                   + "FROM tbseats as s "
+                   + "natural join tbcustomersseats "
+                   + "natural join tbcustomers "
+                   + "natural join tbcustomerstype "
+                   + "WHERE movie_room_id = "
+                   + "(select movie_room_id "
+                   + "from tbmovierooms as mr"
+                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + "and mr.show_start = " + show_start;
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -251,16 +263,31 @@ public class DB {
 
         try {
             while (rs.next()) { // While there're still results
-
+            	
+            	int seat_id = rs.getInt("seat_id");
                 int customer_id = rs.getInt("customer_id");
                 String customer_type = rs.getString("customer_type");
                 int row = rs.getInt("sRow");
                 int column = rs.getInt("sColumn");
-                boolean isTaken = rs.getBoolean("isTaken");
+                //boolean isTaken = rs.getBoolean("isTaken");
+         
+                // TODO
+                // new Customer
+                // Look for the right Room => use the giveSeat method to fill the room with the booked seats
+                
+                customers.add(new Customer(column, row, room_id, customer_type));
+                
+                for (room : this.rooms) {
+                	if (room.getId() == room_id) { // Retrieve the right room
+                		room.giveSeat(row, column) // We add the seat as taken
+                	}
+                }
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        
         try {
             rs.close();
         } catch (SQLException e) {
@@ -315,5 +342,6 @@ public class DB {
         //db.registerDriver();
         db.createConnection();
         db.retrieveMovie(1);
+        db.retrieveRooms(2);
     }
 }

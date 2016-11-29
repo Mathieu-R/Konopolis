@@ -7,20 +7,11 @@ import java.util.ArrayList;
  *
  */
 public class Customer {
-	private src.konopolis.model.Seat seat;
+	private int seat_id;
+	private Room room;
 	private double reduction = 0.0;
 	private char type;
-	private Room room;
 	private int age;
-	private ArrayList<Customer> listCustomers = new ArrayList<Customer>();
-
-	public Customer() {
-		seat.setRow(0);
-		seat.setColumn(0);
-		seat.setTaken(false);
-		reduction = 0.0;
-		type = 'C';
-	}
 
 	public Customer(int x, int y, Room room) {
 
@@ -30,7 +21,6 @@ public class Customer {
 		try {
             this.room.giveSeat(x, y);
             Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
-            listCustomers.add(this);
         } catch (SeatUnknownException e) {
             System.out.println(e.getMessage());
 		} catch (SeatTakenException e) {
@@ -39,21 +29,37 @@ public class Customer {
 
 	}
 
-	public Customer(int x,int y, Room room, int age) {
+	public Customer(int x, int y, Room room, String type) {
+		this.Room = room;
+		
+		try {
+            this.room.giveSeat(x, y);
+            this.type = type.charAt(0); // First charachter of the type
+            
+            switch(this.type) {
+            	case 'J': this.reduction = 0.5;
+            	case 'E': this.reduction = 0.3;
+            	case 'S': this.reduction = 0.4;
+            	case 'V': this.reduction = 0.7;
+            }
+			Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+        } catch (SeatUnknownException e) {
+            System.out.println(e.getMessage());
+		} catch (SeatTakenException e) {
+            System.out.println(e.getMessage());
+        }
+		
+	}
+	
+	public Customer(int x, int y, Room room, String type, double reduction) {
 		this.room = room;
 		
 		try {
             this.room.giveSeat(x, y);
-            this.age = age;
-        	if (age > 60) {
-    			this.reduction = 0.7;
-    		} else if (age < 12) {
-    			this.reduction = 0.5;
-    		} else {
-    			this.reduction = 0.0;
-    		}
+            this.type = type.charAt(0); // First charachter of the type
+            this.reduction = reduction;
+         
 			Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
-            listCustomers.add(this);
         } catch (SeatUnknownException e) {
             System.out.println(e.getMessage());
 		} catch (SeatTakenException e) {
