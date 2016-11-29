@@ -30,7 +30,7 @@ public class Customer {
 	}
 
 	public Customer(int x, int y, Room room, String type) {
-		this.Room = room;
+		this.room = room;
 		
 		try {
             this.room.giveSeat(x, y);
@@ -108,14 +108,6 @@ public class Customer {
 		this.age = age;
 	}
 
-	public ArrayList<Customer> getListCustomers() {
-		return listCustomers;
-	}
-
-	public void setListCustomers(ArrayList<Customer> listCustomers) {
-		this.listCustomers = listCustomers;
-	}
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -145,7 +137,6 @@ public class Customer {
                 ", type=" + type +
                 ", room=" + room +
                 ", age=" + age +
-                ", listCustomers=" + listCustomers +
                 '}';
     }
 }
