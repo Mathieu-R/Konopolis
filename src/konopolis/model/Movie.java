@@ -12,7 +12,7 @@ public class Movie {
 	private String title;
 	private String description;
 	private String [] genres;
-    private ArrayList<src.konopolis.model.Show> shows = new ArrayList<Show>();
+    private ArrayList<Show> shows = new ArrayList<Show>();
 	private String director;
 	private String [] casting;
 	private int time;

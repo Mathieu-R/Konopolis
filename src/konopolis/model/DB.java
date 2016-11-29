@@ -163,15 +163,14 @@ public class DB {
                 
                 // For every date String
                 for (String show : shows) {
-                	// Parse it in LocalDate
-                	DateTimeFormatter format_date = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                	DateTimeFormatter format_time = DateTimeFormatter.ofPattern("kk:mm:ss");
+                	// Formatters for date + time
+                	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss");
             		// start of the show
-                	LocalDate show_start_date = LocalDate.parse(show, format_date); // Date (yyyy-MM-dd)
-                	LocalTime show_start_time = LocalTime.format(show, format_time); // Time (hh:mm:ss)
-                	LocalDateTime show_start = show_start_date.of(show_start_date, show_start_time);
+                	LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
+                	LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
+                	LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
             		// end of the show => start of the show + time in minutes
-            		final LocalDate show_end = LocalDate.parse(show, format).plus(time, ChronoUnit.MINUTES);
+            		final LocalDateTime show_end = show_start.plus(time, ChronoUnit.MINUTES);
             		
             		// Add an instance of show => id = movie_id
             		shows_al.add(new Show(show_start, show_end, id, room_id));
