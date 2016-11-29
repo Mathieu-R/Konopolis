@@ -1,7 +1,12 @@
 package src.konopolis.model;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -97,13 +102,31 @@ public class DB {
      * Retrieve movie's info from the db
      */
     public void retrieveMovie(int movie_id) {
-        String sql = "SELECT /*movie_id,*/ title, description, director, cast, genre, time, language, price" +
-                "FROM tbmovies join tblanguages join tbmoviescasts join tbcasts join tbmoviesgenres join tb genres" +
-                "WHERE movie_id = " + movie_id;
+        String sql = "SELECT m.movie_id, title, description, director, cast, genre, time, language, price" 
+        		+ "FROM tbmovies as m inner join tblanguages as l on m.language_id = l.language_id"
+                + "inner join tbmoviescasts as mc on m.movie_id = mc.movie_id"
+                + "inner join tbcasts as c on mc.cast_id = c.cast_id "
+                + "inner join tbmoviesgenres as mg on m.movie_id = mg.movie_id"
+                + "inner join tbgenres as g on mg.genre_id = g.genre_id" 
+        		+ "WHERE m.movie_id = " + movie_id;
+        
+        String sql2 = "SELECT m.movie_id, title, description, director," 
+					+ "(select group_concat(c.cast) " 
+					+ "from tbmoviescasts as mc "
+					+ "left join tbcasts as c on mc.cast_id = c.cast_id) as casting,"
+			        + "(select group_concat(g.genre) " 
+					+ "from tbmoviesgenres as mg "
+					+ "left join tbgenres as g on mg.genre_id = g.genre_id) as genres,"
+					+ "(select group_concat(show_start) "
+					+ "from tbrooms as r on m.movie_id = r.movie_id) as shows"
+			        + "time, language, price "
+			        + "from tbmovies as m "
+			        + "left join tblanguages as l on m.language_id = l.language_id "
+			        + "where m.movie_id = " + movie_id;
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
-            rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(sql2);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -115,10 +138,20 @@ public class DB {
                 String title = rs.getString("title");
                 String description = rs.getString("description");
                 String director = rs.getString("director");
-                String cast = rs.getString("cast");
-                String genre = rs.getString("genre");
+                // Split the string of casting ("act1, act2, act3") into Array ["act1", "act2", "act3"]
+                String[] casting = rs.getString("casting").split(","); // Several actors
+                String[] genres = rs.getString("genres").split(","); // Several genres
+                String shows = rs.getString("shows");
+                int time = rs.getInt("time");
                 String language = rs.getString("language");
                 double price = rs.getDouble("price");
+                
+                // ArrayList of movies to be able to manage them
+                ArrayList<Movie> movies = new ArrayList<Movie>();
+                
+                // Push every Movie' instance in this ArrayList
+                movies.add(new Movie(id, title, description, genres, /* shows ,*/ director, casting, time, language, price));
+                
 
             }
         } catch (SQLException e) {
@@ -248,6 +281,9 @@ public class DB {
     }
 
     public static void main(String[] args) {
-        new DB();
+        final DB db = new DB();
+        db.registerDriver();
+        db.createConnection();
+        db.retrieveMovie(1);
     }
 }
