@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/konopolis/model/Room.java
 package src.konopolis.model;
+=======
+package src.konopolis;
+>>>>>>> 933e33cc87ead141c1cf3e295f2055861a7444fe:src/konopolis/Room.java
 
 import java.util.ArrayList;
 
@@ -15,7 +19,7 @@ public class Room {
     private ArrayList<ArrayList<src.konopolis.model.Seat>> seats = new ArrayList<ArrayList<Seat>>();
     /*private double cost;*/
     private Movie movie;
-    private static double income = 0.0;
+    private static double income = 0.0; // Revenus du cinéma
 
     /**
      * Constructors
