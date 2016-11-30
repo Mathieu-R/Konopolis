@@ -20,6 +20,19 @@ public class Movie {
     private double price;
 	
 	/* constructor */
+    public Movie(String title, String description, String[] genres, ArrayList<Show> shows, String director, String[] casting,
+		int time, String language, double price) {
+	    id++;
+		this.title = title;
+		this.description = description;
+		this.genres = genres;
+		this.shows = shows;
+		this.director = director;
+		this.casting = casting;
+		this.time = time;
+		this.language = language;
+		this.price = price;
+	}
 	public Movie(int id, String title, String description, String[] genres, ArrayList<Show> shows, String director, String[] casting,
 				 int time, String language, double price) {
         this.id = id;

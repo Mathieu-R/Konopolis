@@ -278,9 +278,6 @@ public class KonopolisModel extends Observable {
                 String customer_type = rs.getString("customer_type");
                 int row = rs.getInt("sRow");
                 int column = rs.getInt("sColumn");
-         
-                // TODO
-                // new Customer
                 
                 //Look for the right Room => create an instance of customer and add it to the customers ArrayList
                 for (room : this.rooms) {

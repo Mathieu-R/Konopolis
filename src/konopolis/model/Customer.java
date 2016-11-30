@@ -15,7 +15,7 @@ public class Customer {
 	private int age;
 
 	public Customer(int x, int y, Room room) {
-
+		id++;
 		reduction = 0.0;
         this.room = room;
 
@@ -31,6 +31,7 @@ public class Customer {
 	}
 
 	public Customer(int x, int y, Room room, String type) {
+		id++;
 		this.room = room;
 		
 		try {
@@ -118,8 +119,8 @@ public class Customer {
 
         if (type != customer.type) return false;
         if (age != customer.age) return false;
-        return seat.equals(customer.seat);
-
+        if (seat_id != customer.seat_id) return false;
+        return true;
     }
 
     @Override
