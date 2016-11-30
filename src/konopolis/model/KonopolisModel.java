@@ -184,7 +184,9 @@ public class KonopolisModel extends Observable {
 
                 
                 // Push every Movie' instance in this ArrayList
-                movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));     
+                movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
+                setChanged();
+                notifyObservers();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -226,7 +228,6 @@ public class KonopolisModel extends Observable {
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
                 rooms.add(new Room(rows, seats_by_row, movie_id, id));  
-                
                 retrieveCustomers(id, movie_id, show_start);
 
             }
@@ -283,6 +284,8 @@ public class KonopolisModel extends Observable {
                 for (room : this.rooms) {
                 	if (room.getId() == room_id) { // Retrieve the right room
                         customers.add(new Customer(column, row, room, customer_type)); // The instance of customer book the seat
+                        setChanged();
+                        notifyObservers();
                 	}
                 }
                 
@@ -417,6 +420,8 @@ public class KonopolisModel extends Observable {
     	for (room : rooms) {
     		if (room.getId() == room_id) {
     			new Customer(x, y, room, type);
+    			setChanged();
+    			notifyObservers();
     		}
     	}
     }
