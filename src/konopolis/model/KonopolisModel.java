@@ -61,6 +61,7 @@ public class KonopolisModel extends Observable {
 
     /**
      * Create the connection to the DB (Konopolis)
+     * @throws SQLException
      */
     public void createConnection() {
         System.out.println("Connecting to Konopolis DB...");
@@ -83,7 +84,8 @@ public class KonopolisModel extends Observable {
      * Retrieve all the movies titles from the db
      * That's what we want at the launching of our app
      * Stored in a HashMap (movies)
-     * @return HashMap that contains the id and the title of the movies
+     * @return HashMap that contains the id => key and the title => value of the movies
+     * @throws SQLException
      */
     public HashMap<Integer, String> retrieveAllMoviesTitles() {
         HashMap<Integer, String> movies = new HashMap<Integer, String>(); // Local HashMap for movies
@@ -119,7 +121,9 @@ public class KonopolisModel extends Observable {
     }
 
     /**
-     * Retrieve movie's info from the db
+     * Retrieve movie's info from the db based on it id
+     * @param movie_id, the id of the room
+     * @throws SQLException
      */
     public void retrieveMovie(int movie_id) {
         
@@ -197,7 +201,8 @@ public class KonopolisModel extends Observable {
 
     /**
      * Retrieve the room based on a room_id
-     * @param room_id
+     * @param room_id, the id of the room
+     * @throws SQLException
      */
     public void retrieveRooms(int room_id) {
 
@@ -246,6 +251,7 @@ public class KonopolisModel extends Observable {
      * @param room_id
      * @param movie_id
      * @param show_start
+     * @throws SQLException
      */
     public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
     	// customer_id should be unique key ?
@@ -300,9 +306,10 @@ public class KonopolisModel extends Observable {
     }
     
     /**
-     * Return the id of the customer' type
+     * Return the id of the customer type (to be able to add the customer to the db (relationnal db))
      * @param type, type of the customer (Junior, Student)
      * @return customer_type_id
+     * @throws SQLException
      */
     public int retrieveCustomerTypeId(String type) {
     	String customerTypeId = "SELECT customer_type_id "
@@ -336,6 +343,14 @@ public class KonopolisModel extends Observable {
     	return 0;
     }
     
+    /**
+     * Retrieve the id movie_room_id of a customer (to be able to add a customer to the db (relationnal db))
+     * @param movie_id, id of the movie
+     * @param room_id, id of the room
+     * @param show_start, start date of the movie
+     * @return, int => the movie_room_id
+     * @throws SQLException
+     */
     public int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
     	String customerTypeId = "SELECT movie_room_id "
     							+ "FROM tbmoviesrooms "
@@ -368,6 +383,18 @@ public class KonopolisModel extends Observable {
     	
     }
     
+    /**
+     * create a new Customer instance, add it to the ArrayList of customers and insert it into the db
+     * @param x, position in x of the customer seat
+     * @param y, position in y of the customer seat
+     * @param customer_id, id of the customer
+     * @param room_id, id of the room where the customer will be
+     * @param type, type of customer (Senior, Junior,...)
+     * @param seat_id, id of the seat where the customer will be seated on
+     * @param movie_id, id of the movie that the customer will watch
+     * @param show_start, start date of the movie
+     * @throws SQLException
+     */
     public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
     	
     	PreparedStatement addCt = null;
@@ -442,8 +469,8 @@ public class KonopolisModel extends Observable {
     
     /**
      * Convert a String into a LocalDateTime
-     * @param show
-     * @return LocalDateTime
+     * @param show, the date and time in a String type
+     * @return LocalDateTime, the date and time in a LocalDateTime type
      */
     public LocalDateTime stringToLocalDateTime(String show) {
     	// Formatters for date + time
