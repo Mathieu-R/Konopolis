@@ -11,16 +11,16 @@ public class Movie {
 	private static int id = 0;
 	private String title;
 	private String description;
-	private String [] genres;
+	private ArrayList<String> genres;
     private ArrayList<Show> shows = new ArrayList<Show>();
 	private String director;
-	private String [] casting;
+	private ArrayList<String> casting;
 	private int time;
 	private String language;
     private double price;
 	
 	/* constructor */
-    public Movie(String title, String description, String[] genres, ArrayList<Show> shows, String director, String[] casting,
+    public Movie(String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 		int time, String language, double price) {
 	    id++;
 		this.title = title;
@@ -33,7 +33,8 @@ public class Movie {
 		this.language = language;
 		this.price = price;
 	}
-	public Movie(int id, String title, String description, String[] genres, ArrayList<Show> shows, String director, String[] casting,
+    
+	public Movie(int id, String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 				 int time, String language, double price) {
         this.id = id;
 		this.title = title;
@@ -74,11 +75,11 @@ public class Movie {
 		this.description = description;
 	}
 
-	public String[] getGenres() {
+	public ArrayList<String> getGenres() {
 		return genres;
 	}
 
-	public void setGenres(String[] genres) {
+	public void setGenres(ArrayList<String> genres) {
 		this.genres = genres;
 	}
 
@@ -98,11 +99,11 @@ public class Movie {
 		this.director = director;
 	}
 
-	public String[] getCasting() {
+	public ArrayList<String> getCasting() {
 		return casting;
 	}
 
-	public void setCasting(String[] casting) {
+	public void setCasting(ArrayList<String> casting) {
 		this.casting = casting;
 	}
 
@@ -149,19 +150,12 @@ public class Movie {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", genres=" + Arrays.toString(genres) +
-                ", shows=" + shows +
-                ", director='" + director + '\'' +
-                ", casting=" + Arrays.toString(casting) +
-                ", time=" + time +
-                ", language='" + language + '\'' +
-                ", price=" + price +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Movie [title=" + title + ", description=" + description + ", genres=" + genres + ", shows=" + shows
+				+ ", director=" + director + ", casting=" + casting + ", time=" + time + ", language=" + language
+				+ ", price=" + price + "]";
+	}
+
+    
 }

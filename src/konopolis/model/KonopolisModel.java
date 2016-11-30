@@ -72,6 +72,10 @@ public class KonopolisModel extends Observable {
         }
     }
     
+    /**
+     * Create a statement
+     * @throws SQLException
+     */
     public void createStatement() {
 	   try {
            stmt = conn.createStatement();
@@ -165,7 +169,6 @@ public class KonopolisModel extends Observable {
                 // Split the string of casting ("act1, act2, act3") into Array ["act1", "act2", "act3"]
                 String[] casting = rs.getString("casting").split(","); // Several actors
                 String[] genres = rs.getString("genres").split(","); // Several genres
-                //String[] shows = rs.getString("shows").split(",");
                 String[] shows = rs.getString("shows").split(",");
                 int time = rs.getInt("time");
                 String language = rs.getString("language");
@@ -379,8 +382,209 @@ public class KonopolisModel extends Observable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-		return 0;
     	
+		return 0;
+    }
+    
+    public int retrieveLanguageId(String language) {
+    	String languageId = "SELECT language_id "
+    						+ "FROM tblanguages "
+    						+ "WHERE language = " + language;
+    	
+    	this.createConnection();
+    	this.createStatement();
+    	
+    	ResultSet rs = null;
+    	
+    	try {
+    		rs = stmt.executeQuery(languageId);
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+    		while(rs.next()) {
+    			return rs.getInt("language_id");
+    		}
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		return 0;
+    }
+    
+    /**
+     * retrieve the genre_id based on a genre, if the genre doesn't exist yet, we create id and send back it id; 
+     * @param genre, a String that is the genre of the movie
+     * @return, int, the genre id
+     * @throws SQLException
+     */
+    public int retrieveOrCreateGenreId(String genre) {
+    	String genreId = "SELECT genre_id "
+    						+ "FROM tbgenres "
+    						+ "WHERE genre = " + genre;
+    	
+    	this.createConnection(); // Connect to the DB
+    	this.createStatement(); // Create the statement
+    	
+    	ResultSet rs = null; // Set that will contain all the results
+    	
+    	try {
+    		rs = stmt.executeQuery(genreId);
+    	} catch(SQLException queryErr) { // If the query fails (ex: the genre does not exist)
+    		queryErr.printStackTrace();
+    		
+    		PreparedStatement addGr = null;
+    		String addGenre = "INSERT INTO tbgenres(genre) " // We create it
+    							+ "VALUE (?)";
+    		
+    		//this.createConnection(); We do not need to create the connection again
+    		try { // Beginning of insert query
+    			addGr = conn.prepareStatement(addGenre); // Prepared Statement
+    			
+    			addGr.setString(1, genre);
+    			rs = addGr.executeQuery(); // Execute a prepared statement and return the result set;
+    			
+    			while(rs.next()) {
+    				return rs.getInt("genre_id"); // Return the genre_id created	
+    			}
+    			
+    		} catch (SQLException insertErr) { // Error in the insert query
+        		insertErr.printStackTrace();
+        		if (conn != null) { // Try to rollback DB
+        			try {
+            			System.out.println("Trying to rollback db");
+            			conn.rollback();
+            		} catch (SQLException err) {
+            			System.out.println("Rollback failed !");
+            			err.printStackTrace();
+            		}
+        		}	
+        	} finally {
+        		if (addGr != null) { // Try to close preparedStatement
+    				try {
+    					addGr.close();
+    				} catch (SQLException e) {
+    					e.printStackTrace();
+    				}
+        		}
+    		} // End of finally
+    	}						
+    	
+    	try { // If the first query is OK, so the genre exist
+    		while(rs.next()) {
+    			return rs.getInt("genre_id");
+    		}
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+            rs.close(); // Close the resultSet
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+		return 0;
+    }
+    
+    public void addMovie(int movie_id, String title, String description, String director, /*ArrayList<Show> shows*/, /* ArrayList<String> casting */ int time, String language, double price, ArrayList<String> genres) {
+    	PreparedStatement addMv = null;
+
+    	
+    	String addMovie = "INSERT INTO tbmovies(movie_id, title, description, director, time, language_id, price) "
+    						+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    	
+		this.createConnection();
+    	
+    	try {
+    		
+    		addMv = conn.prepareStatement(addMovie);
+    		
+    		addMv.setInt(1, movie_id);
+    		addMv.setString(2, title);
+    		addMv.setString(3, description);
+    		addMv.setString(4, director);
+    		addMv.setInt(5, time);
+    		addMv.setInt(6, retrieveLanguageId(language));
+    		addMv.setDouble(7, price);
+    		
+    		addMv.executeUpdate();
+    		
+    		addGenres(movie_id, genres); // If the movie is successfully added to the db, we add these genres
+    		
+    		movies_al.add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
+    		
+    	} catch (SQLException e) {
+			e.printStackTrace();
+			if (conn != null) {
+				try {
+	    			System.out.println("Trying to rollback db");
+	    			conn.rollback();
+	    		} catch (SQLException err) {
+	    			System.out.println("Rollback failed !");
+	    			err.printStackTrace();
+	    		}
+			}
+			
+		} finally {
+			if (addMv != null) {
+				try {
+					addMv.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+    }
+    
+    /**
+     * Add one or more genre(s) associated a movie in the db
+     * @param movie_id, the id of the movie
+     * @param genres, ArrayList of genres
+     */
+    public void addGenres(int movie_id, ArrayList<String> genres) {
+    	PreparedStatement addGr = null;
+    	
+    	this.createConnection();
+    	
+    	try {
+    	
+    		for (String genre : genres) { // For Each genre
+        		addGr = conn.prepareStatement("INSERT INTO tbmoviesgenres(movie_id, genre_id)" // Add the genre associated to the movie in the db
+						+ "VALUES (?, ?)");
+        		
+        		addGr.setInt(1, movie_id);
+        		addGr.setInt(2, retrieveOrCreateGenreId(genre));
+
+        		addGr.executeUpdate();	
+        	}
+    		
+    	} catch (SQLException e) {
+			e.printStackTrace();
+			if (conn != null) {
+				try {
+	    			System.out.println("Trying to rollback db");
+	    			conn.rollback();
+	    		} catch (SQLException err) {
+	    			System.out.println("Rollback failed !");
+	    			err.printStackTrace();
+	    		}
+			}
+			
+		} finally {
+			if (addGr != null) {
+				try {
+					addGr.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
     }
     
     /**
@@ -406,8 +610,9 @@ public class KonopolisModel extends Observable {
     	String addSeat = "INSERT INTO tbseats(customer_id, sRow, sColumn, movie_room_id) "
     				+ "VALUES (?, ?, ?, ?)";
     	
+    	this.createConnection(); // Create connection to DB
+    	
     	try {
-        	this.createConnection(); // Create connection to DB
         	conn.setAutoCommit(false); // The way to do sql transactions => avoid to commit transaction after every request
         	
         	addCt = conn.prepareStatement(addCustomer); // Prepared Request
@@ -438,18 +643,20 @@ public class KonopolisModel extends Observable {
     		}
     		
     	} finally {
-    		if (addCt != null)
+    		if (addCt != null) {
 				try {
 					addCt.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-    		if (addSt != null)
+    		}
+    		if (addSt != null) {
 				try {
 					addSt.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+    		}
     		
     		try {
 				conn.setAutoCommit(true);
