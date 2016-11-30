@@ -13,8 +13,8 @@ public class Customer {
 	private char type;
 	private int age;
 
-	public Customer(int x, int y, Room room) {
-		id++;
+	public Customer(int x, int y, Room room, int id) {
+		this.id = id;
 		reduction = 0.0;
         this.room = room;
 
@@ -29,8 +29,8 @@ public class Customer {
 
 	}
 
-	public Customer(int x, int y, Room room, String type) {
-		id++;
+	public Customer(int x, int y, Room room, String type, int id) {
+		this.id = id;
 		this.room = room;
 		
 		try {
@@ -52,7 +52,8 @@ public class Customer {
 		
 	}
 	
-	public Customer(int x, int y, Room room, String type, double reduction) {
+	public Customer(int x, int y, Room room, String type, double reduction, int id) {
+		this.id = id;
 		this.room = room;
 		
 		try {
