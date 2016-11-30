@@ -281,7 +281,7 @@ public class KonopolisModel extends Observable {
                 //Look for the right Room => create an instance of customer and add it to the customers ArrayList
                 for (Room room : rooms_al) {
                 	if (room.getId() == room_id) { // Retrieve the right room
-                        customers_al.add(new Customer(column, row, room, customer_type)); // The instance of customer book the seat
+                        customers_al.add(new Customer(column, row, room, customer_type, seat_id)); // The instance of customer book the seat
                         setChanged();
                         notifyObservers();
                 	}
@@ -433,7 +433,7 @@ public class KonopolisModel extends Observable {
     	
     	for (Room room : rooms_al) {
     		if (room.getId() == room_id) {
-    			new Customer(x, y, room, type);
+    			new Customer(x, y, room, type, customer_id);
     			setChanged();
     			notifyObservers();
     		}
