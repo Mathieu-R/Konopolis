@@ -8,12 +8,12 @@ import java.util.ArrayList;
 
 public class Room {
 
-    private int id;
+    private static int id = 0;
     private int totSeats;
     private int rows;
     private int seatsByRow;
     private ArrayList<ArrayList<src.konopolis.model.Seat>> seats = new ArrayList<ArrayList<Seat>>();
-    private int movie_id;
+    private Movie movie;
     private static double income = 0.0; // Revenus du cinéma
 
     /**
@@ -49,7 +49,7 @@ public class Room {
      * @param movie_id, id of the movie at a given show
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, int movie_id, int id) {
+    public Room(int rows, int sitsByRow, Movie movie, int id) {
         if (rows > 20 || sitsByRow > 35) {
             System.out.println("Too much rows or seats by row");
             return;
@@ -62,7 +62,7 @@ public class Room {
 
         this.totSeats = rows * sitsByRow;
 
-        this.movie_id = movie_id;
+        this.movie = movie;
 
         initRoom();
     }
@@ -185,12 +185,12 @@ public class Room {
         this.seats = seats;
     }
 
-    public int getMovie() {
-        return movie_id;
+    public Movie getMovie() {
+        return movie;
     }
 
-    public void setMovie(int movie_id) {
-        this.movie_id = movie_id;
+    public void setMovie(Movie movie) {
+        this.movie = movie;
     }
 
     public static double getIncome() {
@@ -238,7 +238,7 @@ public class Room {
                 ", rows=" + rows +
                 ", seatsByRow=" + seatsByRow +
                 ", seats=" + seats +
-                ", movie_id=" + movie_id +
+                ", movie=" + movie +
                 '}';
     }
 

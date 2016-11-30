@@ -7,6 +7,7 @@ import java.util.ArrayList;
  *
  */
 public class Customer {
+	private static int id = 0; // ID of the customer, id is for the whole theater
 	private int seat_id;
 	private Room room;
 	private double reduction = 0.0;

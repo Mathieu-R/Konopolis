@@ -8,7 +8,7 @@ import java.util.Arrays;
  */
 
 public class Movie {
-	private int id = 0;
+	private static int id = 0;
 	private String title;
 	private String description;
 	private String [] genres;
@@ -37,12 +37,12 @@ public class Movie {
 	
 	/* All Getters and Setters */
 
-	public int getId() {
-		return id;
+	public static int getId() {
+		return Movie.id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public static void setId(int id) {
+		Movie.id = id;
 	}
 
 	public String getTitle() {

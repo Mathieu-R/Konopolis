@@ -3,6 +3,7 @@ package src.konopolis.model;
 import java.util.Observable;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,24 +27,22 @@ import java.util.HashMap;
  * It makes the request to the DB
  */
 public class KonopolisModel extends Observable {
-
-    private DB db = null;
     
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
     private final String DB_URL = "jdbc:mysql://localhost:3306/Konopolis";
     private final String USER = "root";
     private final String PWD = "root";
 
-    private ArrayList<Movie> movies = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
-    private ArrayList<Show> shows = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
-    private ArrayList<Customer> customers = new ArrayList<Customer>(); // ArrayList of Customers to be able to manage them
-    private ArrayList<Room> rooms = new ArrayList<Room>(); // ArrayList of Rooms to be able to manage them
+    private ArrayList<Movie> movies_al = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
+    private ArrayList<Show> shows_al = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
+    private ArrayList<Customer> customers_al = new ArrayList<Customer>(); // ArrayList of Customers to be able to manage them
+    private ArrayList<Room> rooms_al = new ArrayList<Room>(); // ArrayList of Rooms to be able to manage them
     
     Connection conn = null;
     Statement stmt = null;
     
     public KonopolisModel() {
-    	registerDriver();
+    	registerDriver(); // Only done at the launching of the app;
     }
 
     /**
@@ -70,12 +69,14 @@ public class KonopolisModel extends Observable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        try {
-            stmt = conn.createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    }
+    
+    public void createStatement() {
+	   try {
+           stmt = conn.createStatement();
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }
     }
 
     /**
@@ -183,7 +184,7 @@ public class KonopolisModel extends Observable {
 
                 
                 // Push every Movie' instance in this ArrayList
-                movies.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));     
+                movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));     
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -299,6 +300,129 @@ public class KonopolisModel extends Observable {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Return the id of the customer' type
+     * @param type, type of the customer (Junior, Student)
+     * @return customer_type_id
+     */
+    public int retrieveCustomerTypeId(String type) {
+    	String customerTypeId = "SELECT customer_type_id "
+				+ "FROM tbcustomerstype "
+				+ "WHERE customer_type = " + type;
+    	
+    	this.createConnection();
+    	this.createStatement();
+    	
+    	ResultSet rs = null;
+    	try {
+    		rs = stmt.executeQuery(customerTypeId);
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+    		while(rs.next()) {
+    			return rs.getInt("customer_type_id");
+    		}
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	
+    }
+    
+    public int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
+    	String customerTypeId = "SELECT movie_room_id "
+    							+ "FROM tbmoviesrooms "
+								+ "WHERE movie_id = " + movie_id + " and room_id = " + room_id + " and show_start = " + show_start;
+    	
+    	this.createConnection();
+    	this.createStatement();
+    	
+    	ResultSet rs = null;
+    	try {
+    		rs = stmt.executeQuery(customerTypeId);
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+    		while(rs.next()) {
+    			return rs.getInt("customer_type_id");
+    		}
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    	}
+    	
+    	try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    	
+    }
+    
+    public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
+    	
+    	PreparedStatement addCt = null;
+    	PreparedStatement addSt = null;
+    	
+    	String addCustomer = "INSERT INTO tbcustomers(seat_id, customer_type_id) "
+    						+ "VALUES (?, ?)";
+    	
+    	String addSeat = "INSERT INTO tbseats(customer_id, sRow, sColumn, movie_room_id) "
+    				+ "VALUES (?, ?, ?, ?)";
+    	
+    	try {
+        	this.createConnection(); // Create connection to DB
+        	conn.setAutoCommit(false); // The way to do sql transactions => avoid to commit transaction after every request
+        	
+        	addCt = conn.prepareStatement(addCustomer); // Prepared Request
+        	addSt = conn.prepareStatement(addSeat);
+        	
+        	addCt.setInt(1, seat_id);
+        	addCt.setInt(2, retrieveCustomerTypeId(type));
+        	addCt.executeUpdate();
+        	
+        	addSt.setInt(1, customer_id);
+        	addSt.setInt(2, y); // Row
+        	addSt.setInt(3, x); // Column
+        	addSt.setInt(4, retrieveMovieRoomId(movie_id, room_id, show_start));
+        	addSt.executeUpdate();
+        	
+        	conn.commit(); // Commit the transaction
+        	
+    	} catch (SQLException e) {
+    		e.printStackTrace();
+    		if (conn != null) {
+    			try {
+        			System.out.println("Trying to rollback db");
+        			conn.rollback();
+        		} catch (SQLException e) {
+        			System.out.println("Rollback failed !");
+        			e.printStackTrace();
+        		}
+    		}
+    		
+    	} finally {
+    		if (addCt != null) addCt.close();
+    		if (addSt != null) addSt.close();
+    		
+    		conn.setAutoCommit(true);
+    	}
+    	
+    	for (room : rooms) {
+    		if (room.getId() == room_id) {
+    			new Customer(x, y, room, type);
+    		}
+    	}
+    }
 
     public String getDB_DRIVER() {
         return DB_DRIVER;
@@ -321,9 +445,7 @@ public class KonopolisModel extends Observable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DB db = (DB) o;
-
-        return DB_URL.equals(db.DB_URL);
+        return DB_URL.equals(o.DB_URL);
 
     }
 
