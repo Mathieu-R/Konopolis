@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inheritJdk="true">
+	<output-test url="file:///test/Konopolis"/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<excludeFolder url="file://$MODULE_DIR$/.idea"/>
+	</contentEntry>
+	<lib name="mysql-connector-java-5.1.34-bin.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/lib/mysql-connector-java-5.1.34-bin.jar!/"/>
+	</lib>
+	<levels>
+		<level name="Konopolis" value="project"/>
+	</levels>
+</component>
