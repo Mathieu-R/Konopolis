@@ -8,7 +8,6 @@ import java.util.ArrayList;
  */
 public class Customer {
 	private static int id = 0; // ID of the customer, id is for the whole theater
-	private int seat_id;
 	private Room room;
 	private double reduction = 0.0;
 	private char type;
@@ -70,12 +69,12 @@ public class Customer {
 		
 	}
 
-	public Seat getSeat() {
-		return seat;
+	public static int getId() {
+		return id;
 	}
 
-	public void setSeat(Seat seat) {
-		this.seat = seat;
+	public static void setId(int id) {
+		Customer.id = id;
 	}
 
 	public double getReduction() {
@@ -111,30 +110,33 @@ public class Customer {
 	}
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + age;
+		result = prime * result + type;
+		return result;
+	}
 
-        Customer customer = (Customer) o;
-
-        if (type != customer.type) return false;
-        if (age != customer.age) return false;
-        if (seat_id != customer.seat_id) return false;
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = seat.hashCode();
-        result = 31 * result + (int) type;
-        result = 31 * result + age;
-        return result;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Customer other = (Customer) obj;
+		if (age != other.age)
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
 
     @Override
     public String toString() {
         return "Customer{" +
-                "seat=" + seat +
                 ", reduction=" + reduction +
                 ", type=" + type +
                 ", room=" + room +
