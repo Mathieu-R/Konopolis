@@ -295,7 +295,7 @@ public class Room {
             return;
         }
         
-        this.id = id;
+        id++;
 
         this.rows = rows;
         this.seatsByRow = sitsByRow;
@@ -318,7 +318,7 @@ public class Room {
             return;
         }
         
-        this.id = id;
+        id++;
 
         this.rows = rows;
         this.seatsByRow = sitsByRow;

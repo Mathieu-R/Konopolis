@@ -169,13 +169,9 @@ public class KonopolisModel extends Observable {
   
                 // For every date String
                 for (String show : shows) {
-                	// Formatters for date + time
-                	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss");
-            		// start of the show
-                	LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
-                	LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
-                	LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
-            		// end of the show => start of the show + time in minutes
+                	LocalDateTime show_start = stringToLocalDateTime(show);
+                	
+                	// end of the show => start of the show + time in minutes
             		final LocalDateTime show_end = show_start.plus(time, ChronoUnit.MINUTES);
             		
             		// Add an instance of show => id = movie_id
@@ -184,7 +180,9 @@ public class KonopolisModel extends Observable {
 
                 
                 // Push every Movie' instance in this ArrayList
-                movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));     
+                movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
+                setChanged();
+                notifyObservers();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -199,9 +197,9 @@ public class KonopolisModel extends Observable {
 
     /**
      * Retrieve the room based on a room_id
-     * @param movie_id
+     * @param room_id
      */
-    public void retrieveRooms(int room_id, /*int movie_id, LocalDateTime show_start*/) {
+    public void retrieveRooms(int room_id) {
 
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
         		   + "FROM tbmoviesrooms natural join tbrooms "
@@ -221,12 +219,14 @@ public class KonopolisModel extends Observable {
                 int movie_id = rs.getInt("movie_id");
                 int rows = rs.getInt("rows");
                 int seats_by_row = rs.getInt("seats_by_row");
-                String show_start = rs.getString("show_start");
+            	LocalDateTime show_start = stringToLocalDateTime(rs.getString("show_start"));	
                 
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
-                rooms.add(new Room(rows, seats_by_row, movie_id, id));  
-                
+            	for (Movie movie : movies_al) { // We search the right room (the one with the right id)
+            		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
+            	}
+
                 retrieveCustomers(id, movie_id, show_start);
 
             }
@@ -239,7 +239,6 @@ public class KonopolisModel extends Observable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -250,7 +249,7 @@ public class KonopolisModel extends Observable {
      */
     public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
     	// customer_id should be unique key ?
-    	// Supprimer le booléen isTaken de la BDD ? Done.
+    	// Supprimer le boolï¿½en isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
     	
         String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn, "
@@ -278,14 +277,13 @@ public class KonopolisModel extends Observable {
                 String customer_type = rs.getString("customer_type");
                 int row = rs.getInt("sRow");
                 int column = rs.getInt("sColumn");
-         
-                // TODO
-                // new Customer
                 
                 //Look for the right Room => create an instance of customer and add it to the customers ArrayList
-                for (room : this.rooms) {
+                for (Room room : rooms_al) {
                 	if (room.getId() == room_id) { // Retrieve the right room
-                        customers.add(new Customer(column, row, room, customer_type)); // The instance of customer book the seat
+                        customers_al.add(new Customer(column, row, room, customer_type)); // The instance of customer book the seat
+                        setChanged();
+                        notifyObservers();
                 	}
                 }
                 
@@ -335,6 +333,7 @@ public class KonopolisModel extends Observable {
             e.printStackTrace();
         }
     	
+    	return 0;
     }
     
     public int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
@@ -365,6 +364,7 @@ public class KonopolisModel extends Observable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+		return 0;
     	
     }
     
@@ -404,25 +404,57 @@ public class KonopolisModel extends Observable {
     			try {
         			System.out.println("Trying to rollback db");
         			conn.rollback();
-        		} catch (SQLException e) {
+        		} catch (SQLException err) {
         			System.out.println("Rollback failed !");
-        			e.printStackTrace();
+        			err.printStackTrace();
         		}
     		}
     		
     	} finally {
-    		if (addCt != null) addCt.close();
-    		if (addSt != null) addSt.close();
+    		if (addCt != null)
+				try {
+					addCt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+    		if (addSt != null)
+				try {
+					addSt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
     		
-    		conn.setAutoCommit(true);
+    		try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
     	}
     	
-    	for (room : rooms) {
+    	for (Room room : rooms_al) {
     		if (room.getId() == room_id) {
     			new Customer(x, y, room, type);
+    			setChanged();
+    			notifyObservers();
     		}
     	}
     }
+    
+    /**
+     * Convert a String into a LocalDateTime
+     * @param show
+     * @return LocalDateTime
+     */
+    public LocalDateTime stringToLocalDateTime(String show) {
+    	// Formatters for date + time
+    	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss");
+		// start of the show
+    	LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
+    	LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
+    	LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
+    	return show_start;
+    }
+    
 
     public String getDB_DRIVER() {
         return DB_DRIVER;
@@ -438,30 +470,6 @@ public class KonopolisModel extends Observable {
 
     public String getPWD() {
         return PWD;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        return DB_URL.equals(o.DB_URL);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return DB_URL.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "DB{" +
-                "DB_DRIVER='" + DB_DRIVER + '\'' +
-                ", DB_URL='" + DB_URL + '\'' +
-                ", USER='" + USER + '\'' +
-                ", PWD='" + PWD + '\'' +
-                '}';
     }
 
 }

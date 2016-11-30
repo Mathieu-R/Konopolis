@@ -1,4 +1,4 @@
-package src.konopolis.model;
+package src.konopolis.test;
 
 import org.junit.Test;
 import src.konopolis.model.Seat;
