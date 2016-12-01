@@ -3,6 +3,10 @@
  */
 package src.konopolis.test;
 
+import src.konopolis.controller.KonopolisController;
+import src.konopolis.model.KonopolisModel;
+import src.konopolis.view.KonopolisView;
+
 /**
  * @author natha
  *
@@ -13,23 +17,21 @@ public class KonopolisTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
 		//Création du model.
-		KonopolisController KonModel = new KonopolisController();
+		KonopolisModel konMod = new KonopolisModel();
 		
-		//Création du controleur
-		KonopolisController KonControl = new KonopolisController(KonModel);
+		//Création des controleurs
+		KonopolisController konControl = new KonopolisController(konMod);
+		KonopolisController konControl = new KonopolisController(konMod);
 		
-		//Création de la vue
-		KonopolisView KonView = new KonopolisView(KonModel, KonControl);
-		
-		public void addView(KonopolisView view) {
-	        this.view = view;
-	    }
+		//Création des vues
+		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, konControl);
+		KonopolisViewModel konViewGui = new KonopolisViewGui(konMod, konControl);
 		
 		//On référence notre vue au controleur
-		KonControl.addView(KonView);
+		konControl.addView(konViewConsole);
+		konControl.addView(konViewGui);
 		
 	}
 
