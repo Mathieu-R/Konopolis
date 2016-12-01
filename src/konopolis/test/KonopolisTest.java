@@ -3,9 +3,13 @@
  */
 package src.konopolis.test;
 
-import src.konopolis.controller.KonopolisController;
+
 import src.konopolis.model.KonopolisModel;
 import src.konopolis.view.KonopolisView;
+
+import src.konopolis.controller.KonopolisController;
+import src.konopolis.view.*;
+
 
 /**
  * @author natha
@@ -22,16 +26,13 @@ public class KonopolisTest {
 		KonopolisModel konMod = new KonopolisModel();
 		
 		//Création des controleurs
-		KonopolisController konControl = new KonopolisController(konMod);
-		KonopolisController konControl = new KonopolisController(konMod);
+		KonopolisController control=new KonopolisController(konMod);
 		
 		//Création des vues
-		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, konControl);
-		KonopolisViewModel konViewGui = new KonopolisViewGui(konMod, konControl);
+		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, control);
 		
 		//On référence notre vue au controleur
-		konControl.addView(konViewConsole);
-		konControl.addView(konViewGui);
+		control.addView(konViewConsole);
 		
 	}
 

@@ -2,9 +2,11 @@ package src.konopolis.model;
 
 import java.util.ArrayList;
 
+
 /**
  * @author Mathieu R. - Groupe 3
  */
+
 
 public class Room {
 
@@ -12,7 +14,7 @@ public class Room {
     private int totSeats;
     private int rows;
     private int seatsByRow;
-    private ArrayList<ArrayList<src.konopolis.model.Seat>> seats = new ArrayList<ArrayList<Seat>>();
+    private ArrayList<ArrayList<Seat>> seats = new ArrayList<ArrayList<Seat>>();
     private Movie movie;
     private static double income = 0.0; // Revenus du cinéma
 
@@ -26,14 +28,14 @@ public class Room {
      * @param sitsByRow
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, int id) {
+    public Room(int rows, int sitsByRow) {
         if (rows > 20 || sitsByRow > 35) {
             System.out.println("Too much rows or seats by row");
             return;
         }
         
         id++;
-
+        this.id=id;
         this.rows = rows;
         this.seatsByRow = sitsByRow;
 
@@ -242,11 +244,5 @@ public class Room {
                 '}';
     }
 
-    public static void main(String[] args) {
-        Room room = new Room(10, 20, 1);
-        room.displayRoom();
-        System.out.println("================");
-        //room.giveSeat(1, 2);
-        room.displayRoom();
-    }
+
 }

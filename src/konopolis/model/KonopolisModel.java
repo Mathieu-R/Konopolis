@@ -33,9 +33,9 @@ import java.util.HashMap;
 public class KonopolisModel extends Observable {
     
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost:3306/Konopolis";
+    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis";
     private final String USER = "root";
-    private final String PWD = "root";
+    private final String PWD = "H1perGl0bulle";
 
 	private ArrayList<Movie> movies_al = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
     private ArrayList<Show> shows_al = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
@@ -47,6 +47,7 @@ public class KonopolisModel extends Observable {
     
     public KonopolisModel() {
     	registerDriver(); // Only done at the launching of the app;
+    	notifyObservers();
     }
 
     /**
@@ -136,7 +137,8 @@ public class KonopolisModel extends Observable {
      * @param movie_id, the id of the room
      * @throws SQLException
      */
-    public void retrieveMovie(int movie_id) {
+    
+public void retrieveMovie(int movie_id) {
         
         String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(c.cast) " 
@@ -197,6 +199,7 @@ public class KonopolisModel extends Observable {
 
                 
                 // Push every Movie' instance in this ArrayList
+                movies_al.clear();
                 movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
                 setChanged();
                 notifyObservers();
@@ -211,17 +214,62 @@ public class KonopolisModel extends Observable {
             e.printStackTrace();
         }
     }
-
     /**
      * Retrieve the room based on a room_id
      * @param room_id, the id of the room
      * @throws SQLException
      */
     public void retrieveRooms(int room_id) {
-
+    	rooms_al.clear();
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
         		   + "FROM tbmoviesrooms natural join tbrooms "
         		   + "WHERE room_id = " + room_id;
+        
+        this.createConnection();
+        this.createStatement();
+
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                int id = rs.getInt("room_id");
+                int movie_id = rs.getInt("movie_id");
+                int rows = rs.getInt("rows");
+                int seats_by_row = rs.getInt("seats_by_row");
+            	LocalDateTime show_start = stringToLocalDateTime(rs.getString("show_start"));	
+                
+                // Push every Movie' instance in this ArrayList
+                // New Room => we initialize all the room (empty for now !)
+            	for (Movie movie : movies_al) { // We search the right room (the one with the right id)
+            		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
+            	}
+
+                retrieveCustomers(id, movie_id, show_start);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void retrieveAllRooms() {
+    	
+    	rooms_al.clear();
+    	
+        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
+        		   + "FROM tbmoviesrooms natural join tbrooms ";
         
         this.createConnection();
         this.createStatement();
@@ -323,6 +371,8 @@ public class KonopolisModel extends Observable {
             e.printStackTrace();
         }
     }
+    
+   
     
     /**
      * Return the id of the customer type (to be able to add the customer to the db (relationnal db))
@@ -599,8 +649,8 @@ public class KonopolisModel extends Observable {
     	PreparedStatement addMv = null;
 
     	
-    	String addMovie = "INSERT INTO tbmovies(movie_id, title, description, director, time, language_id, price) "
-    						+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    	String addMovie = "INSERT INTO tbmovies(title, description, director, time, language_id, price) "
+    						+ "VALUES (?, ?, ?, ?, ?, ?)";
     	
 		this.createConnection();
     	
@@ -608,13 +658,12 @@ public class KonopolisModel extends Observable {
     		
     		addMv = conn.prepareStatement(addMovie);
     		
-    		addMv.setInt(1, movie_id);
-    		addMv.setString(2, title);
-    		addMv.setString(3, description);
-    		addMv.setString(4, director);
-    		addMv.setInt(5, time);
-    		addMv.setInt(6, retrieveLanguageId(language));
-    		addMv.setDouble(7, price);
+    		addMv.setString(1, title);
+    		addMv.setString(2, description);
+    		addMv.setString(3, director);
+    		addMv.setInt(4, time);
+    		addMv.setInt(5, retrieveLanguageId(language));
+    		addMv.setDouble(6, price);
     		
     		addMv.executeUpdate();
     		
