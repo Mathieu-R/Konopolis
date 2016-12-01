@@ -37,7 +37,7 @@ public class KonopolisModel extends Observable {
     private final String USER = "root";
     private final String PWD = "root";
 
-    private ArrayList<Movie> movies_al = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
+	private ArrayList<Movie> movies_al = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
     private ArrayList<Show> shows_al = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
     private ArrayList<Customer> customers_al = new ArrayList<Customer>(); // ArrayList of Customers to be able to manage them
     private ArrayList<Room> rooms_al = new ArrayList<Room>(); // ArrayList of Rooms to be able to manage them
@@ -100,6 +100,9 @@ public class KonopolisModel extends Observable {
 
         String sql = "SELECT movie_id, title" +
                      "FROM tbmovies";
+        
+        this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -154,7 +157,10 @@ public class KonopolisModel extends Observable {
         
         			// What about 2 rooms for one same movie ?
         			// Consider Group By
-
+        
+        this.createConnection();
+        this.createStatement();
+        
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
             rs = stmt.executeQuery(sql);
@@ -216,6 +222,9 @@ public class KonopolisModel extends Observable {
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
         		   + "FROM tbmoviesrooms natural join tbrooms "
         		   + "WHERE room_id = " + room_id;
+        
+        this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -274,6 +283,9 @@ public class KonopolisModel extends Observable {
                    + "(select movie_room_id "
                    + "from tbmovierooms as mr"
                    + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + "and mr.show_start = " + show_start;
+        
+        this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -896,7 +908,10 @@ public class KonopolisModel extends Observable {
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
     
-
+    /**
+     * Getters and Setters
+     */
+    
     public String getDB_DRIVER() {
         return DB_DRIVER;
     }
@@ -912,5 +927,53 @@ public class KonopolisModel extends Observable {
     public String getPWD() {
         return PWD;
     }
+    
+    public ArrayList<Movie> getMovies_al() {
+		return movies_al;
+	}
+
+	public void setMovies_al(ArrayList<Movie> movies_al) {
+		this.movies_al = movies_al;
+	}
+
+	public ArrayList<Show> getShows_al() {
+		return shows_al;
+	}
+
+	public void setShows_al(ArrayList<Show> shows_al) {
+		this.shows_al = shows_al;
+	}
+
+	public ArrayList<Customer> getCustomers_al() {
+		return customers_al;
+	}
+
+	public void setCustomers_al(ArrayList<Customer> customers_al) {
+		this.customers_al = customers_al;
+	}
+
+	public ArrayList<Room> getRooms_al() {
+		return rooms_al;
+	}
+
+	public void setRooms_al(ArrayList<Room> rooms_al) {
+		this.rooms_al = rooms_al;
+	}
+
+	public Connection getConn() {
+		return conn;
+	}
+
+	public void setConn(Connection conn) {
+		this.conn = conn;
+	}
+
+	public Statement getStmt() {
+		return stmt;
+	}
+
+	public void setStmt(Statement stmt) {
+		this.stmt = stmt;
+	}
 
 }
