@@ -1,7 +1,7 @@
 /**
  * 
  */
-package test;
+package src.konopolis.test;
 
 /**
  * @author natha
