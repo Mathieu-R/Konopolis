@@ -100,6 +100,9 @@ public class KonopolisModel extends Observable {
 
         String sql = "SELECT movie_id, title" +
                      "FROM tbmovies";
+        
+        this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -154,7 +157,10 @@ public class KonopolisModel extends Observable {
         
         			// What about 2 rooms for one same movie ?
         			// Consider Group By
-
+        
+        this.createConnection();
+        this.createStatement();
+        
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
             rs = stmt.executeQuery(sql);
@@ -216,6 +222,9 @@ public class KonopolisModel extends Observable {
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
         		   + "FROM tbmoviesrooms natural join tbrooms "
         		   + "WHERE room_id = " + room_id;
+        
+        this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
@@ -274,6 +283,9 @@ public class KonopolisModel extends Observable {
                    + "(select movie_room_id "
                    + "from tbmovierooms as mr"
                    + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + "and mr.show_start = " + show_start;
+        
+        this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
