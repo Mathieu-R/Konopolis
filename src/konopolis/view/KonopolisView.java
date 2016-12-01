@@ -3,26 +3,26 @@
  */
 package src.konopolis.view;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-import controller.KonopolisController;
-import model.*;
+import src.konopolis.controller.KonopolisController;
+import src.konopolis.model.KonopolisModel;
+import src.konopolis.model.Movie;
+import src.konopolis.model.Room;
+import src.konopolis.model.SeatTakenException;
+import src.konopolis.model.SeatUnknownException;
+import src.konopolis.model.Show;
 /**
- * @author natha
+ * @author nathan
  *
  */
 public class KonopolisView implements Observer {
 	Scanner sc;
-	private ArrayList <Movie> listMovies = new ArrayList();
-	private ArrayList <Show>  listShows =new ArrayList();
-	private ArrayList<Room>   listRooms =new ArrayList();
 	
 	private KonopolisController control;
 	private KonopolisModel model;
@@ -57,8 +57,8 @@ public class KonopolisView implements Observer {
 		switch(etape1){
 		/*
 		 * On a la liste des films de la db
-		 * 
-		 * */
+		 */
+		
 			case 1: System.out.println("Sélectionnez un film :");
 	        		/*for (Entry<Integer, String> movieEntry: model.getDB().retrieveAllMoviesTitles().entrySet()) {
 	        			System.out.println(movieEntry.getKey() + ") " + movieEntry.getValue());

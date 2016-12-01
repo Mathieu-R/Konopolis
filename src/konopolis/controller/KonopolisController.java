@@ -1,7 +1,10 @@
 /**
  * 
  */
-package controller;
+package src.konopolis.controller;
+
+import src.konopolis.model.KonopolisModel;
+import src.konopolis.view.KonopolisView;
 
 /**
  * @author natha
@@ -27,4 +30,8 @@ public abstract class KonopolisController {
 
 
 	public abstract void control();
+	
+	public void addView(KonopolisView view) {
+		this.view = view;
+	}
 }
