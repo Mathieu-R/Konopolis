@@ -1,39 +1,17 @@
 package konopolis;
 
-import java.util.Observable;
-import java.util.Observer;
-import javax.swing.*;
+import java.util.Scanner;
 
+public class KonopolisViewCons extends KonopolisView {
 
-
-/**
- * 
- * @author Sébastien H.- Groupe 3
- *
- */
-public class KonopolisView extends JFrame implements Observer{
-	JPanel indexPanel = new JPanel();
-	
-	private JPanel container = new JPanel();
-	private JTextField research = new JTextField(20);
-	private JButton LaunchResearch = new JButton("Recherche");
-	
-	public KonopolisView(){
-		
-		
-		
-		this.setTitle("Konopolis");
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(600,200);
-		this.setVisible(true);
-	}
-
-
-
-
-	@Override
-	public void update(Observable arg0, Object arg1) {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Welcome to Konopolis\t");
+		
+		System.out.println("Witch movie do you want to see ?\t");
+		String MovieResearch = scan.nextLine();
+		System.out.println("You take "+MovieResearch);
 		
 	}
 
