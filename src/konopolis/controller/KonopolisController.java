@@ -52,8 +52,8 @@ public class KonopolisController {
 		model.retrieveMovie(movie_id);
 	}
 	
-	public void retrieveRoom(int room_id) {
-		model.retrieveRoom(room_id);
+	public void retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
+		model.retrieveRoom(movie_id, room_id, show_start);
 	}
 	
 	 public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
@@ -85,7 +85,7 @@ public class KonopolisController {
 		 return model.getCustomers_al().size();
 	 }
 	 
-	 public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
+	 public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
 		 	model.retrieveCustomers(room_id, movie_id, show_start);
 	    }
 	

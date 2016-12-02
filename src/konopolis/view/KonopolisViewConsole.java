@@ -24,6 +24,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	private int movie_id = 0;
 	private int room_id = 0;
 	private int show_id = 0;
+	private LocalDateTime show_start;
 	
 	public KonopolisViewConsole(KonopolisModel model,KonopolisController control){
 		super(model,control);
@@ -72,10 +73,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         									
         									show_id = sc.nextInt(); // Id of the show
     										room_id = movie.getShows().get(show_id - 1).getRoom_id(); // We get the room_id that correspond to the show
+    										show_start = movie.getShows().get(show_id - 1).getShow_start(); // We get the show_start 
         								}
         							}
         							
-									control.retrieveRoom(room_id);
+									control.retrieveRoom(movie_id, room_id, show_start);
 									
 									for (Room room : control.getRooms_al()) {
 										if (room.getId() == room_id) {

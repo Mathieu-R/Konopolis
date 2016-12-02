@@ -220,11 +220,11 @@ public class KonopolisModel extends Observable {
      * @param room_id, the id of the room
      * @throws SQLException
      */
-    public void retrieveRoom(int room_id) {
+    public void retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
     	rooms_al.clear();
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms "
-        		   + "WHERE room_id = " + room_id;
+        		   + "WHERE movie_id = " + movie__id + " and room_id = " + room_id + " and show_start = " + "'" + show__start + "'";
         
         this.createConnection();
         this.createStatement();
@@ -243,7 +243,7 @@ public class KonopolisModel extends Observable {
                 int movie_id = rs.getInt("movie_id");
                 int rows = rs.getInt("rows");
                 int seats_by_row = rs.getInt("seats_by_row");
-            	LocalDateTime show_start = stringToLocalDateTime(rs.getString("show_start"));	
+            	Date show_start = rs.getDate("show_start"); 
                 
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
@@ -318,20 +318,20 @@ public class KonopolisModel extends Observable {
      * @param show_start
      * @throws SQLException
      */
-    public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
+    public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
     	// customer_id should be unique key ?
     	// Supprimer le booléen isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
     	
-        String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn, "
+        String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn "
                    + "FROM tbseats as s "
                    + "natural join tbcustomersseats "
                    + "natural join tbcustomers "
                    + "natural join tbcustomerstype "
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
-                   + "from tbmovierooms as mr"
-                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + "and mr.show_start = " + show_start;
+                   + "from tbmovierooms as mr "
+                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + show_start;
         
         this.createConnection();
         this.createStatement();
@@ -940,11 +940,12 @@ public class KonopolisModel extends Observable {
      */
     public LocalDateTime stringToLocalDateTime(String show) {
     	// Formatters for date + time
-    	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss");
+    	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		// start of the show
-    	LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
-    	LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
-    	LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
+    	//LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
+    	//LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
+    	//LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
+    	LocalDateTime show_start = LocalDateTime.parse(show, format);
     	return show_start;
     }
     
