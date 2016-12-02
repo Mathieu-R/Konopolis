@@ -214,14 +214,15 @@ public void retrieveMovie(int movie_id) {
             e.printStackTrace();
         }
     }
+
     /**
      * Retrieve the room based on a room_id
      * @param room_id, the id of the room
      * @throws SQLException
      */
-    public void retrieveRooms(int room_id) {
+    public void retrieveRoom(int room_id) {
     	rooms_al.clear();
-        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
+        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms "
         		   + "WHERE room_id = " + room_id;
         
@@ -250,7 +251,7 @@ public void retrieveMovie(int movie_id) {
             		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
             	}
 
-                retrieveCustomers(id, movie_id, show_start);
+                retrieveCustomers(id, movie_id, show_start); // We retrieve all the customers for this room
 
             }
         } catch (SQLException e) {
@@ -268,7 +269,7 @@ public void retrieveMovie(int movie_id) {
     	
     	rooms_al.clear();
     	
-        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
+        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms ";
         
         this.createConnection();
@@ -296,7 +297,7 @@ public void retrieveMovie(int movie_id) {
             		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
             	}
 
-                retrieveCustomers(id, movie_id, show_start);
+                //retrieveCustomers(id, movie_id, show_start); 
 
             }
         } catch (SQLException e) {

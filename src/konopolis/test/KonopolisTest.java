@@ -2,7 +2,6 @@
  * 
  */
 package src.konopolis.test;
-
 import src.konopolis.controller.*;
 import src.konopolis.model.*;
 import src.konopolis.view.*;

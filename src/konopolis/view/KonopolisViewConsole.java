@@ -21,6 +21,10 @@ import src.konopolis.model.Show;
 
 public class KonopolisViewConsole extends KonopolisView implements Observer{
 	
+	private int movie_id = 0;
+	private int room_id = 0;
+	private int show_id = 0;
+	
 	public KonopolisViewConsole(KonopolisModel model,KonopolisController control){
 		super(model,control);
 	}
@@ -47,47 +51,58 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 					System.out.println(movieEntry.getKey() + ") " + movieEntry.getValue());
 				}
 					
-	        		int idFilm =sc.nextInt();
-	        		while(!quit){
-	        			
+	        		movie_id = sc.nextInt();
 	        		
+	        		while(!quit) {
+	        			
         			System.out.println("1.Acheter place 2.Description 3.Fermer\n");
-        			int etape2=sc.nextInt();
+        			int etape2 = sc.nextInt();
         			
-        			switch(etape2){
-        					case 1 : System.out.println("Quelle âge ?\n");
-        					
-        							int age=sc.nextInt();
-        							String type;
-        							if (age >= 65) {
-        								type = "Senior";
-        							} else {
-        								type = "Simple";
-        							}
-        							System.out.println("Quelle séance ?\n");
-        							control.retrieveMovie(idFilm);
+        			switch(etape2) {
+        				
+        					case 1: control.retrieveMovie(movie_id);
         							
-        							System.out.println("Sélectionnez la séance ?");
+        							System.out.println("Sélectionnez la séance: "); // We select the show
+        							
         							for (Movie movie : control.getMovies_al()) {
-        								if (movie.getId() == idFilm) {
+        								if (movie.getId() == movie_id) {
         									for (int i = 0 ; i < movie.getShows().size() ; i++) {
-        										System.out.println((i+1) + ") " + movie.getShows().get(i).getShow_start());
+        										System.out.println((i+1) + ") " + movie.getShows().get(i).getShow_start()); // Show the list of shows
         									}
+        									
+        									show_id = sc.nextInt(); // Id of the show
+    										room_id = movie.getShows().get(show_id - 1).getRoom_id(); // We get the room_id that correspond to the show
         								}
         							}
-
-        							int idShow=sc.nextInt();
+        							
+									control.retrieveRoom(room_id);
+									
+									for (Room room : control.getRooms_al()) {
+										if (room.getId() == room_id) {
+											System.out.println("Salle choisie:");
+											room.displayRoom();
+										}
+									}
+        							
+        							System.out.println("Quelle type de personne êtes vous ?\n");
+        							System.out.print("> Junior\n" +
+        											"> Senior\n" +
+        											"> Etudiant\n" +
+        											"> VIP\n");
+        								
+        							String type = sc.next();
+        	
         							System.out.println("Sélectionner votre place avec x,y\n");
         							String [] chosenSeat = sc.nextLine().split(",");
         							
-        							control.retrieveCustomers(control.getMovies_al().get(idFilm).getShows().get(idShow).getRoom_id(),control.getMovies_al().get(idFilm).getShows().get(idShow).getMovie_id(),control.getMovies_al().get(idFilm).getShows().get(idShow).getShow_start());
+        							//control.retrieveCustomers(control.getMovies_al().get(movie_id).getShows().get(show_id).getRoom_id(),control.getMovies_al().get(movie_id).getShows().get(show_id).getMovie_id(),control.getMovies_al().get(movie_id).getShows().get(show_id).getShow_start());
         							
-        							control.addCustomer(Integer.parseInt(chosenSeat[0]),Integer.parseInt(chosenSeat[1]), control.getCustomers_al().size(),control.getMovies_al().get(idFilm).getShows().get(idShow).getRoom_id(), type, control.getCustomers_al().size(), idFilm, control.getMovies_al().get(idFilm).getShows().get(idShow).getShow_start());
-        							update(null,null );
+        							control.addCustomer(Integer.parseInt(chosenSeat[0]),Integer.parseInt(chosenSeat[1]), control.getCustomers_al().size(),control.getMovies_al().get(movie_id).getShows().get(show_id).getRoom_id(), type, control.getCustomers_al().size(), movie_id, control.getMovies_al().get(movie_id).getShows().get(show_id).getShow_start());
+        							update(null,null);
         								
         					break;
         					
-        					case 2 : control.retrieveMovie(idFilm);
+        					case 2 : control.retrieveMovie(movie_id);
         							System.out.println(control.getMovies_al().get(0).getDescription()+"\n");
         							System.out.println("---------------------------------------------------------");
         							System.out.println(control.getMovies_al().get(0).getDirector()+"\n");
@@ -100,8 +115,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         								System.out.println(control.getMovies_al().get(0).getGenres().get(i));
         							}
         							System.out.println("---------------------------------------------------------");
-        							System.out.println(control.getMovies_al().get(0).getTime()+"\n");
-        							System.out.println(control.getMovies_al().get(0).getPrice()+"\n");
+        							System.out.println(control.getMovies_al().get(0).getTime()+" minutes\n");
+        							System.out.println(control.getMovies_al().get(0).getPrice()+" €\n");
 
         					break;
         					

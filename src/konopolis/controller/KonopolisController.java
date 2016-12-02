@@ -39,10 +39,6 @@ public class KonopolisController {
 	       this.model = m;
 	}
 	
-	public void createConnection() {
-        model.createConnection();
-    }
-	
 	public void setInputs(int inputs) {
 		this.inputs = inputs;
 	}
@@ -54,6 +50,10 @@ public class KonopolisController {
 	public void retrieveMovie(int movie_id){
 		
 		model.retrieveMovie(movie_id);
+	}
+	
+	public void retrieveRoom(int room_id) {
+		model.retrieveRoom(room_id);
 	}
 	
 	 public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
