@@ -66,10 +66,12 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         							}
         							System.out.println("Quelle séance ?\n");
         							control.retrieveMovie(idFilm);
+        							
+        							System.out.println("Sélectionnez la séance ?");
         							for (Movie movie : control.getMovies_al()) {
         								if (movie.getId() == idFilm) {
-        									for (Show show : movie.getShows()) {
-        										System.out.println("=> " + show.getShow_start());
+        									for (int i = 0 ; i < movie.getShows().size() ; i++) {
+        										System.out.println((i+1) + ") " + movie.getShows().get(i).getShow_start());
         									}
         								}
         							}
