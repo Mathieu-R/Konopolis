@@ -28,7 +28,7 @@ public class Room {
      * @param sitsByRow
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow) {
+    public Room(int rows, int sitsByRow, int id) {
         if (rows > 20 || sitsByRow > 35) {
             System.out.println("Too much rows or seats by row");
             return;
