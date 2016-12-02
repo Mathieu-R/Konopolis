@@ -384,7 +384,38 @@ public class KonopolisModel extends Observable {
         }
     }
     
-   
+    public ArrayList<String> retrieveTypes() {
+        ArrayList<String> types = new ArrayList<String>();
+        String selectTypes = "SELECT customer_type FROM tbcustomerstype";
+
+        this.createConnection();
+        this.createStatement();
+
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(selectTypes);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                String type = rs.getString("type"); // get the genre
+                types.add(type); // push the genre in the ArrayList
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return types; // We return the ArrayList of genres
+    }
     
     /**
      * Return the id of the customer type (to be able to add the customer to the db (relationnal db))

@@ -1,6 +1,3 @@
-/**
- * 
- */
 package src.konopolis.view;
 
 import java.time.LocalDate;
@@ -28,22 +25,18 @@ public abstract class KonopolisView implements Observer {
 	protected KonopolisModel model;
 	
 	public KonopolisView(KonopolisModel model,KonopolisController control){
-			this.control=control;
-			this.model=model;
-			update(null,null);
-			sc=new Scanner(System.in);
-			model.addObserver(this);
-			init();
+        this.control = control;
+        this.model = model;
+        update(null,null);
+        sc = new Scanner(System.in);
+        model.addObserver(this);
+        init();
 	}
-	public KonopolisView(){
-		init();
-	}
-	 public void update(Object o,Object arg){
-		 init();
-	 }
-	
 
-		public abstract void init();
-	
-	}	
+    public void update(Object o,Object arg){
+	    init();
+    }
+
+	 public abstract void init();
+}
 
