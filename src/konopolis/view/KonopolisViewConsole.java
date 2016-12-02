@@ -33,14 +33,14 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 		System.out.println("BIENVENUE DANS KONOPOLIS");
 		System.out.println("**************************");
 		System.out.println("Faites votre choix:");
-		System.out.println("1.Films  2.Configuration 3.Fermer");
+		System.out.println("1.Films  2.Configuration 3.Fermer\n");
 		int etape1 = sc.nextInt();
 		switch(etape1){
 		/*
 		 * On a la liste des films de la db
 		 */
 		
-			case 1: System.out.println("Sélectionnez un film :");
+			case 1: System.out.println("Sélectionnez un film :\n");
 	        		
 				System.out.println("Liste des films:");
 				for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) {
@@ -51,11 +51,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	        		while(!quit){
 	        			
 	        		
-        			System.out.println("1.Acheter place 2.Description 3.Fermer");
+        			System.out.println("1.Acheter place 2.Description 3.Fermer\n");
         			int etape2=sc.nextInt();
         			
         			switch(etape2){
-        					case 1 : System.out.println("Quelle âge ?");
+        					case 1 : System.out.println("Quelle âge ?\n");
         					
         							int age=sc.nextInt();
         							String type;
@@ -64,13 +64,13 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         							}else{
         								type="Simple";
         							}
-        							System.out.println("Quelle séance ?");
+        							System.out.println("Quelle séance ?\n");
         							control.retrieveMovie(idFilm);
         							for(int i=0;i<control.getMovies_al().get(idFilm).getShows().size();i++){
         							 System.out.println(i+" "+control.getMovies_al().get(idFilm).getShows().get(i).getShow_start());
         							}
         							int idShow=sc.nextInt();
-        							System.out.println("Sélectionner votre place avec x,y");
+        							System.out.println("Sélectionner votre place avec x,y\n");
         							String [] chosenSeat = sc.nextLine().split(",");
         							
         							control.retrieveCustomers(control.getMovies_al().get(idFilm).getShows().get(idShow).getRoom_id(),control.getMovies_al().get(idFilm).getShows().get(idShow).getMovie_id(),control.getMovies_al().get(idFilm).getShows().get(idShow).getShow_start());

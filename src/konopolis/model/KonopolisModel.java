@@ -35,7 +35,7 @@ public class KonopolisModel extends Observable {
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
     private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis";
     private final String USER = "root";
-    private final String PWD = "H1perGl0bulle";
+    private final String PWD = "root";
 
 	private ArrayList<Movie> movies_al = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
     private ArrayList<Show> shows_al = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
