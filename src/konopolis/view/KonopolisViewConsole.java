@@ -30,6 +30,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	public KonopolisViewConsole(KonopolisModel model,KonopolisController control){
 		super(model,control);
         Scanner sc = new Scanner(System.in);
+        init();
 	}
 	
 	
@@ -233,7 +234,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     }
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
+	public void update(Observable obs, Object obj) {
 		init();
 	}
 }

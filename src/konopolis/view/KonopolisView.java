@@ -27,15 +27,8 @@ public abstract class KonopolisView implements Observer {
 	public KonopolisView(KonopolisModel model,KonopolisController control){
         this.control = control;
         this.model = model;
-        update(null,null);
-        sc = new Scanner(System.in);
         model.addObserver(this);
-        init();
 	}
-
-    public void update(Object o,Object arg){
-	    init();
-    }
 
 	 public abstract void init();
 }
