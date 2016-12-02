@@ -59,16 +59,21 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         					
         							int age=sc.nextInt();
         							String type;
-        							if(age>=65){
-        								type="Senior";
-        							}else{
-        								type="Simple";
+        							if (age >= 65) {
+        								type = "Senior";
+        							} else {
+        								type = "Simple";
         							}
         							System.out.println("Quelle séance ?\n");
         							control.retrieveMovie(idFilm);
-        							for(int i=0;i<control.getMovies_al().get(idFilm).getShows().size();i++){
-        							 System.out.println(i+" "+control.getMovies_al().get(idFilm).getShows().get(i).getShow_start());
+        							for (Movie movie : control.getMovies_al()) {
+        								if (movie.getId() == idFilm) {
+        									for (Show show : movie.getShows()) {
+        										System.out.println("=> " + show.getShow_start());
+        									}
+        								}
         							}
+
         							int idShow=sc.nextInt();
         							System.out.println("Sélectionner votre place avec x,y\n");
         							String [] chosenSeat = sc.nextLine().split(",");
