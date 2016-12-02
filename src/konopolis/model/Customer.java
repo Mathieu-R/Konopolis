@@ -1,7 +1,5 @@
 package src.konopolis.model;
 
-import java.util.ArrayList;
-
 /**
  * @author Nathan D. - Groupe 3
  *
@@ -75,12 +73,28 @@ public class Customer {
 		
 	}
 
-	public static int getId() {
+	public static int getCurrentId() {
+		return currentId;
+	}
+
+	public static void setCurrentId(int currentId) {
+		Customer.currentId = currentId;
+	}
+
+	public int getId() {
 		return id;
 	}
 
-	public static void setId(int id) {
-		Customer.id = id;
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Room getRoom() {
+		return room;
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
 	}
 
 	public double getReduction() {
@@ -99,14 +113,6 @@ public class Customer {
 		this.type = type;
 	}
 
-	public Room getRoom() {
-		return room;
-	}
-
-	public void setRoom(Room room) {
-		this.room = room;
-	}
-
 	public int getAge() {
 		return age;
 	}
@@ -115,7 +121,7 @@ public class Customer {
 		this.age = age;
 	}
 
-    @Override
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

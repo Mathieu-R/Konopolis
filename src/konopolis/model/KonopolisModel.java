@@ -216,6 +216,7 @@ public class KonopolisModel extends Observable {
      * Retrieve the room based on a room_id
      * @param room_id, the id of the room
      * @throws SQLException
+     * @throws TooMuchSeatsException
      */
     public void retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
     	rooms_al.clear();
@@ -245,8 +246,12 @@ public class KonopolisModel extends Observable {
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
             	for (Movie movie : movies_al) { // We search the right room (the one with the right id)
-            		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
-            	}
+            		if (movie.getId() == movie_id) try {
+                        rooms_al.add(new Room(rows, seats_by_row, movie, id));
+                    } catch (TooMuchSeatsException e) {
+                        e.getMessage();
+                    }
+                }
 
                 retrieveCustomers(id, movie_id, show_start); // We retrieve all the customers for this room
 
@@ -261,7 +266,12 @@ public class KonopolisModel extends Observable {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Retrieve all the rooms of the theather
+     * @throws SQLException
+     * @throws TooMuchSeatsException
+     */
     public void retrieveAllRooms() {
     	
     	rooms_al.clear();
@@ -291,8 +301,12 @@ public class KonopolisModel extends Observable {
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
             	for (Movie movie : movies_al) { // We search the right room (the one with the right id)
-            		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
-            	}
+            		if (movie.getId() == movie_id) try {
+                        rooms_al.add(new Room(rows, seats_by_row, movie, id));
+                    } catch (TooMuchSeatsException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 //retrieveCustomers(id, movie_id, show_start); 
 
@@ -317,7 +331,7 @@ public class KonopolisModel extends Observable {
      */
     public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
     	// customer_id should be unique key ?
-    	// Supprimer le booléen isTaken de la BDD ? Done.
+    	// Supprimer le boolï¿½en isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
     	
         String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn "

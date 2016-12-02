@@ -1,7 +1,6 @@
 package src.konopolis.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author Sebastien.H - Groupe 3
@@ -53,12 +52,20 @@ public class Movie {
 	
 	/* All Getters and Setters */
 
-	public static int getId() {
-		return Movie.id;
+	public static int getCurrentId() {
+		return currentId;
 	}
 
-	public static void setId(int id) {
-		Movie.id = id;
+	public static void setCurrentId(int currentId) {
+		Movie.currentId = currentId;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -133,7 +140,7 @@ public class Movie {
 		this.price = price;
 	}
 
-    @Override
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

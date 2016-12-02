@@ -45,7 +45,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 		 * On a la liste des films de la db
 		 */
 		
-			case 1: System.out.println("Sélectionnez un film :\n");
+			case 1: System.out.println("Sï¿½lectionnez un film :\n");
 	        		
 				System.out.println("Liste des films:");
 				for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) {
@@ -63,7 +63,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         				
         					case 1: control.retrieveMovie(movie_id);
         							
-        							System.out.println("Sélectionnez la séance: "); // We select the show
+        							System.out.println("Sï¿½lectionnez la sï¿½ance: "); // We select the show
         							
         							for (Movie movie : control.getMovies_al()) {
         								if (movie.getId() == movie_id) {
@@ -86,7 +86,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 										}
 									}
         							
-        							System.out.println("Quelle type de personne êtes vous ?\n");
+        							System.out.println("Quelle type de personne Ãªtes vous ?\n");
         							System.out.print("> Junior\n" +
         											"> Senior\n" +
         											"> Etudiant\n" +
@@ -94,7 +94,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         								
         							String type = sc.nextLine();
         	
-        							System.out.println("Sélectionner votre place avec x,y\n");
+        							System.out.println("Sï¿½lectionner votre place avec x,y\n");
         							String [] chosenSeat = sc.nextLine().split(",");
         							
         							control.addCustomer(
@@ -125,7 +125,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         							}
         							System.out.println("---------------------------------------------------------");
         							System.out.println(control.getMovies_al().get(0).getTime()+" minutes\n");
-        							System.out.println(control.getMovies_al().get(0).getPrice()+" €\n");
+        							System.out.println(control.getMovies_al().get(0).getPrice()+" ï¿½\n");
 
         					break;
         					
@@ -192,7 +192,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 									 }
 									 int idRoom=sc.nextInt();
 									 
-									 System.out.println("Quelle est le réalisateur ?");
+									 System.out.println("Quelle est le rï¿½alisateur ?");
 									 director=sc.nextLine();
 									 
 									 System.out.println("Qui joue dans le film ? (acteur1,acteur2,...)");
@@ -206,7 +206,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 									 System.out.println("Quelle langue ?");
 									 language=sc.nextLine();
 									 
-									 System.out.println("Quelle est le prix ? (€€.cc)");
+									 System.out.println("Quelle est le prix ? (ï¿½ï¿½.cc)");
 									 String repPrice=sc.nextLine();
 									 price=Double.parseDouble(repPrice);
 									 

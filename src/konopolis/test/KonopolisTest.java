@@ -1,6 +1,3 @@
-/**
- * 
- */
 package src.konopolis.test;
 import src.konopolis.controller.*;
 import src.konopolis.model.*;
@@ -9,7 +6,6 @@ import src.konopolis.view.*;
 
 /**
  * @author nathan
- *
  */
 public class KonopolisTest {
 
@@ -19,16 +15,16 @@ public class KonopolisTest {
 	 */
 	public static void main(String[] args) {
 		
-		//Création du model.
+		//Model instance
 		KonopolisModel konMod = new KonopolisModel();
 		
-		//Création des controleurs
+		//Controller instance
 		KonopolisController control = new KonopolisController(konMod);
 		
-		//Création des vues
+		//View instance
 		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, control);
 		
-		//On référence notre vue au controleur
+		//We add the view to the controller
 		control.addView(konViewConsole);
 		
 	}
