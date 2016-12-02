@@ -68,7 +68,8 @@ CREATE table tbRooms (
 CREATE table tbCustomersType (
   customer_type_id int auto_increment PRIMARY KEY,
   customer_type CHAR(30),
-	reduction double
+  reduction double,
+  CONSTRAINT chkReduction CHECK (reduction between(0.0 and 1.0))
 )
 
 CREATE table tbSeats (

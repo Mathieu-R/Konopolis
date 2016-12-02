@@ -8,7 +8,8 @@ import java.util.Arrays;
  */
 
 public class Movie {
-	private static int id = 0;
+	private static int currentId = 0;
+	private int id;
 	private String title;
 	private String description;
 	private ArrayList<String> genres;
@@ -22,7 +23,7 @@ public class Movie {
 	/* constructor */
     public Movie(String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 		int time, String language, double price) {
-	    id++;
+	    this.id = currentId++;
 		this.title = title;
 		this.description = description;
 		this.genres = genres;
@@ -36,6 +37,7 @@ public class Movie {
     
 	public Movie(int id, String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 				 int time, String language, double price) {
+		currentId++;
         this.id = id;
 		this.title = title;
 		this.description = description;

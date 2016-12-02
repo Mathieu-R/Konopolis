@@ -58,7 +58,6 @@ public class KonopolisModel extends Observable {
     public void registerDriver() {
         try {
             Class.forName(DB_DRIVER);
-            System.out.println("Driver OK");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -69,7 +68,6 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public void createConnection() {
-        //System.out.println("Connecting to Konopolis DB...");
         try {
             this.conn = DriverManager.getConnection(DB_URL, USER, PWD);
         } catch (SQLException e) {
@@ -117,7 +115,6 @@ public class KonopolisModel extends Observable {
                 int movie_id  = rs.getInt("movie_id");
                 String title = rs.getString("title");
 
-                System.out.println(title);
                 movies.put(movie_id, title);
             }
         } catch (SQLException e) {
@@ -330,8 +327,8 @@ public class KonopolisModel extends Observable {
                    + "natural join tbcustomerstype "
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
-                   + "from tbmovierooms as mr "
-                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + show_start;
+                   + "from tbmoviesrooms as mr "
+                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + show_start + " )";
         
         this.createConnection();
         this.createStatement();
@@ -846,6 +843,37 @@ public class KonopolisModel extends Observable {
 		}
     }
     
+    public int retrieveNextSeatId() {
+    	String maxSeatId = "SELECT MAX(seat_id) "
+				+ "FROM tbcustomers ";
+
+		this.createConnection();
+		this.createStatement();
+		
+		ResultSet rs = null;
+		
+		try {
+			rs = stmt.executeQuery(maxSeatId);
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			while(rs.next()) {
+				return rs.getInt("seat_id") + 1; // We send back the next seat_id
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	
+		try {
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+    }
+    
     /**
      * create a new Customer instance, add it to the ArrayList of customers and insert it into the db
      * @param x, position in x of the customer seat
@@ -858,7 +886,7 @@ public class KonopolisModel extends Observable {
      * @param show_start, start date of the movie
      * @throws SQLException
      */
-    public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
+    public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
     	
     	PreparedStatement addCt = null;
     	PreparedStatement addSt = null;
@@ -877,7 +905,7 @@ public class KonopolisModel extends Observable {
         	addCt = conn.prepareStatement(addCustomer); // Prepared Request
         	addSt = conn.prepareStatement(addSeat);
         	
-        	addCt.setInt(1, seat_id);
+        	addCt.setInt(1, retrieveNextSeatId());
         	addCt.setInt(2, retrieveCustomerTypeId(type));
         	addCt.executeUpdate();
         	

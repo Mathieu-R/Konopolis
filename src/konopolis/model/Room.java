@@ -10,7 +10,8 @@ import java.util.ArrayList;
 
 public class Room {
 
-    private static int id = 0;
+    private static int currentId = 0;
+    private int id;
     private int totSeats;
     private int rows;
     private int seatsByRow;
@@ -28,14 +29,13 @@ public class Room {
      * @param sitsByRow
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, int id) {
+    public Room(int rows, int sitsByRow, int id) throws TooMuchSeatsException {
         if (rows > 20 || sitsByRow > 35) {
-            System.out.println("Too much rows or seats by row");
-            return;
+            throw new TooMuchSeatsException("Too much rows or seats by row");
         }
         
-        id++;
-        this.id=id;
+        currentId++;
+        this.id = id;
         this.rows = rows;
         this.seatsByRow = sitsByRow;
 
@@ -51,13 +51,14 @@ public class Room {
      * @param movie_id, id of the movie at a given show
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, Movie movie, int id) {
+    public Room(int rows, int sitsByRow, Movie movie, int id) throws TooMuchSeatsException {
+        System.out.println("rows: " + rows + " / columns: " + sitsRow);
         if (rows > 20 || sitsByRow > 35) {
-            System.out.println("Too much rows or seats by row");
-            return;
+            throw new TooMuchSeatsException("Too much rows or seats by row");
         }
         
-        id++;
+        currentId++;
+        this.id = id;
 
         this.rows = rows;
         this.seatsByRow = sitsByRow;

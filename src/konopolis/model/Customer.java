@@ -7,16 +7,19 @@ import java.util.ArrayList;
  *
  */
 public class Customer {
-	private static int id = 0; // ID of the customer, id is for the whole theater
+	private static int currentId = 0; 
+	private int id; // ID of the customer, id is for the whole theater
 	private Room room;
 	private double reduction = 0.0;
 	private char type;
 	private int age;
 
 	public Customer(int x, int y, Room room, int id) {
+		currentId++;
 		this.id = id;
-		reduction = 0.0;
         this.room = room;
+
+        reduction = 0.0;
 
 		try {
             this.room.giveSeat(x, y);
@@ -30,6 +33,7 @@ public class Customer {
 	}
 
 	public Customer(int x, int y, Room room, String type, int id) {
+		currentId++;
 		this.id = id;
 		this.room = room;
 		
@@ -53,6 +57,7 @@ public class Customer {
 	}
 	
 	public Customer(int x, int y, Room room, String type, double reduction, int id) {
+		currentId++;
 		this.id = id;
 		this.room = room;
 		

@@ -56,70 +56,66 @@ public class KonopolisController {
 		model.retrieveRoom(movie_id, room_id, show_start);
 	}
 	
-	 public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
-	    	
-		 model.addCustomer(x, y, customer_id, room_id, type, seat_id, movie_id, show_start);
-	    }
+	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+		model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
+	}
 	 
-	    public int retrieveOrCreateGenreId(String genre) {
-	    	return model.retrieveOrCreateGenreId(genre);
-	    }
-	
-	 public ArrayList<Movie> getMovies_al() {
-			return model.getMovies_al();
-		}
+    public int retrieveOrCreateGenreId(String genre) {
+    	return model.retrieveOrCreateGenreId(genre);
+    }
+
+	public ArrayList<Movie> getMovies_al() {
+		return model.getMovies_al();
+	}
+	  
+	public void addMovie(int movie_id,int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+		model.addMovie(movie_id, room_id, title, description, director, shows_start, casting, time, language, price, genres);
+	}
 	 
-	/* public void addShows(int movie_id, int room_id, LocalDateTime show_start) {
-		 model.addShows(movie_id, room_id, show_start);
-	  }
-	 */  
-	 public void addMovie(int movie_id,int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
-		 model.addMovie(movie_id, room_id, title, description, director, shows_start, casting, time, language, price, genres);
-	 }
+	public void retrieveAllRooms() {
+	 	model.getRooms_al().clear();
+	    model.retrieveAllRooms();
+	}
+	
+	public int getCustomerId(){
+		return model.getCustomers_al().size();
+	}
 	 
-	 public void retrieveAllRooms() {
-		 	model.getRooms_al().clear();
-	        model.retrieveAllRooms();
-	    }
-	 public int getCustomerId(){
-		 return model.getCustomers_al().size();
-	 }
-	 
-	 public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
-		 	model.retrieveCustomers(room_id, movie_id, show_start);
-	    }
+	public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
+		model.retrieveCustomers(room_id, movie_id, show_start);
+	}
 	
-		public void setMovies_al(ArrayList<Movie> movies_al) {
-			model.setMovies_al(movies_al);
-		}
+	public void setMovies_al(ArrayList<Movie> movies_al) {
+		model.setMovies_al(movies_al);
+	}
+
+	public ArrayList<Show> getShows_al() {
+		return model.getShows_al();
+	}
+
+	public void setShows_al(ArrayList<Show> shows_al) {
+		model.setShows_al(shows_al);
+	}
+
+	public ArrayList<Customer> getCustomers_al() {
+		return model.getCustomers_al();
+	}
 	
-		public ArrayList<Show> getShows_al() {
-			return model.getShows_al();
-		}
-	
-		public void setShows_al(ArrayList<Show> shows_al) {
-			model.setShows_al(shows_al);
-		}
-	
-		public ArrayList<Customer> getCustomers_al() {
-			return model.getCustomers_al();
-		}
-		
-		 public LocalDateTime stringToLocalDateTime(String show) {
-		    	return model.stringToLocalDateTime(show);
-		    }
-	
-		public void setCustomers_al(ArrayList<Customer> customers_al) {
-			model.setCustomers_al(customers_al);
-		}
-	
-		public ArrayList<Room> getRooms_al() {
-			return model.getRooms_al();
-		}
-	
-		public void setRooms_al(ArrayList<Room> rooms_al) {
-			model.setRooms_al(rooms_al);
-		}
+	public LocalDateTime stringToLocalDateTime(String show) {
+    	return model.stringToLocalDateTime(show);
+    }
+
+	public void setCustomers_al(ArrayList<Customer> customers_al) {
+		model.setCustomers_al(customers_al);
+	}
+
+	public ArrayList<Room> getRooms_al() {
+		return model.getRooms_al();
+	}
+
+	public void setRooms_al(ArrayList<Room> rooms_al) {
+		model.setRooms_al(rooms_al);
+	}
 	
 	public void addView(KonopolisView view) {
 		this.view = view;

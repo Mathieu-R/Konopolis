@@ -92,14 +92,21 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         											"> Etudiant\n" +
         											"> VIP\n");
         								
-        							String type = sc.next();
+        							String type = sc.nextLine();
         	
         							System.out.println("Sélectionner votre place avec x,y\n");
         							String [] chosenSeat = sc.nextLine().split(",");
         							
-        							//control.retrieveCustomers(control.getMovies_al().get(movie_id).getShows().get(show_id).getRoom_id(),control.getMovies_al().get(movie_id).getShows().get(show_id).getMovie_id(),control.getMovies_al().get(movie_id).getShows().get(show_id).getShow_start());
+        							control.addCustomer(
+        									Integer.parseInt(chosenSeat[0]),
+        									Integer.parseInt(chosenSeat[1]),
+        									control.getCustomers_al().size(),
+        									room_id,
+        									type,
+        									movie_id, 
+        									control.getMovies_al().get(movie_id - 1).getShows().get(show_id).getShow_start()
+        									);
         							
-        							control.addCustomer(Integer.parseInt(chosenSeat[0]),Integer.parseInt(chosenSeat[1]), control.getCustomers_al().size(),control.getMovies_al().get(movie_id).getShows().get(show_id).getRoom_id(), type, control.getCustomers_al().size(), movie_id, control.getMovies_al().get(movie_id).getShows().get(show_id).getShow_start());
         							update(null,null);
         								
         					break;
