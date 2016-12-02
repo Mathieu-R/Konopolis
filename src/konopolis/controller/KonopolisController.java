@@ -31,28 +31,13 @@ public class KonopolisController {
 	private KonopolisModel model;
 	private int inputs;
 	
-	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis";
-    private final String USER = "root";
-    private final String PWD = "H1perGl0bulle";
-	
 	 //Je crée une vue  
 	private KonopolisView view = null;
 	 	
 	 //Création du constructeur
 	public KonopolisController(KonopolisModel m) {
 	       this.model = m;
-	       registerDriver();
 	}
-	
-	public void registerDriver() {
-        try {
-            Class.forName(DB_DRIVER);
-            System.out.println("Driver OK");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 	
 	public void createConnection() {
         model.createConnection();

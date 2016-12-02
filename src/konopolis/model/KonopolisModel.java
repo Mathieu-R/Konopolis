@@ -69,7 +69,7 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public void createConnection() {
-        System.out.println("Connecting to Konopolis DB...");
+        //System.out.println("Connecting to Konopolis DB...");
         try {
             this.conn = DriverManager.getConnection(DB_URL, USER, PWD);
         } catch (SQLException e) {
@@ -99,7 +99,7 @@ public class KonopolisModel extends Observable {
     public HashMap<Integer, String> retrieveAllMoviesTitles() {
         HashMap<Integer, String> movies = new HashMap<Integer, String>(); // Local HashMap for movies
 
-        String sql = "SELECT movie_id, title" +
+        String sql = "SELECT movie_id, title " +
                      "FROM tbmovies";
         
         this.createConnection();
@@ -1024,5 +1024,5 @@ public void retrieveMovie(int movie_id) {
 	public void setStmt(Statement stmt) {
 		this.stmt = stmt;
 	}
-
+	
 }
