@@ -138,9 +138,9 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     
-public void retrieveMovie(int movie_id) {
+    public void retrieveMovie(int movie_id) {
         
-        String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
+	    String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(c.cast) " 
 					+ "from tbmoviescasts as mc "
 					+ "left join tbcasts as c on mc.cast_id = c.cast_id) as casting,"
@@ -155,10 +155,10 @@ public void retrieveMovie(int movie_id) {
 			        + "left join tblanguages as l on m.language_id = l.language_id "
 			        + "left join tbmoviesrooms as mr on m.movie_id = mr.room_id "
 			        + "where m.movie_id = " + movie_id + " "
-        			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
-        
-        			// What about 2 rooms for one same movie ?
-        			// Consider Group By
+	    			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
+	    
+	    			// What about 2 rooms for one same movie ?
+	    			// Consider Group By
         
         this.createConnection();
         this.createStatement();
