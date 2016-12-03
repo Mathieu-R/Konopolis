@@ -42,6 +42,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 step1 = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Come on ! Isn't it easy to choose a number between 1 and 3 ?");
+                sc.next();
             }
         } while (step1 < 1 || step1 > 3);
 
@@ -197,12 +198,13 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) {
             show(movieEntry.getKey() + ") " + movieEntry.getValue());
         }
-        show("Sélectionnez un film :");
+        showInline("Sélectionnez un film :");
         do {
             try {
                 movie_id = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Ce film n'existe pas, choisissez un film de la liste !");
+                sc.next();
             }
         } while (movie_id < 1 || movie_id > control.retrieveAllMoviesTitles().entrySet().size());
 
@@ -248,6 +250,15 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     public void show(String str) {
 	    System.out.println(str);
     }
+
+    /**
+     * Show a inline string in console
+     * @param str
+     */
+    public void showInline(String str) {
+        System.out.print(str);
+    }
+
 
     /**
      * Clear the console
