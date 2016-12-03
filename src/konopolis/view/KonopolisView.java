@@ -19,7 +19,6 @@ import src.konopolis.model.Show;
  *
  */
 public abstract class KonopolisView implements Observer {
-	Scanner sc;
 	
 	protected KonopolisController control;
 	protected KonopolisModel model;

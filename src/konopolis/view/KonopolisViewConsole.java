@@ -4,12 +4,7 @@ import java.io.Console;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Scanner;
+import java.util.*;
 
 import src.konopolis.controller.KonopolisController;
 import src.konopolis.model.KonopolisModel;
@@ -20,7 +15,7 @@ import src.konopolis.model.SeatUnknownException;
 import src.konopolis.model.Show;
 
 public class KonopolisViewConsole extends KonopolisView implements Observer{
-	
+	Scanner sc;
 	private int movie_id = 0;
 	private int room_id = 0;
 	private int show_id = 0;
@@ -29,19 +24,26 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	
 	public KonopolisViewConsole(KonopolisModel model, KonopolisController control){
 		super(model,control);
-        Scanner sc = new Scanner(System.in);
+        sc = new Scanner(System.in);
         init();
 	}
 	
 	public void init() {
-		boolean quit = false;
-		System.out.println("**************************");
-		System.out.println("BIENVENUE DANS KONOPOLIS");
-		System.out.println("**************************");
-		System.out.println("Faites votre choix:");
-		System.out.println("1.Liste des films 2.Configuration 3.Fermer");
+        int step1 = 0;
 
-		int step1 = sc.nextInt();
+		boolean quit = false;
+		show("**************************");
+		show("BIENVENUE DANS KONOPOLIS");
+		show("**************************");
+		do {
+		    try {
+                show("Faites votre choix:");
+                show("1.Liste des films 2.Configuration 3.Fermer");
+                step1 = sc.nextInt();
+            } catch (InputMismatchException e) {
+                show("Come on ! Isn't it easy to choose a number between 1 and 3 ?");
+            }
+        } while (step1 < 1 || step1 > 3);
 
 		switch (step1) {
 			case 1:
@@ -191,12 +193,19 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 		}
 	
     public void showMoviesList() {
-        System.out.println("Sélectionnez un film :");
-        System.out.println("Liste des films:");
+        show("Liste des films:");
         for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) {
-            System.out.println(movieEntry.getKey() + ") " + movieEntry.getValue());
+            show(movieEntry.getKey() + ") " + movieEntry.getValue());
         }
-        movie_id = sc.nextInt();
+        show("Sélectionnez un film :");
+        do {
+            try {
+                movie_id = sc.nextInt();
+            } catch (InputMismatchException e) {
+                show("Ce film n'existe pas, choisissez un film de la liste !");
+            }
+        } while (movie_id < 1 || movie_id > control.retrieveAllMoviesTitles().entrySet().size());
+
     }
 
     public void showShowsList() {
@@ -230,6 +239,24 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         }
         type = sc.nextLine(); // get the type entered by the user
         control.checkType(type); // check if the type exist
+    }
+
+    /**
+     * Show a string in console
+     * @param str
+     */
+    public void show(String str) {
+	    System.out.println(str);
+    }
+
+    /**
+     * Clear the console
+     * H => move to top of the screen
+     * 2J => clear entire screen
+     */
+    public void clear() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
 	@Override
