@@ -1,23 +1,16 @@
 package src.konopolis.model;
 
-import java.util.Observable;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Observable;
 
 /**
  * @author Mathieu R. - Groupe 3
@@ -340,7 +333,7 @@ public class KonopolisModel extends Observable {
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
                    + "from tbmoviesrooms as mr "
-                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + "''" + show_start + "')";
+                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + localDateTimeToSQLDate(show_start) + " )";
         
         this.createConnection();
         this.createStatement();
@@ -989,7 +982,7 @@ public class KonopolisModel extends Observable {
      * @param show, the date and time in a String type
      * @return LocalDateTime, the date and time in a LocalDateTime type
      */
-    public LocalDateTime stringToLocalDateTime(String show) {
+    private LocalDateTime stringToLocalDateTime(String show) {
     	// Formatters for date + time
     	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		// start of the show
@@ -1005,9 +998,13 @@ public class KonopolisModel extends Observable {
      * @param show, the date in a Date type 
      * @return, the date in LocalDateTime type
      */
-    public LocalDateTime dateToLocalDateTime(Date show) {
+    private LocalDateTime dateToLocalDateTime(Date show) {
     	Instant instant = Instant.ofEpochMilli(show.getTime());
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
+    private java.sql.Date localDateTimeToSQLDate(LocalDateTime lt) {
+        return new java.sql.Date(lt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
     }
     
     /**
