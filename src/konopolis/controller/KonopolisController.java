@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package src.konopolis.controller;
 
 
@@ -9,6 +7,7 @@ import src.konopolis.view.KonopolisView;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import src.konopolis.model.*;
@@ -22,6 +21,7 @@ public class KonopolisController {
 	private KonopolisModel model;
 	private int inputs;
 	private ArrayList<String> types = new ArrayList<String>();
+	private HashMap<Integer, String> moviesTitles = new HashMap<Integer, String>();
 
 	private KonopolisView view = null;
 
@@ -34,7 +34,7 @@ public class KonopolisController {
 	}
 
 	public HashMap<Integer, String> retrieveAllMoviesTitles() {
-		return model.retrieveAllMoviesTitles();
+	    return this.moviesTitles = model.retrieveAllMoviesTitles();
 	}
 	
 	public void retrieveMovie(int movie_id){
@@ -65,6 +65,18 @@ public class KonopolisController {
             System.out.println("Ce type de personne n'existe pas");
         }
 	}
+
+    /**
+     * Create a Date object from a day, month, year, hours and minutes
+     * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
+     * @return Date, a Date object constructed from the parameters passed in the function
+     */
+	public Date makeDate(int day, int month, int year, int hours, int minutes) {
+        Calendar c = Calendar.getInstance(); // new instance of Calendar
+        c.set(day, month - 1, year, hours, minutes); // set a date
+        System.out.println("Date created: " + c.getTime());
+        return new java.sql.Date(c.getTimeInMillis()); // return the Date SQL format
+    }
 	 
     public int retrieveOrCreateGenreId(String genre) {
     	return model.retrieveOrCreateGenreId(genre);
@@ -138,5 +150,13 @@ public class KonopolisController {
 
     public void setView(KonopolisView view) {
         this.view = view;
+    }
+
+    public HashMap<Integer, String> getMoviesTitles() {
+        return moviesTitles;
+    }
+
+    public void setMoviesTitles(HashMap<Integer, String> moviesTitles) {
+        this.moviesTitles = moviesTitles;
     }
 }
