@@ -1,7 +1,5 @@
 
 package src.konopolis.controller;
-
-
 import src.konopolis.model.*;
 import src.konopolis.view.KonopolisView;
 
@@ -21,7 +19,6 @@ import java.util.HashMap;
 public class KonopolisController {
 	 
 	private KonopolisModel model;
-	private int inputs;
 	private ArrayList<String> types = new ArrayList<String>();
 	private HashMap<Integer, String> moviesTitles = new HashMap<Integer, String>();
 
@@ -30,23 +27,46 @@ public class KonopolisController {
 	public KonopolisController(KonopolisModel m) {
 	       this.model = m;
 	}
-	
-	public void setInputs(int inputs) {
-		this.inputs = inputs;
-	}
 
+	/* Methods */
+
+    /**
+     * Retrieve all the movies titles
+     * @return
+     */
 	public HashMap<Integer, String> retrieveAllMoviesTitles() {
 	    return this.moviesTitles = model.retrieveAllMoviesTitles();
 	}
-	
+
+    /**
+     * Retrieve a movie according it id
+     * @param movie_id
+     */
 	public void retrieveMovie(int movie_id){
 		model.retrieveMovie(movie_id);
 	}
-	
+
+    /**
+     * Retrieve a room where a movie is broadcasted (for a show given)
+     * @param movie_id
+     * @param room_id
+     * @param show_start
+     */
 	public void retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
 		model.retrieveRoom(movie_id, room_id, show_start);
 	}
-	
+
+    /**
+     * Create a new customer object
+     * If it is created, we add the customer to the db
+     * @param x
+     * @param y
+     * @param customer_id
+     * @param room_id
+     * @param type
+     * @param movie_id
+     * @param show_start
+     */
 	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
 
 		// We create the new customer
@@ -89,11 +109,22 @@ public class KonopolisController {
         System.out.println("Date created: " + c.getTime());
         return new java.sql.Date(c.getTimeInMillis()); // return the Date SQL format
     }
-	 
-    public int retrieveOrCreateGenreId(String genre) {
-    	return model.retrieveOrCreateGenreId(genre);
-    }
-	   
+
+    /**
+     * A a movie to the db
+     * Create a new Movie object
+     * @param movie_id
+     * @param room_id
+     * @param title
+     * @param description
+     * @param director
+     * @param shows_start
+     * @param casting
+     * @param time
+     * @param language
+     * @param price
+     * @param genres
+     */
 	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
 		ArrayList<Show> shows = new ArrayList<Show>();
 		
@@ -110,34 +141,13 @@ public class KonopolisController {
 
 		model.addMovie(movie_id, room_id, title, description, director, shows_start, casting, time, language, price, genres);
 	}
-	 
+
+    /**
+     * Retrieve all the rooms available
+     */
 	public void retrieveAllRooms() {
 	    model.retrieveAllRooms();
 	}
-	
-	public int getCustomerId(){
-		return model.getCustomers_al().size();
-	}
-	 
-	public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
-		model.retrieveCustomers(room_id, movie_id, show_start);
-	}
-
-	public ArrayList<Movie> getMovies_al() {
-	    return model.getMovies_al();
-    }
-
-    public ArrayList<Room> getRooms_al() {
-	    return model.getRooms_al();
-    }
-
-    public ArrayList<Show> getShows_al() {
-	    return model.getShows_al();
-    }
-
-	public ArrayList<Customer> getCustomers_al() {
-	    return model.getCustomers_al();
-    }
 
     /**
      * add a view to the controller
@@ -159,16 +169,28 @@ public class KonopolisController {
 
 	/* Getters and Setters */
 
+    public ArrayList<Movie> getMovies_al() {
+        return model.getMovies_al();
+    }
+
+    public ArrayList<Room> getRooms_al() {
+        return model.getRooms_al();
+    }
+
+    public ArrayList<Show> getShows_al() {
+        return model.getShows_al();
+    }
+
+    public ArrayList<Customer> getCustomers_al() {
+        return model.getCustomers_al();
+    }
+
     public KonopolisModel getModel() {
         return model;
     }
 
     public void setModel(KonopolisModel model) {
         this.model = model;
-    }
-
-    public int getInputs() {
-        return inputs;
     }
 
     public ArrayList<String> getTypes() {
@@ -194,6 +216,4 @@ public class KonopolisController {
     public void setMoviesTitles(HashMap<Integer, String> moviesTitles) {
         this.moviesTitles = moviesTitles;
     }
-
-
 }

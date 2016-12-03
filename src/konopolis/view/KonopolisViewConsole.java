@@ -83,6 +83,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
     private void bookMovie() {
         control.retrieveMovie(movie_id); // get the movie chosen from db
+        //update(null, null);
         showShowsList(); // show the list of shows for the movie chosen. The user can choose a show.
         control.retrieveRoom(movie_id, room_id, show_start); // get the room from db for the show chosen
         showRoomMap(); // show the mapping of the room
@@ -100,7 +101,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 movie_id,
                 control.getMovies_al().get(movie_id - 1).getShows().get(show_id).getShow_start()
         );
-        update(null, null);
+        //update(null, null);
     }
 
     private void descriptionMovie() {
@@ -186,7 +187,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
 
-        update(null, null);
+        //update(null, null);
     }
 
     private ArrayList<java.sql.Date> enterDate() {
@@ -420,7 +421,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
 	@Override
 	public void update(Observable obs, Object obj) {
-		init();
+		//init();
 	}
 }
 

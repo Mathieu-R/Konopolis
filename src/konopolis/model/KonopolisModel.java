@@ -195,7 +195,7 @@ public class KonopolisModel extends Observable {
 
                 
                 // Push every Movie' instance in this ArrayList
-                movies_al.clear();
+                movies_al.clear(); // A changer, il faudrait vérifier si le film existe déjà, dans ce cas ne pas faire la requête une seconde fois
                 movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
                 setChanged();
                 notifyObservers();
@@ -218,7 +218,7 @@ public class KonopolisModel extends Observable {
      * @throws TooMuchSeatsException
      */
     public void retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
-    	rooms_al.clear();
+    	//rooms_al.clear();
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms "
         		   + "WHERE movie_id = " + movie__id + " and room_id = " + room_id + " and show_start = " + "'" + show__start + "'";
@@ -240,7 +240,7 @@ public class KonopolisModel extends Observable {
                 int movie_id = rs.getInt("movie_id");
                 int rows = rs.getInt("rows");
                 int seats_by_row = rs.getInt("seats_by_row");
-            	Date show_start = rs.getDate("show_start"); 
+            	//Date show_start = rs.getDate("show_start");
                 
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
@@ -248,11 +248,12 @@ public class KonopolisModel extends Observable {
             		if (movie.getId() == movie_id) try {
                         rooms_al.add(new Room(rows, seats_by_row, movie, id));
                     } catch (TooMuchSeatsException e) {
+            		    // SetChanged ? // notifyObserver ?
                         e.getMessage();
                     }
                 }
 
-                retrieveCustomers(id, movie_id, show_start); // We retrieve all the customers for this room
+                retrieveCustomers(id, movie_id, show__start); // We retrieve all the customers for this room
 
             }
         } catch (SQLException e) {
@@ -272,9 +273,7 @@ public class KonopolisModel extends Observable {
      * @throws TooMuchSeatsException
      */
     public void retrieveAllRooms() {
-    	
-    	rooms_al.clear();
-    	
+
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms ";
         
@@ -328,7 +327,7 @@ public class KonopolisModel extends Observable {
      * @param show_start
      * @throws SQLException
      */
-    public void retrieveCustomers(int room_id, int movie_id, Date show_start) {
+    public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
     	// customer_id should be unique key ?
     	// Supprimer le bool�en isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
@@ -341,7 +340,7 @@ public class KonopolisModel extends Observable {
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
                    + "from tbmoviesrooms as mr "
-                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + show_start + " )";
+                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + "''" + show_start + "')";
         
         this.createConnection();
         this.createStatement();
@@ -400,7 +399,7 @@ public class KonopolisModel extends Observable {
         try {
             while (rs.next()) { // While there're still results
 
-                String type = rs.getString("type"); // get the genre
+                String type = rs.getString("customer_type"); // get the genre
                 types.add(type); // push the genre in the ArrayList
             }
         } catch (SQLException e) {
