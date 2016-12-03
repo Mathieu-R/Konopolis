@@ -926,12 +926,19 @@ public class KonopolisModel extends Observable {
      * @param customer_id, id of the customer
      * @param room_id, id of the room where the customer will be
      * @param type, type of customer (Senior, Junior,...)
-     * @param seat_id, id of the seat where the customer will be seated on
      * @param movie_id, id of the movie that the customer will watch
      * @param show_start, start date of the movie
      * @throws SQLException
      */
     public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+
+        for (Room room : rooms_al) {
+            if (room.getId() == room_id) {
+                new Customer(x, y, room, type, customer_id);
+                setChanged();
+                notifyObservers();
+            }
+        }
     	
     	PreparedStatement addCt = null;
     	PreparedStatement addSt = null;
@@ -997,13 +1004,7 @@ public class KonopolisModel extends Observable {
 			}
     	}
     	
-    	for (Room room : rooms_al) {
-    		if (room.getId() == room_id) {
-    			new Customer(x, y, room, type, customer_id);
-    			setChanged();
-    			notifyObservers();
-    		}
-    	}
+
     }
     
     /**

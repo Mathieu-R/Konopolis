@@ -60,7 +60,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                         showTypeOfPeople(); // show all the type of people (to know the reduction to apply)
 
                         System.out.println("Sélectionner votre place avec x,y\n");
-                        String[] chosenSeat = sc.nextLine().split(","); //
+                        String[] chosenSeat = sc.nextLine().split(",");
 
                         control.addCustomer(
                             Integer.parseInt(chosenSeat[0].trim()),
@@ -78,21 +78,21 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
                     case 2 : // Description
                         control.retrieveMovie(movie_id);
-                        System.out.println(control.getMovies_al().get(0).getDescription()+"\n");
-                        System.out.println("---------------------------------------------------------");
-                        System.out.println(control.getMovies_al().get(0).getDirector()+"\n");
+                        show(control.getMovies_al().get(0).getDescription()+"\n");
+                        show("---------------------------------------------------------");
+                        show(control.getMovies_al().get(0).getDirector()+"\n");
                         for(int i=0;i<control.getMovies_al().get(0).getCasting().size();i++){
-                            System.out.println(control.getMovies_al().get(0).getCasting().get(i));
+                            show(control.getMovies_al().get(0).getCasting().get(i));
                         }
-                        System.out.println("---------------------------------------------------------");
-                        System.out.println("Langue: " + control.getMovies_al().get(0).getLanguage());
-                        System.out.println("Genres:");
+                        show("---------------------------------------------------------");
+                        show("Langue: " + control.getMovies_al().get(0).getLanguage());
+                        show("Genres:");
                         for(int i = 0 ; i < control.getMovies_al().get(0).getGenres().size() ; i++){
-                            System.out.println("- " + control.getMovies_al().get(0).getGenres().get(i));
+                            show("- " + control.getMovies_al().get(0).getGenres().get(i));
                         }
-                        System.out.println("---------------------------------------------------------");
-                        System.out.println(control.getMovies_al().get(0).getTime()+" minutes");
-                        System.out.println(control.getMovies_al().get(0).getPrice()+"€\n");
+                        show("---------------------------------------------------------");
+                        show(control.getMovies_al().get(0).getTime()+" minutes");
+                        show(control.getMovies_al().get(0).getPrice()+"€\n");
                         break;
 
                     case 3 : // Exit
