@@ -27,12 +27,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	private String type;
 	private LocalDateTime show_start;
 	
-	public KonopolisViewConsole(KonopolisModel model,KonopolisController control){
+	public KonopolisViewConsole(KonopolisModel model, KonopolisController control){
 		super(model,control);
         Scanner sc = new Scanner(System.in);
         init();
 	}
-	
 	
 	public void init() {
 		boolean quit = false;
