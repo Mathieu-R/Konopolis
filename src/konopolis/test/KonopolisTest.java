@@ -1,8 +1,8 @@
 package src.konopolis.test;
-import src.konopolis.controller.*;
-import src.konopolis.model.*;
-import src.konopolis.view.*;
 
+import src.konopolis.model.KonopolisModel;
+import src.konopolis.controller.KonopolisController;
+import src.konopolis.view.KonopolisViewConsole;
 
 /**
  * @author nathan
@@ -15,16 +15,16 @@ public class KonopolisTest {
 	 */
 	public static void main(String[] args) {
 		
-		//Model instance
+		// Model instance
 		KonopolisModel konMod = new KonopolisModel();
 		
-		//Controller instance
+		// Controller instance
 		KonopolisController control = new KonopolisController(konMod);
 		
-		//View instance
+		// View instance
 		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, control);
 		
-		//We add the view to the controller
+		// We add the view to the controller
 		control.addView(konViewConsole);
 		
 	}
