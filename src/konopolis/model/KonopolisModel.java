@@ -25,7 +25,6 @@ import java.util.HashMap;
 
 /**
  * Model
- * Abstract Class
  * Implements Observer
  * It informs the modifications to the view
  * It makes the request to the DB
@@ -716,19 +715,6 @@ public class KonopolisModel extends Observable {
     		addCasting(movie_id, casting); // We add the casting
     		
     		
-    		ArrayList<Show> shows = new ArrayList<Show>();
-    		
-    		// For every start of a show 
-    		// We create an instance of Show Class 
-    		// That we put in the ArrayList shows
-    		// This ArrayList will be added to the Movie instance
-    		for (Date show_start: shows_start) {
-    			// show_start, show_end, movie_id, room_id
-    			shows.add(new Show(dateToLocalDateTime(show_start), dateToLocalDateTime(show_start).plus(time, ChronoUnit.MINUTES), movie_id, room_id)); 
-    		}
-    		
-    		movies_al.add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
-    		
     	} catch (SQLException e) {
 			e.printStackTrace();
 			if (conn != null) {
@@ -931,14 +917,6 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
-
-        for (Room room : rooms_al) {
-            if (room.getId() == room_id) {
-                new Customer(x, y, room, type, customer_id);
-                setChanged();
-                notifyObservers();
-            }
-        }
     	
     	PreparedStatement addCt = null;
     	PreparedStatement addSt = null;

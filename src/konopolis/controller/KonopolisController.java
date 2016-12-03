@@ -2,15 +2,17 @@
 package src.konopolis.controller;
 
 
+import src.konopolis.model.*;
 import src.konopolis.view.KonopolisView;
 
 import java.sql.Date;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-
-import src.konopolis.model.*;
 
 /**
  * @author nathan
@@ -46,6 +48,14 @@ public class KonopolisController {
 	}
 	
 	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+
+		// We create the new customer
+		for (Room room : model.getRooms_al()) {
+            if (room.getId() == room_id) {
+                new Customer(x, y, room, type, customer_id);
+            }
+        }
+
 		model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
 	}
 
@@ -58,12 +68,14 @@ public class KonopolisController {
 
     /**
      * Check if the type of people entered by the user exist
-     * @param genre
+     * @param type
      */
-	public void checkType(String type) {
+	public boolean checkType(String type) {
 	    if (!types.contains(type.trim())) { // If the type does not exist
             System.out.println("Ce type de personne n'existe pas");
+            return false;
         }
+        return true;
 	}
 
     /**
@@ -81,8 +93,21 @@ public class KonopolisController {
     public int retrieveOrCreateGenreId(String genre) {
     	return model.retrieveOrCreateGenreId(genre);
     }
-	  
-	public void addMovie(int movie_id,int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+	   
+	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+		ArrayList<Show> shows = new ArrayList<Show>();
+		
+		// For every start of a show 
+		// We create an instance of Show Class 
+		// That we put in the ArrayList shows
+		// This ArrayList will be added to the Movie instance
+		for (Date show_start: shows_start) {
+			// show_start, show_end, movie_id, room_id
+			shows.add(new Show(dateToLocalDateTime(show_start), dateToLocalDateTime(show_start).plus(time, ChronoUnit.MINUTES), movie_id, room_id));
+		}
+		
+		model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
+
 		model.addMovie(movie_id, room_id, title, description, director, shows_start, casting, time, language, price, genres);
 	}
 	 
@@ -122,6 +147,16 @@ public class KonopolisController {
 		this.view = view;
 	}
 
+    /**
+     * Convert a Date (type) into a LocalDateTime
+     * @param show, the date in a Date type
+     * @return, the date in LocalDateTime type
+     */
+    private LocalDateTime dateToLocalDateTime(Date show) {
+        Instant instant = Instant.ofEpochMilli(show.getTime());
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
 	/* Getters and Setters */
 
     public KonopolisModel getModel() {
@@ -159,4 +194,6 @@ public class KonopolisController {
     public void setMoviesTitles(HashMap<Integer, String> moviesTitles) {
         this.moviesTitles = moviesTitles;
     }
+
+
 }

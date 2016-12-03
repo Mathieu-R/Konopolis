@@ -1,19 +1,13 @@
 package src.konopolis.view;
 
-import java.io.Console;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Year;
-import java.util.*;
-
 import src.konopolis.controller.KonopolisController;
 import src.konopolis.model.KonopolisModel;
 import src.konopolis.model.Movie;
 import src.konopolis.model.Room;
-import src.konopolis.model.SeatTakenException;
-import src.konopolis.model.SeatUnknownException;
-import src.konopolis.model.Show;
+
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.util.*;
 
 public class KonopolisViewConsole extends KonopolisView implements Observer{
 	Scanner sc;
@@ -121,7 +115,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     private void movieConfig() {
 	    int choiceConfig = 0;
 
-        show("1.Ajouter un film 2.Ajouter une salle");
+        show("1.Ajouter un film");
         do {
             try {
                 choiceConfig = sc.nextInt();
@@ -146,7 +140,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         ArrayList<String> genres;
         String director;
         ArrayList<String> casting;
-        ArrayList<Date> dates_show; // ArrayList of shows
+        ArrayList<java.sql.Date> dates_show; // ArrayList of shows
         int time;
         String language;
         double price;
@@ -164,7 +158,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         dates_show = enterDate(); // function to allow the user to enter a date of show
 
-        System.out.println("Quelle salle ?");
+        System.out.println("Quelle est la salle ?");
         control.retrieveAllRooms();
         for (int i=0;i<control.getRooms_al().size();i++){
             System.out.println(control.getRooms_al().get(i).getId()+".Salle"+control.getRooms_al().get(i).getId());
@@ -180,30 +174,31 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         casting = new ArrayList<String>(Arrays.asList(repCast.split(",")));
 
         System.out.println("Combien de temps dure le film ? (en minutes)");
-        String repTime=sc.nextLine();
-        time=Integer.parseInt(repTime);
+        String repTime = sc.nextLine();
+        time = Integer.parseInt(repTime);
 
-        System.out.println("Quelle langue ?");
-        language=sc.nextLine();
+        System.out.println("Quelle est la langue ?");
+        language = sc.nextLine();
 
-        System.out.println("Quelle est le prix ? (��.cc)");
-        String repPrice=sc.nextLine();
-        price=Double.parseDouble(repPrice);
+        System.out.println("Quelle est le prix ? (€)");
+        String repPrice = sc.nextLine();
+        price = Double.parseDouble(repPrice);
 
-        control.addMovie(control.retrieveAllMoviesTitles().size(), idRoom, title, description, director, dates_show, casting, time, language, price, genres);
+        control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
 
         update(null, null);
     }
 
-    private ArrayList<Date> enterDate() {
+    private ArrayList<java.sql.Date> enterDate() {
 	    /* user inputs */
-        String moreDate;
+        String moreDate = "";
 
 	    /* Boolean to know if we have to do let the user enter a date again */
         boolean enterDate = false;
 
-        ArrayList<Date> dates_show = new ArrayList<Date>(); // ArrayList of shows
+        ArrayList<java.sql.Date> dates_show = new ArrayList<java.sql.Date>(); // ArrayList of shows
 
+        show("Quelle sont la ou les séances ?");
         do { // The user can enter a date of show
             int day = enterDay();
             int month = enterMonth();
@@ -211,7 +206,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             int hour = enterHour();
             int minute = enterMinute();
 
-            Date date = control.makeDate(day, month, year, hour, minute);
+            java.sql.Date date = control.makeDate(day, month, year, hour, minute);
             dates_show.add(date);
 
             System.out.println("Ajouter une autre séance ?");
@@ -282,7 +277,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int hour = 0;
         do {
             try {
-                showInline("Heure (1 - 24):");
+                showInline("Heure (13 - 23):");
                 hour = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Entrez une heure entre 13 et 23.");
@@ -344,14 +339,20 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     }
 
     private void showShowsList() {
-        System.out.println("Sélectionnez la séance: "); // We select the show
         for (Movie movie : control.getMovies_al()) {
             if (movie.getId() == movie_id) {
                 for (int i = 0 ; i < movie.getShows().size() ; i++) {
-                    System.out.println((i+1) + ") " + movie.getShows().get(i).getShow_start()); // Show the list of shows
+                    show((i+1) + ") " + movie.getShows().get(i).getShow_start()); // Show the list of shows
                 }
-
-                show_id = sc.nextInt(); // Id of the show
+                do {
+                    try {
+                        show("Sélectionnez la séance: "); // We select the show
+                        show_id = sc.nextInt(); // Id of the show
+                    } catch (InputMismatchException e) {
+                        show("Mauvais choix");
+                        sc.nextInt();
+                    }
+                } while (show_id < 1 || show_id > movie.getShows().size());
                 room_id = movie.getShows().get(show_id - 1).getRoom_id(); // We get the room_id
                 show_start = movie.getShows().get(show_id - 1).getShow_start(); // We get the show_start
             }
@@ -368,12 +369,20 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     }
 
     private void showTypeOfPeople() {
+	    String enteredType = "";
         System.out.println("Quelle type de personne êtes-vous ?\n");
         for (String type : control.retrieveTypes()) { // get all the types
             System.out.println("> " + type); // show it the the console
         }
-        type = sc.nextLine(); // get the type entered by the user
-        control.checkType(type); // check if the type exist
+        do {
+            try {
+                enteredType = sc.nextLine(); // get the type entered by the user
+            } catch (InputMismatchException e) {
+                show("Ce type n'existe pas.");
+                sc.nextLine();
+            }
+        } while (!control.checkType(enteredType));
+
     }
 
     /**
