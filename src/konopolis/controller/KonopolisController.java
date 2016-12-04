@@ -1,12 +1,11 @@
 
 package src.konopolis.controller;
+
 import src.konopolis.model.*;
 import src.konopolis.view.KonopolisView;
 
-import java.sql.Date;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -103,11 +102,11 @@ public class KonopolisController {
      * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
      * @return Date, a Date object constructed from the parameters passed in the function
      */
-	public Date makeDate(int day, int month, int year, int hours, int minutes) {
+	public java.util.Date makeDate(int day, int month, int year, int hours, int minutes) {
         Calendar c = Calendar.getInstance(); // new instance of Calendar
-        c.set(day, month - 1, year, hours, minutes); // set a date
+        c.set(day, month - 1, year, hours, minutes, 0); // set a date
         System.out.println("Date created: " + c.getTime());
-        return new java.sql.Date(c.getTimeInMillis()); // return the Date SQL format
+        return c.getTime();
     }
 
     /**
@@ -125,14 +124,14 @@ public class KonopolisController {
      * @param price
      * @param genres
      */
-	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<java.util.Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
 		ArrayList<Show> shows = new ArrayList<Show>();
 		
 		// For every start of a show 
 		// We create an instance of Show Class 
 		// That we put in the ArrayList shows
 		// This ArrayList will be added to the Movie instance
-		for (Date show_start: shows_start) {
+		for (java.util.Date show_start: shows_start) {
 			// show_start, show_end, movie_id, room_id
 			shows.add(new Show(dateToLocalDateTime(show_start), dateToLocalDateTime(show_start).plus(time, ChronoUnit.MINUTES), movie_id, room_id));
 		}
@@ -158,13 +157,12 @@ public class KonopolisController {
 	}
 
     /**
-     * Convert a Date (type) into a LocalDateTime
-     * @param show, the date in a Date type
+     * Convert a java.util.Date (type) into a LocalDateTime
+     * @param date, the date in a Date type
      * @return, the date in LocalDateTime type
      */
-    private LocalDateTime dateToLocalDateTime(Date show) {
-        Instant instant = Instant.ofEpochMilli(show.getTime());
-        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    private LocalDateTime dateToLocalDateTime(java.util.Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
 	/* Getters and Setters */

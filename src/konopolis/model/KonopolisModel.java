@@ -1,16 +1,15 @@
 package src.konopolis.model;
 
+import javax.xml.transform.Result;
 import java.sql.*;
+import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Observable;
+import java.util.*;
 
 /**
  * @author Mathieu R. - Groupe 3
@@ -334,27 +333,20 @@ public class KonopolisModel extends Observable {
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
                    + "from tbmoviesrooms as mr "
-                   + "where mr.room_id = ? and mr.movie_id = ? and mr.show_start = ? )";
+                   + "where mr.room_id = ? and mr.movie_id = ? and mr.show_start = ?)";
         
         this.createConnection();
 
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+
         try {
             getCt = conn.prepareStatement(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
-        try {
             getCt.setInt(1, room_id);
             getCt.setInt(2, movie_id);
-            getCt.setTimestamp(3, show_start);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            getCt.setTimestamp(3, Timestamp.valueOf(show_start));
 
-        ResultSet rs = null; // Execute the sql query and put the results in the results set
-        try {
-            rs = getCt.executeQuery(sql);
+             rs = getCt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -693,10 +685,9 @@ public class KonopolisModel extends Observable {
      * @param price, the price of the movie
      * @param genres, an ArrayList of String that are the genres of the movie
      */
-    public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+    public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<java.util.Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
     	PreparedStatement addMv = null;
 
-    	
     	String addMovie = "INSERT INTO tbmovies(title, description, director, time, language_id, price) "
     						+ "VALUES (?, ?, ?, ?, ?, ?)";
     	
@@ -795,20 +786,20 @@ public class KonopolisModel extends Observable {
      * @param room_id, the id of the room
      * @param shows_start, an ArrayList of Date that are the starts of every show
      */
-    public void addShows(int movie_id, int room_id, ArrayList<Date> shows_start) {
+    public void addShows(int movie_id, int room_id, ArrayList<java.util.Date> shows_start) {
     	PreparedStatement addSh = null;
     	
     	this.createConnection();
     	
     	try {
     	
-    		for (Date show_start : shows_start) { // For Each genre
+    		for (java.util.Date show_start : shows_start) { // For Each genre
         		addSh = conn.prepareStatement("INSERT INTO tbmoviesrooms(movie_id, room_id, show_start) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?, ?)");
         		
         		addSh.setInt(1, movie_id);
         		addSh.setInt(2, room_id);
-        		addSh.setDate(3, show_start); 
+        		addSh.setTimestamp(3, new Timestamp(show_start.getTime()));
         		addSh.executeUpdate();	
         	}
     		

@@ -141,7 +141,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         ArrayList<String> genres;
         String director;
         ArrayList<String> casting;
-        ArrayList<java.sql.Date> dates_show; // ArrayList of shows
+        ArrayList<java.util.Date> dates_show; // ArrayList of shows
         int time;
         String language;
         double price;
@@ -190,14 +190,14 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         //update(null, null);
     }
 
-    private ArrayList<java.sql.Date> enterDate() {
+    private ArrayList<java.util.Date> enterDate() {
 	    /* user inputs */
         String moreDate = "";
 
 	    /* Boolean to know if we have to do let the user enter a date again */
         boolean enterDate = false;
 
-        ArrayList<java.sql.Date> dates_show = new ArrayList<java.sql.Date>(); // ArrayList of shows
+        ArrayList<java.util.Date> dates_show = new ArrayList<java.util.Date>(); // ArrayList of shows
 
         show("Quelle sont la ou les séances ?");
         do { // The user can enter a date of show
@@ -207,7 +207,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             int hour = enterHour();
             int minute = enterMinute();
 
-            java.sql.Date date = control.makeDate(day, month, year, hour, minute);
+            java.util.Date date = control.makeDate(day, month, year, hour, minute);
             dates_show.add(date);
 
             System.out.println("Ajouter une autre séance ?");
@@ -371,9 +371,9 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
     private void showTypeOfPeople() {
 	    String enteredType = "";
-        System.out.println("Quelle type de personne êtes-vous ?\n");
+        show("Quelle type de personne êtes-vous ?\n");
         for (String type : control.retrieveTypes()) { // get all the types
-            System.out.println("> " + type); // show it the the console
+            show("> " + type); // show it the the console
         }
         do {
             try {
