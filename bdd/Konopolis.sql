@@ -52,7 +52,7 @@ CREATE table tbMoviesRooms(
 	movie_room_id int auto_increment NOT NULL PRIMARY KEY ,
 	movie_id int NOT NULL,
 	room_id int NOT NULL,
-	show_start DATETIME,
+	show_start TIMESTAMP,
 	FOREIGN KEY (movie_id) REFERENCES tbMovies(movie_id) ON UPDATE CASCADE,
 	FOREIGN KEY (room_id) REFERENCES tbRooms(room_id) ON UPDATE CASCADE
 )

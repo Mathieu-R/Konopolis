@@ -322,8 +322,9 @@ public class KonopolisModel extends Observable {
      */
     public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
     	// customer_id should be unique key ?
-    	// Supprimer le bool�en isTaken de la BDD ? Done.
+    	// Supprimer le booléen isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
+        PreparedStatement getCt = null;
     	
         String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn "
                    + "FROM tbseats as s "
@@ -333,14 +334,27 @@ public class KonopolisModel extends Observable {
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
                    + "from tbmoviesrooms as mr "
-                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + " and mr.show_start = " + localDateTimeToSQLDate(show_start) + " )";
+                   + "where mr.room_id = ? and mr.movie_id = ? and mr.show_start = ? )";
         
         this.createConnection();
-        this.createStatement();
+
+        try {
+            getCt = conn.prepareStatement(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            getCt.setInt(1, room_id);
+            getCt.setInt(2, movie_id);
+            getCt.setTimestamp(3, show_start);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
-            rs = stmt.executeQuery(sql);
+            rs = getCt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -743,7 +757,7 @@ public class KonopolisModel extends Observable {
     	try {
     	
     		for (String genre : genres) { // For Each genre
-        		addGr = conn.prepareStatement("INSERT INTO tbmoviesgenres(movie_id, genre_id)" // Add the genre associated to the movie in the db
+        		addGr = conn.prepareStatement("INSERT INTO tbmoviesgenres(movie_id, genre_id) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?)");
         		
         		addGr.setInt(1, movie_id);
@@ -789,7 +803,7 @@ public class KonopolisModel extends Observable {
     	try {
     	
     		for (Date show_start : shows_start) { // For Each genre
-        		addSh = conn.prepareStatement("INSERT INTO tbmoviesrooms(movie_id, room_id, show_start)" // Add the genre associated to the movie in the db
+        		addSh = conn.prepareStatement("INSERT INTO tbmoviesrooms(movie_id, room_id, show_start) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?, ?)");
         		
         		addSh.setInt(1, movie_id);
@@ -834,7 +848,7 @@ public class KonopolisModel extends Observable {
     	try {
     	
     		for (String actor : casting) { // For Each genre
-        		addCs = conn.prepareStatement("INSERT INTO tbmoviescasts(movie_id, cast_id)" // Add the genre associated to the movie in the db
+        		addCs = conn.prepareStatement("INSERT INTO tbmoviescasts(movie_id, cast_id) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?)");
         		
         		addCs.setInt(1, movie_id);
