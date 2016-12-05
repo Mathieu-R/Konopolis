@@ -14,7 +14,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	private int movie_id = 0;
 	private int room_id = 0;
 	private int show_id = 0;
-	private String type;
+	private String enteredType = "";
 	private LocalDateTime show_start;
 	
 	public KonopolisViewConsole(KonopolisModel model, KonopolisController control){
@@ -89,18 +89,20 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         showRoomMap(); // show the mapping of the room
         showTypeOfPeople(); // show all the type of people (to know the reduction to apply)
 
-        show("Sélectionner votre place avec x,y\n");
+        show("Sélectionner votre place avec x,y");
         String[] chosenSeat = sc.nextLine().split(",");
 
         control.addCustomer(
                 Integer.parseInt(chosenSeat[0].trim()),
                 Integer.parseInt(chosenSeat[1].trim()),
-                control.getCustomers_al().size(),
+                control.getCustomers_al().size() + 1,
                 room_id,
-                type,
+                enteredType,
                 movie_id,
-                control.getMovies_al().get(movie_id - 1).getShows().get(show_id).getShow_start()
+                control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
         );
+        // While
+        // Ticket de caisse...
         //update(null, null);
     }
 
@@ -147,41 +149,41 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         double price;
 
         sc.nextLine();
-        System.out.println("Quelle est le titre ?");
+        show("Quelle est le titre du film ?");
         title = sc.nextLine();
 
-        System.out.println("Donnez une desciption");
+        show("Donnez une desciption");
         description = sc.nextLine();
 
-        System.out.println("Quel est (quels sont) le(s) genre(s) du film ?");
+        show("Quel est (quels sont) le(s) genre(s) du film ?");
         String repGenres = sc.nextLine();
         genres = new ArrayList<String>(Arrays.asList(repGenres.split(",")));
 
         dates_show = enterDate(); // function to allow the user to enter a date of show
 
-        System.out.println("Quelle est la salle ?");
+        show("Dans quel salle se déroule le film ?");
         control.retrieveAllRooms();
-        for (int i=0;i<control.getRooms_al().size();i++){
-            System.out.println(control.getRooms_al().get(i).getId()+".Salle"+control.getRooms_al().get(i).getId());
+        for (int i = 0 ; i < control.getRooms_al().size() ; i++){
+            show(control.getRooms_al().get(i).getId() + ".Salle" + control.getRooms_al().get(i).getId());
         }
 
         int idRoom = sc.nextInt();
 
-        System.out.println("Quelle est le réalisateur ?");
+        show("Quelle est le réalisateur ?");
         director = sc.nextLine();
 
-        System.out.println("Quels sont les acteurs principaux ?");
+        show("Quels sont les acteurs principaux ?");
         String repCast = sc.nextLine();
         casting = new ArrayList<String>(Arrays.asList(repCast.split(",")));
 
-        System.out.println("Combien de temps dure le film ? (en minutes)");
+        show("Combien de temps dure le film ? (en minutes)");
         String repTime = sc.nextLine();
         time = Integer.parseInt(repTime);
 
-        System.out.println("Quelle est la langue ?");
+        show("Quelle est la langue ?");
         language = sc.nextLine();
 
-        System.out.println("Quelle est le prix ? (€)");
+        show("Quelle est le prix ? (€)");
         String repPrice = sc.nextLine();
         price = Double.parseDouble(repPrice);
 
@@ -351,7 +353,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                         show_id = sc.nextInt(); // Id of the show
                     } catch (InputMismatchException e) {
                         show("Mauvais choix");
-                        sc.nextInt();
+                        //sc.nextInt();
                     }
                 } while (show_id < 1 || show_id > movie.getShows().size());
                 room_id = movie.getShows().get(show_id - 1).getRoom_id(); // We get the room_id
@@ -370,7 +372,6 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     }
 
     private void showTypeOfPeople() {
-	    String enteredType = "";
         show("Quelle type de personne êtes-vous ?\n");
         for (String type : control.retrieveTypes()) { // get all the types
             show("> " + type); // show it the the console
@@ -378,9 +379,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         do {
             try {
                 enteredType = sc.nextLine(); // get the type entered by the user
+                show("" + enteredType);
             } catch (InputMismatchException e) {
                 show("Ce type n'existe pas.");
-                sc.nextLine();
+                //enteredType = sc.next();
             }
         } while (!control.checkType(enteredType));
 

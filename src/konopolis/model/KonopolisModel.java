@@ -24,7 +24,7 @@ import java.util.*;
 public class KonopolisModel extends Observable {
     
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false"; // auto reconnection and no ssl connection (not prod ready)
+    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false&relaxAutoCommit=true"; // auto reconnection and no ssl connection (not prod ready)
     private final String USER = "root";
     private final String PWD = "root";
 
@@ -421,16 +421,20 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public int retrieveCustomerTypeId(String type) {
+        PreparedStatement getCtId = null;
+        ResultSet rs = null;
+
     	String customerTypeId = "SELECT customer_type_id "
 				+ "FROM tbcustomerstype "
-				+ "WHERE customer_type = " + type;
+				+ "WHERE customer_type = ?";
     	
     	this.createConnection();
-    	this.createStatement();
-    	
-    	ResultSet rs = null;
+
     	try {
-    		rs = stmt.executeQuery(customerTypeId);
+    	    getCtId = conn.prepareStatement(customerTypeId);
+    	    getCtId.setString(1, type);
+    		rs = getCtId.executeQuery();
+
     	} catch(SQLException e) {
     		e.printStackTrace();
     	}
@@ -461,23 +465,28 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
-    	String customerTypeId = "SELECT movie_room_id "
+        PreparedStatement getMrId = null;
+
+    	String movieRoomId = "SELECT movie_room_id "
     							+ "FROM tbmoviesrooms "
-								+ "WHERE movie_id = " + movie_id + " and room_id = " + room_id + " and show_start = " + show_start;
+								+ "WHERE movie_id = ? and room_id = ? and show_start = ?";
     	
     	this.createConnection();
-    	this.createStatement();
     	
     	ResultSet rs = null;
     	try {
-    		rs = stmt.executeQuery(customerTypeId);
+    	    getMrId = conn.prepareStatement(movieRoomId);
+    	    getMrId.setInt(1, movie_id);
+    	    getMrId.setInt(2, room_id);
+    	    getMrId.setTimestamp(3, Timestamp.valueOf(show_start));
+    		rs = getMrId.executeQuery();
     	} catch(SQLException e) {
     		e.printStackTrace();
     	}
     	
     	try {
     		while(rs.next()) {
-    			return rs.getInt("customer_type_id");
+    			return rs.getInt("movie_room_id");
     		}
     	} catch(SQLException e) {
     		e.printStackTrace();
@@ -872,8 +881,8 @@ public class KonopolisModel extends Observable {
     }
     
     public int retrieveNextSeatId() {
-    	String maxSeatId = "SELECT MAX(seat_id) "
-				+ "FROM tbcustomers ";
+    	String maxSeatId = "SELECT MAX(seat_id) as maxSid "
+				+ "FROM tbcustomers";
 
 		this.createConnection();
 		this.createStatement();
@@ -888,7 +897,7 @@ public class KonopolisModel extends Observable {
 		
 		try {
 			while(rs.next()) {
-				return rs.getInt("seat_id") + 1; // We send back the next seat_id
+				return rs.getInt("maxSid") + 1; // We send back the next seat_id
 			}
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -930,11 +939,12 @@ public class KonopolisModel extends Observable {
         	conn.setAutoCommit(false); // The way to do sql transactions => avoid to commit transaction after every request
         	
         	addCt = conn.prepareStatement(addCustomer); // Prepared Request
-        	addSt = conn.prepareStatement(addSeat);
         	
         	addCt.setInt(1, retrieveNextSeatId());
         	addCt.setInt(2, retrieveCustomerTypeId(type));
         	addCt.executeUpdate();
+
+            addSt = conn.prepareStatement(addSeat);
         	
         	addSt.setInt(1, customer_id);
         	addSt.setInt(2, y); // Row
