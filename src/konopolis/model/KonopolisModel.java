@@ -476,9 +476,11 @@ public class KonopolisModel extends Observable {
     	ResultSet rs = null;
     	try {
     	    getMrId = conn.prepareStatement(movieRoomId);
+
     	    getMrId.setInt(1, movie_id);
     	    getMrId.setInt(2, room_id);
     	    getMrId.setTimestamp(3, Timestamp.valueOf(show_start));
+
     		rs = getMrId.executeQuery();
     	} catch(SQLException e) {
     		e.printStackTrace();
@@ -573,10 +575,8 @@ public class KonopolisModel extends Observable {
         		insertErr.printStackTrace();
         		if (conn != null) { // Try to rollback DB
         			try {
-            			System.out.println("Trying to rollback db");
             			conn.rollback();
             		} catch (SQLException err) {
-            			System.out.println("Rollback failed !");
             			err.printStackTrace();
             		}
         		}	
@@ -646,10 +646,8 @@ public class KonopolisModel extends Observable {
         		insertErr.printStackTrace();
         		if (conn != null) { // Try to rollback DB
         			try {
-            			System.out.println("Trying to rollback db");
             			conn.rollback();
             		} catch (SQLException err) {
-            			System.out.println("Rollback failed !");
             			err.printStackTrace();
             		}
         		}	
@@ -725,10 +723,8 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
@@ -770,10 +766,8 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
@@ -816,10 +810,8 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
@@ -861,14 +853,11 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
-			
 		} finally {
 			if (addCs != null) {
 				try {
@@ -957,17 +946,15 @@ public class KonopolisModel extends Observable {
     	} catch (SQLException e) {
     		e.printStackTrace();
     		if (conn != null) {
-    			try {
-        			System.out.println("Trying to rollback db");
-        			conn.rollback();
-        		} catch (SQLException err) {
-        			System.out.println("Rollback failed !");
-        			err.printStackTrace();
-        		}
-    		}
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
     		
     	} finally {
-    		if (addCt != null) {
+            if (addCt != null) {
 				try {
 					addCt.close();
 				} catch (SQLException e) {
@@ -987,9 +974,13 @@ public class KonopolisModel extends Observable {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-    	}
-    	
 
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+    	}
     }
     
     /**

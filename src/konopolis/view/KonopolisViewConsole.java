@@ -1,5 +1,6 @@
 package src.konopolis.view;
 
+import org.omg.PortableInterceptor.INACTIVE;
 import src.konopolis.controller.KonopolisController;
 import src.konopolis.model.KonopolisModel;
 import src.konopolis.model.Movie;
@@ -157,9 +158,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 choiceConfig = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Mauvais choix !");
-                sc.nextInt();
             }
-        } while (choiceConfig < 1 || choiceConfig > 1);
+        } while (choiceConfig != 1);
 
         switch (choiceConfig) {
             case 1:
@@ -171,54 +171,114 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     private void addMovie() {
         /* A FINIR !! */
 
-        String title;
-        String description;
+        String title = "";
+        String description = "";
+        String repGenres = "";
         ArrayList<String> genres;
-        String director;
+        int idRoom = 0;
+        String director = "";
+        String repCast = "";
         ArrayList<String> casting;
         ArrayList<java.util.Date> dates_show; // ArrayList of shows
-        int time;
-        String language;
-        double price;
+        int time = 0;
+        String language = "";
+        double price = 0.0;
 
-        sc.nextLine();
-        show("Quelle est le titre du film ?");
-        title = sc.nextLine();
+        do {
+            try {
+                show("Quelle est le titre du film ?");
+                title = sc.nextLine();
+            } catch (InputMismatchException e) {
+                show("Titre manquant !");
+            }
+        } while (title.equals(""));
 
-        show("Donnez une desciption");
-        description = sc.nextLine();
+        do {
+            try {
+                show("Donnez une desciption");
+                description = sc.nextLine();
+            } catch (InputMismatchException e) {
+                show("Description manquante !");
+            }
+        } while (description.equals(""));
 
-        show("Quel est (quels sont) le(s) genre(s) du film ?");
-        String repGenres = sc.nextLine();
-        genres = new ArrayList<String>(Arrays.asList(repGenres.split(",")));
+        do {
+            try {
+                show("Quel est (quels sont) le(s) genre(s) du film ? (séparés par une virgule)");
+                repGenres = sc.nextLine();
+                genres = new ArrayList<String>(Arrays.asList(repGenres.split(",")));
+            } catch (InputMismatchException e) {
+                show("Genre(s) manquant(s) ou pattern incorrecte.");
+            }
+        } while (repGenres.equals("") || !(repGenres.contains(",")));
 
         dates_show = enterDate(); // function to allow the user to enter a date of show
 
+
         show("Dans quel salle se déroule le film ?");
-        control.retrieveAllRooms();
-        for (int i = 0 ; i < control.getRooms_al().size() ; i++){
-            show(control.getRooms_al().get(i).getId() + ".Salle" + control.getRooms_al().get(i).getId());
+
+        control.retrieveAllRooms(); // Get all the rooms
+        for (Room room : control.getRooms_al()) { // Show every room
+            show(room.getId() + ") " + room.getRows() + " rangées - " + room.getSeatsByRow() + " sièges par rangée - " + room.getTotSeats() + " places");
         }
 
-        int idRoom = sc.nextInt();
+        do {
+            try {
+                idRoom = sc.nextInt();
+            } catch (InputMismatchException e) {
+                show("Salle inexistante");
+            }
+        } while (idRoom < 1 || idRoom > control.getRooms_al().size());
 
-        show("Quelle est le réalisateur ?");
-        director = sc.nextLine();
+        do {
+            try {
+                show("Quelle est le réalisateur ?");
+                director = sc.nextLine();
+            } catch (InputMismatchException e) {
+                show("Réalisateur manquant !");
+            }
+        } while (director.equals(""));
 
-        show("Quels sont les acteurs principaux ?");
-        String repCast = sc.nextLine();
-        casting = new ArrayList<String>(Arrays.asList(repCast.split(",")));
+        do {
+            try {
+                show("Quels sont les acteurs principaux ? (séparés par une virgule)");
+                repCast = sc.nextLine();
+                casting = new ArrayList<String>(Arrays.asList(repCast.split(",")));
+            } catch (InputMismatchException e) {
+                show("Acteur(s) manquant(s) ou pattern non-respecté");
+            }
+        } while (repCast.equals("") ||(!(repCast.contains(","))));
 
-        show("Combien de temps dure le film ? (en minutes)");
-        String repTime = sc.nextLine();
-        time = Integer.parseInt(repTime);
+        do {
+            try {
+                show("Combien de temps dure le film ? (en minutes)");
+                String repTime = sc.nextLine();
+                time = Integer.parseInt(repTime);
+            } catch (InputMismatchException e) {
+                show("Durée manquante !");
+            }
+        } while (time == 0);
 
-        show("Quelle est la langue ?");
-        language = sc.nextLine();
+        do {
+            try {
+                show("Quelle est la langue ?");
+                language = sc.nextLine();
+            } catch (InputMismatchException e) {
+                show("Langue manquante !");
+            }
+        } while (language.equals(""));
 
-        show("Quelle est le prix ? (€)");
-        String repPrice = sc.nextLine();
-        price = Double.parseDouble(repPrice);
+        do {
+            try {
+                show("Quelle est le prix ? (€)");
+                String repPrice = sc.nextLine();
+                price = Double.parseDouble(repPrice);
+            } catch (InputMismatchException e) {
+                show("Prix manquant !");
+            }
+        } while (price == 0.0);
+
+
 
         control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
 
@@ -256,7 +316,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                     show("Veuillez entrez correctement 'oui' ou 'non'.");
                     sc.next();
                 }
-            } while ((!moreDate.toLowerCase().equals("oui")) || (!moreDate.toLowerCase().equals("non")));
+            } while ((!moreDate.toLowerCase().equals("oui")) && (!moreDate.toLowerCase().equals("non")));
 
             if (moreDate.toLowerCase().equals("oui")) { // If the user want to enter another date of show
                 enterDate = true; // We begin back the loop
