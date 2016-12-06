@@ -1,6 +1,5 @@
 package src.konopolis.view;
 
-import org.omg.PortableInterceptor.INACTIVE;
 import src.konopolis.controller.KonopolisController;
 import src.konopolis.model.KonopolisModel;
 import src.konopolis.model.Movie;
@@ -174,12 +173,12 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         String title = "";
         String description = "";
         String repGenres = "";
-        ArrayList<String> genres;
+        ArrayList<String> genres = new ArrayList<String>();
         int idRoom = 0;
         String director = "";
         String repCast = "";
-        ArrayList<String> casting;
-        ArrayList<java.util.Date> dates_show; // ArrayList of shows
+        ArrayList<String> casting = new ArrayList<String>();
+        ArrayList<java.util.Date> dates_show = new ArrayList<java.util.Date>(); // ArrayList of shows
         int time = 0;
         String language = "";
         double price = 0.0;
@@ -393,7 +392,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 show("Entrez une minute entre 1 et 59.");
                 sc.nextInt();
             }
-        } while (minute < 1 || minute > 59);
+        } while (minute < 0 || minute > 59);
         return minute;
     }
 

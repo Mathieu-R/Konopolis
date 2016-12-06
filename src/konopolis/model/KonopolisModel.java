@@ -265,6 +265,7 @@ public class KonopolisModel extends Observable {
      * @throws TooMuchSeatsException
      */
     public void retrieveAllRooms() {
+        rooms_al.clear();
 
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms ";
@@ -286,7 +287,7 @@ public class KonopolisModel extends Observable {
                 int movie_id = rs.getInt("movie_id");
                 int rows = rs.getInt("rows");
                 int seats_by_row = rs.getInt("seats_by_row");
-            	LocalDateTime show_start = stringToLocalDateTime(rs.getString("show_start"));	
+            	//LocalDateTime show_start = stringToLocalDateTime(rs.getString("show_start"));
                 
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
@@ -297,9 +298,7 @@ public class KonopolisModel extends Observable {
                         e.printStackTrace();
                     }
                 }
-
-                //retrieveCustomers(id, movie_id, show_start); 
-
+                //retrieveCustomers(id, movie_id, show_start);
             }
         } catch (SQLException e) {
             e.printStackTrace();
