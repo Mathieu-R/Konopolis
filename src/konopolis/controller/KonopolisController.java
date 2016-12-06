@@ -17,9 +17,12 @@ import java.util.HashMap;
  */
 public class KonopolisController {
 	 
+	private double total = 0;
+
 	private KonopolisModel model;
 	private ArrayList<String> types = new ArrayList<String>();
 	private HashMap<Integer, String> moviesTitles = new HashMap<Integer, String>();
+	private HashMap<String, Double> booking = new HashMap<String, Double>();
 
 	private KonopolisView view = null;
 
@@ -68,10 +71,23 @@ public class KonopolisController {
      */
 	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
 
+		double reduction = 0;
+
 		// We create the new customer
 		for (Room room : model.getRooms_al()) {
             if (room.getId() == room_id) {
-                new Customer(x, y, room, type, customer_id);
+                final Customer newCust = new Customer(x, y, room, type, customer_id); // Create the customer
+                reduction = newCust.getReduction(); // get the reduction
+            }
+        }
+
+        // Price
+
+        for (Movie movie : model.getMovies_al()) {
+            if (movie.getId() == movie_id) {
+            	final double reductedPrice = movie.getPrice() - movie.getPrice() * reduction;
+            	booking.put(type, reductedPrice); // add the type and reductedPrice to the HashMap 
+                total += reductedPrice; // add the price to the total;
             }
         }
 
@@ -213,5 +229,21 @@ public class KonopolisController {
 
     public void setMoviesTitles(HashMap<Integer, String> moviesTitles) {
         this.moviesTitles = moviesTitles;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public HashMap<String, Double> getBooking() {
+        return booking;
+    }
+
+    public void setBooking(HashMap<String, Double> booking) {
+        this.booking = booking;
     }
 }

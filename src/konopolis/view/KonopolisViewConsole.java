@@ -82,28 +82,61 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     }
 
     private void bookMovie() {
+        boolean book = false;
+        String moreBooking = "";
+
         control.retrieveMovie(movie_id); // get the movie chosen from db
         //update(null, null);
         showShowsList(); // show the list of shows for the movie chosen. The user can choose a show.
         control.retrieveRoom(movie_id, room_id, show_start); // get the room from db for the show chosen
         showRoomMap(); // show the mapping of the room
-        showTypeOfPeople(); // show all the type of people (to know the reduction to apply)
 
-        show("Sélectionner votre place avec x,y");
-        String[] chosenSeat = sc.nextLine().split(",");
+        do {
 
-        control.addCustomer(
-                Integer.parseInt(chosenSeat[0].trim()),
-                Integer.parseInt(chosenSeat[1].trim()),
-                control.getCustomers_al().size() + 1,
-                room_id,
-                enteredType,
-                movie_id,
-                control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
-        );
-        // While
+            showTypeOfPeople(); // show all the type of people (to know the reduction to apply)
+
+            show("Sélectionner votre place avec x,y");
+            String[] chosenSeat = sc.nextLine().split(",");
+
+            control.addCustomer(
+                    Integer.parseInt(chosenSeat[0].trim()),
+                    Integer.parseInt(chosenSeat[1].trim()),
+                    control.getCustomers_al().size() + 1,
+                    room_id,
+                    enteredType,
+                    movie_id,
+                    control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
+            );
+
+            show("Commander une autre place ?");
+
+            do { // ask if the user want to book another place
+                try {
+                    show("> oui.");
+                    show("> non.");
+                    moreBooking = sc.next();
+                } catch (InputMismatchException e) {
+                    show("Veuillez entrez correctement 'oui' ou 'non'.");
+                }
+            } while ((!moreBooking.toLowerCase().equals("oui")) && (!moreBooking.toLowerCase().equals("non")));
+
+            if (moreBooking.toLowerCase().equals("oui")) { // If the user want to enter another date of show
+                book = true; // We begin back the loop
+            }
+
+
+        } while (book);
+        
         // Ticket de caisse...
-        //update(null, null);
+        for (Map.Entry<String, Double> bookingEntry: control.getBooking().entrySet()) {
+            show("> " + bookingEntry.getKey() + " - " + Math.round(bookingEntry.getValue() * 100.0) / 100.0);
+        }
+        
+        // Total
+        show("TOTAL A PAYER : " + Math.round(control.getTotal() * 100.0) / 100.0 + "€");
+        control.setTotal(0); // Put back the total at 0;
+
+        update(null, null);
     }
 
     private void descriptionMovie() {
