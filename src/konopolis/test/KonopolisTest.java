@@ -1,37 +1,31 @@
-/**
- * 
- */
 package src.konopolis.test;
 
-import src.konopolis.controller.KonopolisController;
 import src.konopolis.model.KonopolisModel;
-import src.konopolis.view.KonopolisView;
+import src.konopolis.controller.KonopolisController;
+import src.konopolis.view.KonopolisViewConsole;
 
 /**
- * @author natha
- *
+ * @author nathan
  */
 public class KonopolisTest {
 
 	/**
+	 * Launch the app
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		
-		//Création du model.
+		// Model instance
 		KonopolisModel konMod = new KonopolisModel();
 		
-		//Création des controleurs
-		KonopolisController konControl = new KonopolisController(konMod);
-		KonopolisController konControl = new KonopolisController(konMod);
+		// Controller instance
+		KonopolisController control = new KonopolisController(konMod);
 		
-		//Création des vues
-		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, konControl);
-		KonopolisViewModel konViewGui = new KonopolisViewGui(konMod, konControl);
+		// View instance
+		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, control);
 		
-		//On référence notre vue au controleur
-		konControl.addView(konViewConsole);
-		konControl.addView(konViewGui);
+		// We add the view to the controller
+		control.addView(konViewConsole);
 		
 	}
 

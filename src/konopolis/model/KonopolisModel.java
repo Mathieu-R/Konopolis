@@ -1,23 +1,15 @@
 package src.konopolis.model;
 
-import java.util.Observable;
-import java.sql.Connection;
+import javax.xml.transform.Result;
+import java.sql.*;
 import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * @author Mathieu R. - Groupe 3
@@ -25,7 +17,6 @@ import java.util.HashMap;
 
 /**
  * Model
- * Abstract Class
  * Implements Observer
  * It informs the modifications to the view
  * It makes the request to the DB
@@ -33,7 +24,7 @@ import java.util.HashMap;
 public class KonopolisModel extends Observable {
     
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost:3306/Konopolis";
+    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false&relaxAutoCommit=true"; // auto reconnection and no ssl connection (not prod ready)
     private final String USER = "root";
     private final String PWD = "root";
 
@@ -47,6 +38,7 @@ public class KonopolisModel extends Observable {
     
     public KonopolisModel() {
     	registerDriver(); // Only done at the launching of the app;
+    	notifyObservers();
     }
 
     /**
@@ -57,7 +49,6 @@ public class KonopolisModel extends Observable {
     public void registerDriver() {
         try {
             Class.forName(DB_DRIVER);
-            System.out.println("Driver OK");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -68,7 +59,6 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public void createConnection() {
-        System.out.println("Connecting to Konopolis DB...");
         try {
             this.conn = DriverManager.getConnection(DB_URL, USER, PWD);
         } catch (SQLException e) {
@@ -98,7 +88,7 @@ public class KonopolisModel extends Observable {
     public HashMap<Integer, String> retrieveAllMoviesTitles() {
         HashMap<Integer, String> movies = new HashMap<Integer, String>(); // Local HashMap for movies
 
-        String sql = "SELECT movie_id, title" +
+        String sql = "SELECT movie_id, title " +
                      "FROM tbmovies";
         
         this.createConnection();
@@ -116,7 +106,6 @@ public class KonopolisModel extends Observable {
                 int movie_id  = rs.getInt("movie_id");
                 String title = rs.getString("title");
 
-                System.out.println(title);
                 movies.put(movie_id, title);
             }
         } catch (SQLException e) {
@@ -136,9 +125,10 @@ public class KonopolisModel extends Observable {
      * @param movie_id, the id of the room
      * @throws SQLException
      */
+    
     public void retrieveMovie(int movie_id) {
         
-        String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
+	    String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(c.cast) " 
 					+ "from tbmoviescasts as mc "
 					+ "left join tbcasts as c on mc.cast_id = c.cast_id) as casting,"
@@ -153,10 +143,10 @@ public class KonopolisModel extends Observable {
 			        + "left join tblanguages as l on m.language_id = l.language_id "
 			        + "left join tbmoviesrooms as mr on m.movie_id = mr.room_id "
 			        + "where m.movie_id = " + movie_id + " "
-        			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
-        
-        			// What about 2 rooms for one same movie ?
-        			// Consider Group By
+	    			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
+	    
+	    			// What about 2 rooms for one same movie ?
+	    			// Consider Group By
         
         this.createConnection();
         this.createStatement();
@@ -197,6 +187,7 @@ public class KonopolisModel extends Observable {
 
                 
                 // Push every Movie' instance in this ArrayList
+                movies_al.clear(); // A changer, il faudrait vérifier si le film existe déjà, dans ce cas ne pas faire la requête une seconde fois
                 movies_al.add(new Movie(id, title, description, genres, shows_al, director, casting, time, language, price));
                 setChanged();
                 notifyObservers();
@@ -216,12 +207,13 @@ public class KonopolisModel extends Observable {
      * Retrieve the room based on a room_id
      * @param room_id, the id of the room
      * @throws SQLException
+     * @throws TooMuchSeatsException
      */
-    public void retrieveRooms(int room_id) {
-
-        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start" 
+    public void retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
+    	//rooms_al.clear();
+        String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms "
-        		   + "WHERE room_id = " + room_id;
+        		   + "WHERE movie_id = " + movie__id + " and room_id = " + room_id + " and show_start = " + "'" + show__start + "'";
         
         this.createConnection();
         this.createStatement();
@@ -240,16 +232,67 @@ public class KonopolisModel extends Observable {
                 int movie_id = rs.getInt("movie_id");
                 int rows = rs.getInt("rows");
                 int seats_by_row = rs.getInt("seats_by_row");
-            	LocalDateTime show_start = stringToLocalDateTime(rs.getString("show_start"));	
+            	//Date show_start = rs.getDate("show_start");
                 
                 // Push every Movie' instance in this ArrayList
                 // New Room => we initialize all the room (empty for now !)
             	for (Movie movie : movies_al) { // We search the right room (the one with the right id)
-            		if (movie.getId() == movie_id) rooms_al.add(new Room(rows, seats_by_row, movie, id));  
-            	}
+            		if (movie.getId() == movie_id) try {
+                        rooms_al.add(new Room(rows, seats_by_row, movie, id));
+                    } catch (TooMuchSeatsException e) {
+            		    // SetChanged ? // notifyObserver ?
+                        e.getMessage();
+                    }
+                }
 
-                retrieveCustomers(id, movie_id, show_start);
+                retrieveCustomers(id, movie_id, show__start); // We retrieve all the customers for this room
 
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Retrieve all the rooms of the theather
+     * @throws SQLException
+     * @throws TooMuchSeatsException
+     */
+    public void retrieveAllRooms() {
+        rooms_al.clear();
+
+        String sql = "SELECT room_id, rows, seats_by_row "
+        		   + "FROM tbrooms ";
+        
+        this.createConnection();
+        this.createStatement();
+
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                int id = rs.getInt("room_id");
+                int rows = rs.getInt("rows");
+                int seats_by_row = rs.getInt("seats_by_row");
+                
+                // Push every Room instance in the ArrayList of Room
+                try {
+                    rooms_al.add(new Room(rows, seats_by_row, id));
+                } catch (TooMuchSeatsException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -271,25 +314,32 @@ public class KonopolisModel extends Observable {
      */
     public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
     	// customer_id should be unique key ?
-    	// Supprimer le bool�en isTaken de la BDD ? Done.
+    	// Supprimer le booléen isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
+        PreparedStatement getCt = null;
     	
-        String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn, "
+        String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn "
                    + "FROM tbseats as s "
                    + "natural join tbcustomersseats "
                    + "natural join tbcustomers "
                    + "natural join tbcustomerstype "
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
-                   + "from tbmovierooms as mr"
-                   + "where mr.room_id = " + room_id + " and mr.movie_id = " + movie_id + "and mr.show_start = " + show_start;
+                   + "from tbmoviesrooms as mr "
+                   + "where mr.room_id = ? and mr.movie_id = ? and mr.show_start = ?)";
         
         this.createConnection();
-        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
+
         try {
-            rs = stmt.executeQuery(sql);
+            getCt = conn.prepareStatement(sql);
+
+            getCt.setInt(1, room_id);
+            getCt.setInt(2, movie_id);
+            getCt.setTimestamp(3, Timestamp.valueOf(show_start));
+
+             rs = getCt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -324,6 +374,39 @@ public class KonopolisModel extends Observable {
         }
     }
     
+    public ArrayList<String> retrieveTypes() {
+        ArrayList<String> types = new ArrayList<String>();
+        String selectTypes = "SELECT customer_type FROM tbcustomerstype";
+
+        this.createConnection();
+        this.createStatement();
+
+        ResultSet rs = null; // Execute the sql query and put the results in the results set
+        try {
+            rs = stmt.executeQuery(selectTypes);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            while (rs.next()) { // While there're still results
+
+                String type = rs.getString("customer_type"); // get the genre
+                types.add(type); // push the genre in the ArrayList
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return types; // We return the ArrayList of genres
+    }
+    
     /**
      * Return the id of the customer type (to be able to add the customer to the db (relationnal db))
      * @param type, type of the customer (Junior, Student)
@@ -331,16 +414,20 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public int retrieveCustomerTypeId(String type) {
+        PreparedStatement getCtId = null;
+        ResultSet rs = null;
+
     	String customerTypeId = "SELECT customer_type_id "
 				+ "FROM tbcustomerstype "
-				+ "WHERE customer_type = " + type;
+				+ "WHERE customer_type = ?";
     	
     	this.createConnection();
-    	this.createStatement();
-    	
-    	ResultSet rs = null;
+
     	try {
-    		rs = stmt.executeQuery(customerTypeId);
+    	    getCtId = conn.prepareStatement(customerTypeId);
+    	    getCtId.setString(1, type);
+    		rs = getCtId.executeQuery();
+
     	} catch(SQLException e) {
     		e.printStackTrace();
     	}
@@ -371,23 +458,30 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
-    	String customerTypeId = "SELECT movie_room_id "
+        PreparedStatement getMrId = null;
+
+    	String movieRoomId = "SELECT movie_room_id "
     							+ "FROM tbmoviesrooms "
-								+ "WHERE movie_id = " + movie_id + " and room_id = " + room_id + " and show_start = " + show_start;
+								+ "WHERE movie_id = ? and room_id = ? and show_start = ?";
     	
     	this.createConnection();
-    	this.createStatement();
     	
     	ResultSet rs = null;
     	try {
-    		rs = stmt.executeQuery(customerTypeId);
+    	    getMrId = conn.prepareStatement(movieRoomId);
+
+    	    getMrId.setInt(1, movie_id);
+    	    getMrId.setInt(2, room_id);
+    	    getMrId.setTimestamp(3, Timestamp.valueOf(show_start));
+
+    		rs = getMrId.executeQuery();
     	} catch(SQLException e) {
     		e.printStackTrace();
     	}
     	
     	try {
     		while(rs.next()) {
-    			return rs.getInt("customer_type_id");
+    			return rs.getInt("movie_room_id");
     		}
     	} catch(SQLException e) {
     		e.printStackTrace();
@@ -403,19 +497,21 @@ public class KonopolisModel extends Observable {
     }
     
     public int retrieveLanguageId(String language) {
+        PreparedStatement getLgId = null;
     	String languageId = "SELECT language_id "
     						+ "FROM tblanguages "
-    						+ "WHERE language = " + language;
+    						+ "WHERE language = ? ";
     	
     	this.createConnection();
-    	this.createStatement();
     	
     	ResultSet rs = null;
     	
     	try {
-    		rs = stmt.executeQuery(languageId);
+    	    getLgId = conn.prepareStatement(languageId);
+            getLgId.setString(1, language);
+    		rs = getLgId.executeQuery();
     	} catch(SQLException e) {
-    		e.printStackTrace();
+    		//e.printStackTrace();
     	}
     	
     	try {
@@ -441,61 +537,54 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public int retrieveOrCreateGenreId(String genre) {
+        PreparedStatement getGrId = null;
+
     	String genreId = "SELECT genre_id "
     						+ "FROM tbgenres "
-    						+ "WHERE genre = " + genre;
+    						+ "WHERE genre = ? ";
     	
     	this.createConnection(); // Connect to the DB
-    	this.createStatement(); // Create the statement
     	
     	ResultSet rs = null; // Set that will contain all the results
     	
     	try {
-    		rs = stmt.executeQuery(genreId);
-    	} catch(SQLException queryErr) { // If the query fails (ex: the genre does not exist)
-    		queryErr.printStackTrace();
-    		
-    		PreparedStatement addGr = null;
-    		String addGenre = "INSERT INTO tbgenres(genre) " // We create it
-    							+ "VALUE (?)";
-    		
-    		//this.createConnection(); We do not need to create the connection again
-    		try { // Beginning of insert query
-    			addGr = conn.prepareStatement(addGenre); // Prepared Statement
-    			
-    			addGr.setString(1, genre);
-    			rs = addGr.executeQuery(); // Execute a prepared statement and return the result set;
-    			
-    			while(rs.next()) {
-    				return rs.getInt("genre_id"); // Return the genre_id created	
-    			}
-    			
-    		} catch (SQLException insertErr) { // Error in the insert query
-        		insertErr.printStackTrace();
-        		if (conn != null) { // Try to rollback DB
-        			try {
-            			System.out.println("Trying to rollback db");
-            			conn.rollback();
-            		} catch (SQLException err) {
-            			System.out.println("Rollback failed !");
-            			err.printStackTrace();
-            		}
-        		}	
-        	} finally {
-        		if (addGr != null) { // Try to close preparedStatement
-    				try {
-    					addGr.close();
-    				} catch (SQLException e) {
-    					e.printStackTrace();
-    				}
-        		}
-    		} // End of finally
+    		getGrId = conn.prepareStatement(genreId);
+    		getGrId.setString(1, genre);
+    		rs = getGrId.executeQuery();
+    	} catch(SQLException queryErr) { // If the query fails 
+    		//queryErr.printStackTrace();
     	}						
     	
-    	try { // If the first query is OK, so the genre exist
-    		while(rs.next()) {
-    			return rs.getInt("genre_id");
-    		}
+    	try { 
+            if (!rs.isBeforeFirst()) { // return false if rs is empty or the cursor is not before the first record
+                PreparedStatement addGr = null;
+                String addGenre = "INSERT INTO tbgenres(genre) " // We create it
+                                    + "VALUE (?)";
+                
+                try { // Beginning of insert query
+                    addGr = conn.prepareStatement(addGenre); // Prepared Statement
+                    
+                    addGr.setString(1, genre);
+                    addGr.executeUpdate(); // Execute a prepared statement and return the result set;
+                    
+                    retrieveOrCreateGenreId(genre); // Call back the method
+                    
+                } catch (SQLException insertErr) { // Error in the insert query
+                    insertErr.printStackTrace();
+                } finally {
+                    if (addGr != null) { // Try to close preparedStatement
+                        try {
+                            addGr.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } // End of finally
+            } else {
+                if (rs.next())
+                    return rs.getInt("genre_id");
+            }
+
     	} catch(SQLException e) {
     		e.printStackTrace();
     	}
@@ -515,60 +604,57 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public int retrieveOrCreateCastId(String actor) {
+        PreparedStatement getCtId = null;
+
     	String castId = "SELECT cast_id "
-    						+ "FROM tbcasts "
-    						+ "WHERE cast = " + actor;
+                            + "FROM tbcasts "
+    						+ "WHERE cast = ? ";
     	
     	this.createConnection(); // Connect to the DB
-    	this.createStatement(); // Create the statement
     	
     	ResultSet rs = null; // Set that will contain all the results
     	
     	try {
-    		rs = stmt.executeQuery(castId);
+    	    getCtId = conn.prepareStatement(castId);
+    	    getCtId.setString(1, actor);
+    		rs = getCtId.executeQuery();
     	} catch(SQLException queryErr) { // If the query fails (ex: the actor does not exist)
-    		queryErr.printStackTrace();
-    		
-    		PreparedStatement addAc = null;
-    		String addActor = "INSERT INTO tbcasts(cast) " // We create it
-    							+ "VALUE (?)";
-    		
-    		try { // Beginning of insert query
-    			addAc = conn.prepareStatement(addActor); // Prepared Statement
-    			
-    			addAc.setString(1, actor);
-    			rs = addAc.executeQuery(); // Execute a prepared statement and return the result set;
-    			
-    			while(rs.next()) {
-    				return rs.getInt("cast_id"); // Return the cast_id created	
-    			}
-    			
-    		} catch (SQLException insertErr) { // Error in the insert query
-        		insertErr.printStackTrace();
-        		if (conn != null) { // Try to rollback DB
-        			try {
-            			System.out.println("Trying to rollback db");
-            			conn.rollback();
-            		} catch (SQLException err) {
-            			System.out.println("Rollback failed !");
-            			err.printStackTrace();
-            		}
-        		}	
-        	} finally {
-        		if (addAc != null) { // Try to close preparedStatement
-    				try {
-    					addAc.close();
-    				} catch (SQLException e) {
-    					e.printStackTrace();
-    				}
-        		}
-    		} // End of finally
+    		//queryErr.printStackTrace();
     	}						
     	
     	try { // If the first query is OK, so the actor exist
-    		while(rs.next()) {
-    			return rs.getInt("genre_id");
-    		}
+    		
+            if (!rs.isBeforeFirst()) { // return false if rs is empty
+
+                PreparedStatement addAc = null;
+                String addActor = "INSERT INTO tbcasts(cast) " // We create it
+                                    + "VALUE (?)";
+                
+                try { // Beginning of insert query
+                    addAc = conn.prepareStatement(addActor); // Prepared Statement
+                    
+                    addAc.setString(1, actor);
+                    addAc.executeUpdate();// Execute a prepared statement and return the result set;
+
+                    retrieveOrCreateCastId(actor); // Call back the method
+                    
+                } catch (SQLException insertErr) { // Error in the insert query
+                    insertErr.printStackTrace();
+                } finally {
+                    if (addAc != null) { // Try to close preparedStatement
+                        try {
+                            addAc.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } // End of finally
+            
+            } else {
+                if (rs.next())
+                    return rs.getInt("cast_id");
+            }
+
     	} catch(SQLException e) {
     		e.printStackTrace();
     	}
@@ -595,12 +681,11 @@ public class KonopolisModel extends Observable {
      * @param price, the price of the movie
      * @param genres, an ArrayList of String that are the genres of the movie
      */
-    public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+    public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
     	PreparedStatement addMv = null;
 
-    	
-    	String addMovie = "INSERT INTO tbmovies(movie_id, title, description, director, time, language_id, price) "
-    						+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    	String addMovie = "INSERT INTO tbmovies(title, description, director, time, language_id, price) "
+    						+ "VALUES (?, ?, ?, ?, ?, ?)";
     	
 		this.createConnection();
     	
@@ -608,13 +693,12 @@ public class KonopolisModel extends Observable {
     		
     		addMv = conn.prepareStatement(addMovie);
     		
-    		addMv.setInt(1, movie_id);
-    		addMv.setString(2, title);
-    		addMv.setString(3, description);
-    		addMv.setString(4, director);
-    		addMv.setInt(5, time);
-    		addMv.setInt(6, retrieveLanguageId(language));
-    		addMv.setDouble(7, price);
+    		addMv.setString(1, title);
+    		addMv.setString(2, description);
+    		addMv.setString(3, director);
+    		addMv.setInt(4, time);
+    		addMv.setInt(5, retrieveLanguageId(language));
+    		addMv.setDouble(6, price);
     		
     		addMv.executeUpdate();
     		
@@ -624,27 +708,12 @@ public class KonopolisModel extends Observable {
     		addCasting(movie_id, casting); // We add the casting
     		
     		
-    		ArrayList<Show> shows = new ArrayList<Show>();
-    		
-    		// For every start of a show 
-    		// We create an instance of Show Class 
-    		// That we put in the ArrayList shows
-    		// This ArrayList will be added to the Movie instance
-    		for (Date show_start: shows_start) {
-    			// show_start, show_end, movie_id, room_id
-    			shows.add(new Show(dateToLocalDateTime(show_start), dateToLocalDateTime(show_start).plus(time, ChronoUnit.MINUTES), movie_id, room_id)); 
-    		}
-    		
-    		movies_al.add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
-    		
     	} catch (SQLException e) {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
@@ -673,11 +742,11 @@ public class KonopolisModel extends Observable {
     	try {
     	
     		for (String genre : genres) { // For Each genre
-        		addGr = conn.prepareStatement("INSERT INTO tbmoviesgenres(movie_id, genre_id)" // Add the genre associated to the movie in the db
+        		addGr = conn.prepareStatement("INSERT INTO tbmoviesgenres(movie_id, genre_id) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?)");
         		
         		addGr.setInt(1, movie_id);
-        		addGr.setInt(2, retrieveOrCreateGenreId(genre));
+        		addGr.setInt(2, retrieveOrCreateGenreId(genre.trim()));
 
         		addGr.executeUpdate();	
         	}
@@ -686,10 +755,8 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
@@ -711,20 +778,20 @@ public class KonopolisModel extends Observable {
      * @param room_id, the id of the room
      * @param shows_start, an ArrayList of Date that are the starts of every show
      */
-    public void addShows(int movie_id, int room_id, ArrayList<Date> shows_start) {
+    public void addShows(int movie_id, int room_id, ArrayList<LocalDateTime> shows_start) {
     	PreparedStatement addSh = null;
     	
     	this.createConnection();
     	
     	try {
     	
-    		for (Date show_start : shows_start) { // For Each genre
-        		addSh = conn.prepareStatement("INSERT INTO tbmoviesrooms(movie_id, room_id, show_start)" // Add the genre associated to the movie in the db
+    		for (LocalDateTime show_start : shows_start) { // For Each genre
+        		addSh = conn.prepareStatement("INSERT INTO tbmoviesrooms(movie_id, room_id, show_start) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?, ?)");
         		
         		addSh.setInt(1, movie_id);
         		addSh.setInt(2, room_id);
-        		addSh.setDate(3, show_start); 
+        		addSh.setTimestamp(3, Timestamp.valueOf(show_start));
         		addSh.executeUpdate();	
         	}
     		
@@ -732,10 +799,8 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
@@ -764,11 +829,11 @@ public class KonopolisModel extends Observable {
     	try {
     	
     		for (String actor : casting) { // For Each genre
-        		addCs = conn.prepareStatement("INSERT INTO tbmoviescasts(movie_id, cast_id)" // Add the genre associated to the movie in the db
+        		addCs = conn.prepareStatement("INSERT INTO tbmoviescasts(movie_id, cast_id) " // Add the genre associated to the movie in the db
 						+ "VALUES (?, ?)");
         		
         		addCs.setInt(1, movie_id);
-        		addCs.setInt(2, retrieveOrCreateCastId(actor));
+        		addCs.setInt(2, retrieveOrCreateCastId(actor.trim()));
 
         		addCs.executeUpdate();	
         	}
@@ -777,14 +842,11 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 			if (conn != null) {
 				try {
-	    			System.out.println("Trying to rollback db");
 	    			conn.rollback();
 	    		} catch (SQLException err) {
-	    			System.out.println("Rollback failed !");
 	    			err.printStackTrace();
 	    		}
 			}
-			
 		} finally {
 			if (addCs != null) {
 				try {
@@ -796,6 +858,37 @@ public class KonopolisModel extends Observable {
 		}
     }
     
+    public int retrieveNextSeatId() {
+    	String maxSeatId = "SELECT MAX(seat_id) as maxSid "
+				+ "FROM tbcustomers";
+
+		this.createConnection();
+		this.createStatement();
+		
+		ResultSet rs = null;
+		
+		try {
+			rs = stmt.executeQuery(maxSeatId);
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			while(rs.next()) {
+				return rs.getInt("maxSid") + 1; // We send back the next seat_id
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	
+		try {
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+    }
+    
     /**
      * create a new Customer instance, add it to the ArrayList of customers and insert it into the db
      * @param x, position in x of the customer seat
@@ -803,12 +896,11 @@ public class KonopolisModel extends Observable {
      * @param customer_id, id of the customer
      * @param room_id, id of the room where the customer will be
      * @param type, type of customer (Senior, Junior,...)
-     * @param seat_id, id of the seat where the customer will be seated on
      * @param movie_id, id of the movie that the customer will watch
      * @param show_start, start date of the movie
      * @throws SQLException
      */
-    public void addCustomer(int x, int y, int customer_id, int room_id, String type, int seat_id, int movie_id, LocalDateTime show_start) {
+    public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
     	
     	PreparedStatement addCt = null;
     	PreparedStatement addSt = null;
@@ -825,11 +917,12 @@ public class KonopolisModel extends Observable {
         	conn.setAutoCommit(false); // The way to do sql transactions => avoid to commit transaction after every request
         	
         	addCt = conn.prepareStatement(addCustomer); // Prepared Request
-        	addSt = conn.prepareStatement(addSeat);
         	
-        	addCt.setInt(1, seat_id);
+        	addCt.setInt(1, retrieveNextSeatId());
         	addCt.setInt(2, retrieveCustomerTypeId(type));
         	addCt.executeUpdate();
+
+            addSt = conn.prepareStatement(addSeat);
         	
         	addSt.setInt(1, customer_id);
         	addSt.setInt(2, y); // Row
@@ -842,17 +935,15 @@ public class KonopolisModel extends Observable {
     	} catch (SQLException e) {
     		e.printStackTrace();
     		if (conn != null) {
-    			try {
-        			System.out.println("Trying to rollback db");
-        			conn.rollback();
-        		} catch (SQLException err) {
-        			System.out.println("Rollback failed !");
-        			err.printStackTrace();
-        		}
-    		}
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
     		
     	} finally {
-    		if (addCt != null) {
+            if (addCt != null) {
 				try {
 					addCt.close();
 				} catch (SQLException e) {
@@ -872,14 +963,12 @@ public class KonopolisModel extends Observable {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-    	}
-    	
-    	for (Room room : rooms_al) {
-    		if (room.getId() == room_id) {
-    			new Customer(x, y, room, type, customer_id);
-    			setChanged();
-    			notifyObservers();
-    		}
+
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
     	}
     }
     
@@ -888,13 +977,14 @@ public class KonopolisModel extends Observable {
      * @param show, the date and time in a String type
      * @return LocalDateTime, the date and time in a LocalDateTime type
      */
-    public LocalDateTime stringToLocalDateTime(String show) {
+    private LocalDateTime stringToLocalDateTime(String show) {
     	// Formatters for date + time
-    	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm:ss");
+    	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		// start of the show
-    	LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
-    	LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
-    	LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
+    	//LocalDate show_start_date = LocalDate.parse(show, format); // Date (yyyy-MM-dd)
+    	//LocalTime show_start_time = LocalTime.parse(show, format); // Time (hh:mm:ss)
+    	//LocalDateTime show_start = LocalDateTime.of(show_start_date, show_start_time); // Parse in LocalDateTime
+    	LocalDateTime show_start = LocalDateTime.parse(show, format);
     	return show_start;
     }
     
@@ -903,9 +993,13 @@ public class KonopolisModel extends Observable {
      * @param show, the date in a Date type 
      * @return, the date in LocalDateTime type
      */
-    public LocalDateTime dateToLocalDateTime(Date show) {
+    private LocalDateTime dateToLocalDateTime(Date show) {
     	Instant instant = Instant.ofEpochMilli(show.getTime());
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
+    private java.sql.Date localDateTimeToSQLDate(LocalDateTime lt) {
+        return new java.sql.Date(lt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
     }
     
     /**
@@ -976,4 +1070,23 @@ public class KonopolisModel extends Observable {
 		this.stmt = stmt;
 	}
 
+	public static void main(String[] args) {
+        KonopolisModel db = new KonopolisModel();
+        int lgId = db.retrieveLanguageId("Français");
+        System.out.println("Français => id: " + lgId);
+
+        int ctId = db.retrieveOrCreateCastId("Seb");
+        System.out.println("Seb => id: " + ctId);
+
+        int grId = db.retrieveOrCreateGenreId("Action");
+        System.out.println("Action => id: " + grId);
+
+        ArrayList<String> genres = new ArrayList<String>();
+        genres.add("Action");
+        genres.add("Aventure");
+        genres.add("Comédie");
+
+        db.addGenres(2, genres);
+    }
+	
 }

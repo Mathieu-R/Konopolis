@@ -8,36 +8,38 @@ import java.util.ArrayList;
 
 public class Room {
 
-    private static int id = 0;
+    private static int currentId = 0;
+    private int id;
     private int totSeats;
     private int rows;
     private int seatsByRow;
-    private ArrayList<ArrayList<src.konopolis.model.Seat>> seats = new ArrayList<ArrayList<Seat>>();
+    private ArrayList<ArrayList<Seat>> seats = new ArrayList<ArrayList<Seat>>();
     private Movie movie;
-    private static double income = 0.0; // Revenus du cinéma
+    private static double income = 0.0; // Revenus du cinï¿½ma
 
     /**
      * Constructors
      */
 
+
+
     /**
      * Constructor without movie
      * @param rows
-     * @param sitsByRow
+     * @param seatsByRow
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, int id) {
-        if (rows > 20 || sitsByRow > 35) {
-            System.out.println("Too much rows or seats by row");
-            return;
+    public Room(int rows, int seatsByRow, int id) throws TooMuchSeatsException {
+        if (rows > 20 || seatsByRow > 35) {
+            throw new TooMuchSeatsException("Too much rows or seats by row");
         }
         
-        id++;
-
+        currentId++;
+        this.id = id;
         this.rows = rows;
-        this.seatsByRow = sitsByRow;
+        this.seatsByRow = seatsByRow;
 
-        this.totSeats = rows * sitsByRow;
+        this.totSeats = rows * seatsByRow;
 
         initRoom();
     }
@@ -45,22 +47,23 @@ public class Room {
     /**
      * Constructor with movie
      * @param rows
-     * @param sitsByRow
-     * @param movie_id, id of the movie at a given show
+     * @param seatsByRow
+     * @param movie, instance of the movie broadcasted in the room
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, Movie movie, int id) {
-        if (rows > 20 || sitsByRow > 35) {
-            System.out.println("Too much rows or seats by row");
-            return;
+    public Room(int rows, int seatsByRow, Movie movie, int id) throws TooMuchSeatsException {
+        System.out.println("rows: " + rows + " / columns: " + seatsByRow);
+        if (rows > 20 || seatsByRow > 35) {
+            throw new TooMuchSeatsException("Too much rows or seats by row");
         }
         
-        id++;
+        currentId++;
+        this.id = id;
 
         this.rows = rows;
-        this.seatsByRow = sitsByRow;
+        this.seatsByRow = seatsByRow;
 
-        this.totSeats = rows * sitsByRow;
+        this.totSeats = rows * seatsByRow;
 
         this.movie = movie;
 
@@ -139,11 +142,17 @@ public class Room {
 
     }
 
-
-
     /**
      * Getters and Setters
      */
+
+    public static int getCurrentId() {
+        return currentId;
+    }
+
+    public static void setCurrentId(int currentId) {
+        Room.currentId = currentId;
+    }
 
     public int getId() {
         return id;
@@ -242,11 +251,5 @@ public class Room {
                 '}';
     }
 
-    public static void main(String[] args) {
-        Room room = new Room(10, 20, 1);
-        room.displayRoom();
-        System.out.println("================");
-        //room.giveSeat(1, 2);
-        room.displayRoom();
-    }
+
 }

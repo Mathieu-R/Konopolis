@@ -1,14 +1,14 @@
 package src.konopolis.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author Sebastien.H - Groupe 3
  */
 
 public class Movie {
-	private static int id = 0;
+	private static int currentId = 0;
+	private int id;
 	private String title;
 	private String description;
 	private ArrayList<String> genres;
@@ -22,7 +22,7 @@ public class Movie {
 	/* constructor */
     public Movie(String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 		int time, String language, double price) {
-	    id++;
+	    this.id = currentId++;
 		this.title = title;
 		this.description = description;
 		this.genres = genres;
@@ -36,6 +36,7 @@ public class Movie {
     
 	public Movie(int id, String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 				 int time, String language, double price) {
+		currentId++;
         this.id = id;
 		this.title = title;
 		this.description = description;
@@ -51,12 +52,20 @@ public class Movie {
 	
 	/* All Getters and Setters */
 
-	public static int getId() {
-		return Movie.id;
+	public static int getCurrentId() {
+		return currentId;
 	}
 
-	public static void setId(int id) {
-		Movie.id = id;
+	public static void setCurrentId(int currentId) {
+		Movie.currentId = currentId;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -131,7 +140,7 @@ public class Movie {
 		this.price = price;
 	}
 
-    @Override
+	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

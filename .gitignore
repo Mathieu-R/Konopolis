@@ -2,7 +2,9 @@
 .idea
 .metadata
 .recommenders
+Konopolis.iml
 bin
+out
 lib
 production
 
@@ -22,4 +24,5 @@ production
 hs_err_pid*
 
 .classpath
+*.iml
 Konopolis.userlibraries
