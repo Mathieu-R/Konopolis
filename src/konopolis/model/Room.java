@@ -93,13 +93,13 @@ public class Room {
      * @param y, column of the seat
      */
     public void giveSeat(int x, int y) throws SeatUnknownException, SeatTakenException {
-        if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
+        if (y > rows || x > seatsByRow || y <= 0 || x <= 0) { // If we exceed the room capacity
             throw new SeatUnknownException("This seat doesn't exist");
         }
-        if (seats.get(x-1).get(y-1).isTaken()) { // If the seat is taken
+        if (seats.get(y-1).get(x-1).isTaken()) { // If the seat is taken
             throw new SeatTakenException("This seat is already taken");
         }
-        seats.get(x-1).get(y-1).setTaken(true);
+        seats.get(y-1).get(x-1).setTaken(true);
     }
 
     /**
@@ -108,13 +108,13 @@ public class Room {
      * @param y, column of the seat
      */
     public void cancelSeat(int x, int y) throws SeatUnknownException, SeatNotTakenException {
-        if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
+        if (y > rows || x > seatsByRow || y <= 0 || x <= 0) { // If we exceed the room capacity
             throw new SeatUnknownException("This seat doesn't exist");
         }
-        if (!seats.get(x-1).get(y-1).isTaken()) { // If the seat is not taken
+        if (!seats.get(y-1).get(x-1).isTaken()) { // If the seat is not taken
             throw new SeatNotTakenException("This seat is not taken yet, why cancel this reservation ?, it doesn't make sens !");
         }
-        seats.get(x-1).get(y-1).setTaken(false);
+        seats.get(y-1).get(x-1).setTaken(false);
     }
 
     /**

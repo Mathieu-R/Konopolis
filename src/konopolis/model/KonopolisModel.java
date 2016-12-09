@@ -356,7 +356,13 @@ public class KonopolisModel extends Observable {
                 //Look for the right Room => create an instance of customer and add it to the customers ArrayList
                 for (Room room : rooms_al) {
                 	if (room.getId() == room_id) { // Retrieve the right room
-                        customers_al.add(new Customer(column, row, room, customer_type, seat_id)); // The instance of customer book the seat
+                        try {
+                            customers_al.add(new Customer(column, row, room, customer_type, seat_id)); // The instance of customer book the seat
+                        } catch (SeatUnknownException e) {
+                            e.getMessage();
+                        } catch (SeatTakenException e) {
+                            e.getMessage();
+                        }
                         setChanged();
                         notifyObservers();
                 	}

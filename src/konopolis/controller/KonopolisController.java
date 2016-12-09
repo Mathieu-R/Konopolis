@@ -68,15 +68,17 @@ public class KonopolisController {
      * @param movie_id
      * @param show_start
      */
-	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) throws SeatUnknownException, SeatTakenException {
 
 		double reduction = 0;
 
 		// We create the new customer
 		for (Room room : model.getRooms_al()) {
             if (room.getId() == room_id) {
-                final Customer newCust = new Customer(x, y, room, type, customer_id); // Create the customer
+                final Customer newCust; // Create the customer
+                newCust = new Customer(x, y, room, type, customer_id);
                 reduction = newCust.getReduction(); // get the reduction
+
             }
         }
 
@@ -84,9 +86,9 @@ public class KonopolisController {
 
         for (Movie movie : model.getMovies_al()) {
             if (movie.getId() == movie_id) {
-            	final double reductedPrice = movie.getPrice() - movie.getPrice() * reduction;
-            	booking.put(type, reductedPrice); // add the type and reductedPrice to the HashMap 
-                total += reductedPrice; // add the price to the total;
+            	final double reducedPrice = movie.getPrice() - movie.getPrice() * reduction;
+            	booking.put(type, reducedPrice); // add the type and reducedPrice to the HashMap
+                total += reducedPrice; // add the price to the total;
             }
         }
 
@@ -115,13 +117,9 @@ public class KonopolisController {
     /**
      * Create a Date object from a day, month, year, hours and minutes
      * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
-     * @return Date, a Date object constructed from the parameters passed in the function
+     * @return LocalDateTime, a LocalDateTime constructed from the parameters passed in the function
      */
 	public static LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
-        /*Calendar c = Calendar.getInstance(); // new instance of Calendar
-        c.set(day, month - 1, year, hours, minutes, 0); // set a date
-        System.out.println("Date created: " + c.getTime());
-        return c.getTime();*/
         return LocalDateTime.of(year, month, day, hours, minutes);
     }
 

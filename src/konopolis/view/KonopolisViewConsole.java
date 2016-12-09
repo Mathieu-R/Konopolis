@@ -1,9 +1,7 @@
 package src.konopolis.view;
 
 import src.konopolis.controller.KonopolisController;
-import src.konopolis.model.KonopolisModel;
-import src.konopolis.model.Movie;
-import src.konopolis.model.Room;
+import src.konopolis.model.*;
 
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -84,6 +82,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     private void bookMovie() {
         boolean book = false;
         String moreBooking = "";
+        String[] chosenSeat = new String[2];
+        boolean successCustomer = false;
 
         control.retrieveMovie(movie_id); // get the movie chosen from db
         //update(null, null);
@@ -95,18 +95,29 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
             showTypeOfPeople(); // show all the type of people (to know the reduction to apply)
 
-            show("Sélectionner votre place avec x,y");
-            String[] chosenSeat = sc.nextLine().split(",");
+            do {
+                try {
+                    show("Sélectionner votre place avec x,y");
+                    chosenSeat = sc.nextLine().split(",");
+                    control.addCustomer(
+                            Integer.parseInt(chosenSeat[0].trim()),
+                            Integer.parseInt(chosenSeat[1].trim()),
+                            control.getCustomers_al().size() + 1,
+                            room_id,
+                            enteredType,
+                            movie_id,
+                            control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
+                    );
+                    successCustomer = true;
+                } catch (SeatUnknownException e) {
+                    show("" + e.getMessage());
+                } catch (SeatTakenException e) {
+                    show("" + e.getMessage());
+                }
 
-            control.addCustomer(
-                    Integer.parseInt(chosenSeat[0].trim()),
-                    Integer.parseInt(chosenSeat[1].trim()),
-                    control.getCustomers_al().size() + 1,
-                    room_id,
-                    enteredType,
-                    movie_id,
-                    control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
-            );
+            } while (!successCustomer);
+
+
 
             show("Commander une autre place ?");
 
