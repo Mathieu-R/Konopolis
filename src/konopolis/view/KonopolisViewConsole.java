@@ -178,7 +178,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         String director = "";
         String repCast = "";
         ArrayList<String> casting = new ArrayList<String>();
-        ArrayList<java.util.Date> dates_show = new ArrayList<java.util.Date>(); // ArrayList of shows
+        ArrayList<LocalDateTime> dates_show = new ArrayList<LocalDateTime>(); // ArrayList of shows
         int time = 0;
         String language = "";
         double price = 0.0;
@@ -194,7 +194,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         do {
             try {
-                show("Donnez une desciption");
+                show("Donnez une description");
                 description = sc.nextLine();
             } catch (InputMismatchException e) {
                 show("Description manquante !");
@@ -209,7 +209,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             } catch (InputMismatchException e) {
                 show("Genre(s) manquant(s) ou pattern incorrecte.");
             }
-        } while (repGenres.equals("") || !(repGenres.contains(",")));
+        } while (repGenres.equals(""));
 
         dates_show = enterDate(); // function to allow the user to enter a date of show
 
@@ -246,7 +246,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             } catch (InputMismatchException e) {
                 show("Acteur(s) manquant(s) ou pattern non-respecté");
             }
-        } while (repCast.equals("") ||(!(repCast.contains(","))));
+        } while (repCast.equals(""));
 
         do {
             try {
@@ -284,14 +284,14 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         //update(null, null);
     }
 
-    private ArrayList<java.util.Date> enterDate() {
+    private ArrayList<LocalDateTime> enterDate() {
 	    /* user inputs */
         String moreDate = "";
 
 	    /* Boolean to know if we have to do let the user enter a date again */
         boolean enterDate = false;
 
-        ArrayList<java.util.Date> dates_show = new ArrayList<java.util.Date>(); // ArrayList of shows
+        ArrayList<LocalDateTime> dates_show = new ArrayList<LocalDateTime>(); // ArrayList of shows
 
         show("Quelle sont la ou les séances ?");
         do { // The user can enter a date of show
@@ -301,7 +301,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             int hour = enterHour();
             int minute = enterMinute();
 
-            java.util.Date date = control.makeDate(day, month, year, hour, minute);
+            LocalDateTime date = control.makeDate(day, month, year, hour, minute);
             dates_show.add(date);
 
             System.out.println("Ajouter une autre séance ?");
@@ -386,10 +386,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int minute = 0;
         do {
             try {
-                showInline("Minute (1 - 59):");
+                showInline("Minute (00 - 59):");
                 minute = sc.nextInt();
             } catch (InputMismatchException e) {
-                show("Entrez une minute entre 1 et 59.");
+                show("Entrez une minute entre 00 et 59.");
                 sc.nextInt();
             }
         } while (minute < 0 || minute > 59);

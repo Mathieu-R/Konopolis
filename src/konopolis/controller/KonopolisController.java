@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -118,11 +117,12 @@ public class KonopolisController {
      * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
      * @return Date, a Date object constructed from the parameters passed in the function
      */
-	public java.util.Date makeDate(int day, int month, int year, int hours, int minutes) {
-        Calendar c = Calendar.getInstance(); // new instance of Calendar
+	public static LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
+        /*Calendar c = Calendar.getInstance(); // new instance of Calendar
         c.set(day, month - 1, year, hours, minutes, 0); // set a date
         System.out.println("Date created: " + c.getTime());
-        return c.getTime();
+        return c.getTime();*/
+        return LocalDateTime.of(year, month, day, hours, minutes);
     }
 
     /**
@@ -140,16 +140,16 @@ public class KonopolisController {
      * @param price
      * @param genres
      */
-	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<java.util.Date> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
 		ArrayList<Show> shows = new ArrayList<Show>();
 		
 		// For every start of a show 
 		// We create an instance of Show Class 
 		// That we put in the ArrayList shows
 		// This ArrayList will be added to the Movie instance
-		for (java.util.Date show_start: shows_start) {
+		for (LocalDateTime show_start: shows_start) {
 			// show_start, show_end, movie_id, room_id
-			shows.add(new Show(dateToLocalDateTime(show_start), dateToLocalDateTime(show_start).plus(time, ChronoUnit.MINUTES), movie_id, room_id));
+			shows.add(new Show(show_start, show_start.plus(time, ChronoUnit.MINUTES), movie_id, room_id));
 		}
 		
 		model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
@@ -173,6 +173,7 @@ public class KonopolisController {
 	}
 
     /**
+     * No need anymore ?
      * Convert a java.util.Date (type) into a LocalDateTime
      * @param date, the date in a Date type
      * @return, the date in LocalDateTime type
@@ -245,5 +246,9 @@ public class KonopolisController {
 
     public void setBooking(HashMap<String, Double> booking) {
         this.booking = booking;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(KonopolisController.makeDate(29, 12, 2016, 13, 00));
     }
 }

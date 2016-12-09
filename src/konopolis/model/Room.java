@@ -21,23 +21,25 @@ public class Room {
      * Constructors
      */
 
+
+
     /**
      * Constructor without movie
      * @param rows
-     * @param sitsByRow
+     * @param seatsByRow
      * @param id, id of the room
      */
-    public Room(int rows, int sitsByRow, int id) throws TooMuchSeatsException {
-        if (rows > 20 || sitsByRow > 35) {
+    public Room(int rows, int seatsByRow, int id) throws TooMuchSeatsException {
+        if (rows > 20 || seatsByRow > 35) {
             throw new TooMuchSeatsException("Too much rows or seats by row");
         }
         
         currentId++;
         this.id = id;
         this.rows = rows;
-        this.seatsByRow = sitsByRow;
+        this.seatsByRow = seatsByRow;
 
-        this.totSeats = rows * sitsByRow;
+        this.totSeats = rows * seatsByRow;
 
         initRoom();
     }
