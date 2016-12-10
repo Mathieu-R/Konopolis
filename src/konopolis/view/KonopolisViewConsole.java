@@ -43,7 +43,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         show("**************************");
         do {
             try {
-                show("Faites votre choix:");
+                show("Faites votre choix: ");
                 show("1.Liste des films 2.Configuration 3.Fermer");
                 step1 = sc.nextInt();
             } catch (InputMismatchException e) {
@@ -117,7 +117,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
             do {
                 try {
-                    show("Sélectionner votre place avec x,y");
+                    show("Sélectionner votre place en x,y (colonne, rangée)");
                     chosenSeat = sc.nextLine().split(","); // split the coordinates
                     control.addCustomer( // try to add the customer
                             Integer.parseInt(chosenSeat[0].trim()),
@@ -160,7 +160,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         
         // Show the receipt
         for (Map.Entry<String, Double> bookingEntry: control.getBooking().entrySet()) {
-            show("> " + bookingEntry.getKey() + " - " + Math.round(bookingEntry.getValue() * 100.0) / 100.0);
+            show("> " + bookingEntry.getKey() + " - " + Math.round(bookingEntry.getValue() * 100.0) / 100.0 + "€");
         }
         
         // Total to pay
@@ -372,7 +372,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int day = 0;
         do {
             try {
-                showInline("Jour (1 - 31):");
+                showInline("Jour (1 - 31): ");
                 day = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Entrez un jour entre 1 et 31.");
@@ -390,7 +390,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int month = 0;
         do {
             try {
-                showInline("Mois (1 - 12):");
+                showInline("Mois (1 - 12): ");
                 month = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Entrez un mois entre 1 et 12.");
@@ -410,7 +410,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int year = 0;
         do {
             try {
-                showInline("Année (" + currentYear + " - 2018):");
+                showInline("Année (" + currentYear + " - 2018): ");
                 year = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Entrez une année entre " + currentYear + " et 2.");
@@ -428,7 +428,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int hour = 0;
         do {
             try {
-                showInline("Heure (13 - 23):");
+                showInline("Heure (13 - 23): ");
                 hour = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Entrez une heure entre 13 et 23.");
@@ -446,7 +446,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int minute = 0;
         do {
             try {
-                showInline("Minute (00 - 59):");
+                showInline("Minute (00 - 59): ");
                 minute = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Entrez une minute entre 00 et 59.");
@@ -464,7 +464,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) { // for every movie in the HashMap
             show(movieEntry.getKey() + ") " + movieEntry.getValue());
         }
-        showInline("Sélectionnez un film :");
+        showInline("Sélectionnez un film : ");
         do { // the user can choose one
             try {
                 movie_id = sc.nextInt();
