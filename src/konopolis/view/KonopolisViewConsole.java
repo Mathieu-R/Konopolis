@@ -528,10 +528,31 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
      * Show the mapping of a room
      */
     private void showRoomMap() {
+        int rowIndex = 1;
+        int seatIndex = 1;
         for (Room room : control.getRooms_al()) {
             if (room.getId() == room_id) {
-                System.out.println("Salle choisie:");
-                room.displayRoom();
+                show("Salle choisie:");
+                for (ArrayList<Seat> seatsRow : room.getSeats()) { // For Each row
+                    //seatIndex = 1;
+                    if (rowIndex == 1) {
+                        showInline("   "); // three spaces
+                        for (Seat seat : seatsRow) {
+                            if (seatIndex < 10) showInline(seatIndex + "  "); // Show the column above the map, two spaces for number < 10
+                            else showInline(seatIndex + " "); // one space for number > 10
+                            seatIndex++;
+                        }
+                        showInline("\n"); // Turn back to the line
+                    }
+                    if (rowIndex < 10) showInline(rowIndex + "  "); // Show the row at the right of the map, two spaces for number < 10
+                    else showInline(rowIndex + " "); // one space for number > 10
+                    for (Seat seat : seatsRow) { // For Each seat
+                        if (seat.isTaken()) showInline("[X]"); // If the seat is taken
+                        else showInline("[O]"); // Otherwise, if the seat is available
+                    }
+                    showInline("\n"); // Turn back to the line for every row
+                    rowIndex++;
+                }
             }
         }
     }

@@ -211,8 +211,8 @@ public class RoomTest {
         }
     }
 
-    @org.junit.Test
-    public void displayRoom() {
+    //@org.junit.Test
+    /*public void displayRoom() {
         Room room1 = null;
         try {
             room1 = new Room(10, 10, 1);
@@ -228,7 +228,7 @@ public class RoomTest {
         }
         room1.displayRoom();
         /* No Test */
-    }
+    //}*/
 
 
 
