@@ -67,30 +67,40 @@ public class KonopolisController {
      * @param movie_id
      * @param show_start
      */
-	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) throws SeatUnknownException, SeatTakenException {
+	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
 
 		double reduction = 0;
 
 		// We create the new customer
 		for (Room room : model.getRooms_al()) {
             if (room.getId() == room_id) {
-                final Customer newCust; // Create the customer
-                newCust = new Customer(x, y, room, type, customer_id);
-                reduction = newCust.getReduction(); // get the reduction
+                final Customer newCust;
+                try { // try to create the customer
+                    newCust = new Customer(x, y, room, type, customer_id);
+                    reduction = newCust.getReduction(); // get the reduction
+
+                    // Price
+                    for (Movie movie : model.getMovies_al()) {
+                        if (movie.getId() == movie_id) {
+                            final double reducedPrice = movie.getPrice() - movie.getPrice() * reduction; // apply the reduction
+                            booking.put(type, reducedPrice); // add the type and reducedPrice to the HashMap
+                            total += reducedPrice; // add the price to the total;
+                        }
+                    }
+
+                    // Finally, add the customer to the db if everything else is ok
+                    model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
+
+                } catch (SeatUnknownException e) {
+                    e.printStackTrace();
+                } catch (SeatTakenException e) {
+                    e.printStackTrace();
+                }
 
             }
         }
 
-        // Price
-        for (Movie movie : model.getMovies_al()) {
-            if (movie.getId() == movie_id) {
-            	final double reducedPrice = movie.getPrice() - movie.getPrice() * reduction; // apply the reduction
-            	booking.put(type, reducedPrice); // add the type and reducedPrice to the HashMap
-                total += reducedPrice; // add the price to the total;
-            }
-        }
 
-		model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
 	}
 
     /**
