@@ -508,7 +508,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         for (Movie movie : control.getMovies_al()) { // for every movie
             if (movie.getId() == movie_id) { // look for the right one
                 for (int i = 0 ; i < movie.getShows().size() ; i++) { // for every shows of this movie
-                    show((i+1) + ") " + movie.getShows().get(i).getShow_start()); // Show the list of shows
+                    show((i+1) + ") " + control.dateInFrench(movie.getShows().get(i).getShow_start())); // Show the list of shows
                 }
                 do { // the user can chose the show he wanna go
                     try {

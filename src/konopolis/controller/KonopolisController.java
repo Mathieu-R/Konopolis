@@ -4,6 +4,7 @@ package src.konopolis.controller;
 import src.konopolis.model.*;
 import src.konopolis.view.KonopolisView;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -129,6 +130,19 @@ public class KonopolisController {
      */
 	public LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
         return LocalDateTime.of(year, month, day, hours, minutes);
+    }
+
+    public String dateInFrench(LocalDateTime date) {
+	    String[] days = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+        String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
+	    final int dayName = date.getDayOfWeek().getValue(); // day of week in number (1 -> 7)
+        final int day = date.getDayOfMonth();
+        final int month = date.getMonthValue(); // month of the year (1 -> 12)
+        final int year = date.getYear();
+        final int hour = date.getHour();
+        final String minutes = date.getMinute() < 10 ? "0" + Integer.toString(date.getMinute()) : Integer.toString(date.getMinute());
+
+        return ("Le " + days[dayName - 1] + " " + day + " " + months[month - 1] + " " + year + " à " + hour + "h" + minutes);
     }
 
     /**
