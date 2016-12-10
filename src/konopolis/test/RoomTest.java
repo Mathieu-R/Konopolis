@@ -2,8 +2,7 @@ package src.konopolis.test;
 
 import java.util.ArrayList;
 
-import src.konopolis.model.Room;
-import src.konopolis.model.Seat;
+import src.konopolis.model.*;
 
 import static org.junit.Assert.*;
 
@@ -12,16 +11,25 @@ import static org.junit.Assert.*;
  */
 
 public class RoomTest {
+
     @org.junit.Test
-    public void constructor() throws Exception {
-        Room overRows = new Room(21, 35, 1);
-        Room overSitsByRow = new Room(20, 36, 1);
-        Room room1 = new Room(20, 35, 1);
+    public void constructor() {
+        Room room1 = null;
+        try {
+            room1 = new Room(20, 35, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
         assertEquals(20, room1.getRows()); // The room1 should have 20 rows
         assertEquals(35, room1.getSeatsByRow()); // The room1 should have 35 columns / seats by row
         assertEquals(700, room1.getTotSeats()); // The room1 should have 700 seats
 
-        Room room2 = new Room(15, 10, 1);
+        Room room2 = null;
+        try {
+            room2 = new Room(15, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
         assertFalse(room1.equals(room2)); // The seats are not the same
 
         for (ArrayList<Seat> rows: room1.getSeats()) {
@@ -38,27 +46,163 @@ public class RoomTest {
         assertEquals(25, seat2.getColumn()); // seat2 should be column 25
     }
 
-    @org.junit.Test
-    public void giveSit() throws Exception {
-        Room room1 = new Room(10, 10, 1);
-        room1.giveSeat(5, 10);
-        assertTrue(room1.getSeats().get(4).get(9).isTaken()); // The seat should be taken
+    /**
+     * Test that an attempt to create an too great room throws TooMuchSeatsException
+     */
+    @org.junit.Test(expected = TooMuchSeatsException.class)
+    public void overSeats() {
+        try {
+            Room overRows = new Room(21, 35, 1); // Too much rows
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            Room overSitsByRow = new Room(20, 36, 1); // Too much seats by rows
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test that an attemps to book an unknows seat throws an SeatUnknowsException
+     */
+    @org.junit.Test(expected = SeatUnknownException.class)
+    public void unknownSeat() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(11, 10); // This seat doesn't exist
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test that an attempt to book a seat already taken throws a SeatTakenException
+     */
+    @org.junit.Test(expected = SeatTakenException.class)
+    public void takenSeat() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(10, 10);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            room1.giveSeat(10, 10); // This seat is already taken
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test that an attempt to cancel the booking of a seat not booked throws a SeatNotTakenException
+     */
+    @org.junit.Test(expected = SeatNotTakenException.class)
+    public void notTakenSeat() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.cancelSeat(10, 10); // This seat is not taken
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatNotTakenException e) {
+            e.printStackTrace();
+        }
     }
 
     @org.junit.Test
-    public void cancelSit() throws Exception {
-        Room room1 = new Room(10, 10, 1);
-        room1.giveSeat(5, 10);
-        room1.cancelSeat(5, 10);
+    public void giveSeat() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(5, 10);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+        assertTrue(room1.getSeats().get(9).get(4).isTaken()); // The seat should be taken
+    }
+
+    @org.junit.Test
+    public void cancelSit() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(5, 10);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.cancelSeat(5, 10);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatNotTakenException e) {
+            e.printStackTrace();
+        }
         assertFalse(room1.getSeats().get(4).get(9).isTaken()); // The seat shouldn't be taken
     }
 
     @org.junit.Test
-    public void emptyRoom() throws Exception {
-        Room room1 = new Room(10, 10, 1);
-        room1.giveSeat(1, 1);
-        room1.giveSeat(5, 10);
-        room1.giveSeat(10, 10);
+    public void emptyRoom() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(1, 1);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(5, 10);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(10, 10);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
         room1.emptyRoom();
         for (ArrayList<Seat> seats: room1.getSeats()) {
             for (Seat seat: seats) {
@@ -68,9 +212,20 @@ public class RoomTest {
     }
 
     @org.junit.Test
-    public void displayRoom() throws Exception {
-        Room room1 = new Room(10, 10, 1);
-        room1.giveSeat(1, 1);
+    public void displayRoom() {
+        Room room1 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(1, 1);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
         room1.displayRoom();
         /* No Test */
     }

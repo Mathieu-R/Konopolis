@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 /**
  * @author nathan
- *
  */
 public class KonopolisController {
 	 
@@ -83,10 +82,9 @@ public class KonopolisController {
         }
 
         // Price
-
         for (Movie movie : model.getMovies_al()) {
             if (movie.getId() == movie_id) {
-            	final double reducedPrice = movie.getPrice() - movie.getPrice() * reduction;
+            	final double reducedPrice = movie.getPrice() - movie.getPrice() * reduction; // apply the reduction
             	booking.put(type, reducedPrice); // add the type and reducedPrice to the HashMap
                 total += reducedPrice; // add the price to the total;
             }
