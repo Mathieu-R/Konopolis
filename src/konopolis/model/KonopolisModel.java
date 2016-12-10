@@ -318,10 +318,8 @@ public class KonopolisModel extends Observable {
     	// Redondance entre les tables seats et customers ?
         PreparedStatement getCt = null;
     	
-        String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn "
-                   + "FROM tbseats as s "
-                   //+ "natural join tbcustomersseats "
-                   + "natural join tbcustomers "
+        String sql = "SELECT c.customer_id, customer_type, sRow, sColumn "
+                   + "FROM tbcustomers as c "
                    + "natural join tbcustomerstype "
                    + "WHERE movie_room_id = "
                    + "(select movie_room_id "
@@ -346,8 +344,7 @@ public class KonopolisModel extends Observable {
 
         try {
             while (rs.next()) { // While there're still results
-            	
-            	int seat_id = rs.getInt("seat_id");
+
                 int customer_id = rs.getInt("customer_id");
                 String customer_type = rs.getString("customer_type");
                 int row = rs.getInt("sRow");
@@ -357,7 +354,7 @@ public class KonopolisModel extends Observable {
                 for (Room room : rooms_al) {
                 	if (room.getId() == room_id) { // Retrieve the right room
                         try {
-                            customers_al.add(new Customer(column, row, room, customer_type, seat_id)); // The instance of customer book the seat
+                            customers_al.add(new Customer(column, row, room, customer_type, customer_id)); // The instance of customer book the seat
                         } catch (SeatUnknownException e) {
                             e.getMessage();
                         } catch (SeatTakenException e) {
@@ -864,7 +861,7 @@ public class KonopolisModel extends Observable {
 		}
     }
     
-    public int retrieveNextSeatId() {
+    /*public int retrieveNextSeatId() {
     	String maxSeatId = "SELECT MAX(seat_id) as maxSid "
 				+ "FROM tbcustomers";
 
@@ -893,90 +890,34 @@ public class KonopolisModel extends Observable {
 			e.printStackTrace();
 		}
 		return 0;
-    }
-    
+    }*/
+
     /**
      * insert a new customer into the db
-     * @param x, position in x of the customer seat
-     * @param y, position in y of the customer seat
-     * @param customer_id, id of the customer
-     * @param room_id, id of the room where the customer will be
-     * @param type, type of customer (Senior, Junior,...)
-     * @param movie_id, id of the movie that the customer will watch
-     * @param show_start, start date of the movie
-     * @throws SQLException
-     */
-    public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
-    	PreparedStatement addCt = null;
-    	
-    	String addCustomer = "INSERT INTO tbcustomers(seat_id, customer_type_id) "
-    						+ "VALUES (?, ?)";
-    	
-    	this.createConnection(); // Create connection to DB
-    	
-    	try {
-        	
-        	addCt = conn.prepareStatement(addCustomer); // Prepared Request
-        	
-        	addCt.setInt(1, retrieveNextSeatId());
-        	addCt.setInt(2, retrieveCustomerTypeId(type));
-        	addCt.executeUpdate();
-
-            addSeat(customer_id, x, y, movie_id, room_id, show_start);
-
-        	
-    	} catch (SQLException e) {
-    		e.printStackTrace();
-    		if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                }
-            }
-    		
-    	} finally {
-            if (addCt != null) {
-				try {
-					addCt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-    		}
-
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-    	}
-    }
-
-    /**
-     * add a seat booked by a customer for a show given
-     * @param customer_id
      * @param x
      * @param y
+     * @param type
      * @param movie_id
      * @param room_id
      * @param show_start
+     *
      */
-    public void addSeat(int customer_id, int x, int y, int movie_id, int room_id, LocalDateTime show_start) {
-        PreparedStatement addSt = null;
+    public void addCustomer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
+        PreparedStatement addCt = null;
 
-        String addSeat = "INSERT INTO tbseats(customer_id, sRow, sColumn, movie_room_id) "
+        String addSeat = "INSERT INTO tbcustomers(sRow, sColumn, movie_room_id, customer_type_id) "
                 + "VALUES (?, ?, ?, ?)";
 
         this.createConnection(); // Create connection to DB
 
         try {
-            addSt = conn.prepareStatement(addSeat);
+            addCt = conn.prepareStatement(addSeat);
 
-            addSt.setInt(1, customer_id);
-            addSt.setInt(2, y); // Row
-            addSt.setInt(3, x); // Column
-            addSt.setInt(4, retrieveMovieRoomId(movie_id, room_id, show_start));
-            addSt.executeUpdate();
+            addCt.setInt(1, y); // Row
+            addCt.setInt(2, x); // Column
+            addCt.setInt(3, retrieveMovieRoomId(movie_id, room_id, show_start));
+            addCt.setInt(4, retrieveCustomerTypeId(type));
+            addCt.executeUpdate();
 
 
         } catch (SQLException e) {
@@ -990,9 +931,9 @@ public class KonopolisModel extends Observable {
             }
 
         } finally {
-            if (addSt != null) {
+            if (addCt != null) {
                 try {
-                    addSt.close();
+                    addCt.close();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
@@ -1032,10 +973,6 @@ public class KonopolisModel extends Observable {
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
-    private java.sql.Date localDateTimeToSQLDate(LocalDateTime lt) {
-        return new java.sql.Date(lt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
-    }
-    
     /**
      * Getters and Setters
      */

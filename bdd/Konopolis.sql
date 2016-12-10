@@ -74,24 +74,26 @@ CREATE table tbCustomersType (
   CONSTRAINT chkReduction CHECK (reduction between(0.0 and 1.0))
 );
 
-CREATE table tbCustomers (
+#CREATE table tbCustomers (
+#  customer_id int auto_increment PRIMARY KEY,
+#  #seat_id int NOT NULL,
+#  customer_type_id int NOT NULL,
+#  FOREIGN KEY (customer_type_id) REFERENCES tbCustomersType(customer_type_id) ON UPDATE CASCADE
+#);
+
+
+CREATE table tbCustomers ( # Old tbSeats
+  #seat_id int auto_increment PRIMARY KEY,
   customer_id int auto_increment PRIMARY KEY,
-  #seat_id int NOT NULL,
-  customer_type_id int NOT NULL,
-  FOREIGN KEY (customer_type_id) REFERENCES tbCustomersType(customer_type_id) ON UPDATE CASCADE
-);
-
-
-CREATE table tbSeats (
-  seat_id int auto_increment PRIMARY KEY,
-  customer_id int NOT NULL,
   sRow int NOT NULL,
   sColumn int NOT NULL,
   movie_room_id int NOT NULL,
+	customer_type_id int NOT NULL, #recently added
   CONSTRAINT chkRow CHECK (sRow between 1 and 20),
   CONSTRAINT chkColumn CHECK (sColumn between 1 and 35),
   FOREIGN KEY (movie_room_id) REFERENCES tbMoviesRooms(movie_room_id) ON UPDATE CASCADE,
-  FOREIGN KEY (customer_id) REFERENCES tbCustomers(customer_id) ON UPDATE CASCADE #added recently
+	FOREIGN KEY (customer_type_id) REFERENCES tbCustomersType(customer_type_id) ON UPDATE CASCADE #recently added
+  #FOREIGN KEY (customer_id) REFERENCES tbCustomers(customer_id) ON UPDATE CASCADE #added recently
 );
 
 

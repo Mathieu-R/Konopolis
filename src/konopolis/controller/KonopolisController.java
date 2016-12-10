@@ -4,7 +4,6 @@ package src.konopolis.controller;
 import src.konopolis.model.*;
 import src.konopolis.view.KonopolisView;
 
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -90,7 +89,7 @@ public class KonopolisController {
                     }
 
                     // Finally, add the customer to the db if everything else is ok
-                    model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
+                    model.addCustomer(x, y, type, room_id, movie_id, show_start);
 
                 } catch (SeatUnknownException e) {
                     throw new RuntimeException(e);
