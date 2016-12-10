@@ -7,6 +7,10 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.*;
 
+/**
+ * Console view
+ * @author Nathan - @fix Mathieu
+ */
 public class KonopolisViewConsole extends KonopolisView implements Observer{
 	Scanner sc;
 	private int movie_id = 0;
@@ -14,13 +18,23 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	private int show_id = 0;
 	private String enteredType = "";
 	private LocalDateTime show_start;
-	
+
+    /**
+     * Constructor, send the model and controller to the view parent class
+     * Launch the init function that start the programm in console
+     * @param model
+     * @param control
+     */
 	public KonopolisViewConsole(KonopolisModel model, KonopolisController control){
 		super(model,control);
         sc = new Scanner(System.in);
         init();
 	}
-	
+
+    /**
+     * Launch the application
+     * 3 choices : Movie list, configuration and close the programm
+     */
 	public void init() {
         int step1 = 0;
 
@@ -51,6 +65,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         }
     }
 
+    /**
+     * Launch the function that show the list of movies
+     * 3 choices : Buy a seat, show the description or close the program
+     */
     private void moviesList() {
         int step2 = 0;
 
@@ -79,14 +97,16 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         }
     }
 
+    /**
+     * function that book a seat for a movie show
+     */
     private void bookMovie() {
-        boolean book = false;
-        String moreBooking = "";
-        String[] chosenSeat = new String[2];
-        boolean successCustomer = false;
+        boolean book = false; // true if the user wanna buy another place
+        String moreBooking = ""; // to know if the user wanna buy another place
+        String[] chosenSeat = new String[2]; // Array that contains the chosen seat (x, y)
+        boolean successCustomer = false; // true if the chosen seat is correct (so it exists and is not taken)
 
         control.retrieveMovie(movie_id); // get the movie chosen from db
-        //update(null, null);
         showShowsList(); // show the list of shows for the movie chosen. The user can choose a show.
         control.retrieveRoom(movie_id, room_id, show_start); // get the room from db for the show chosen
         showRoomMap(); // show the mapping of the room
@@ -98,24 +118,24 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             do {
                 try {
                     show("Sélectionner votre place avec x,y");
-                    chosenSeat = sc.nextLine().split(",");
-                    control.addCustomer(
+                    chosenSeat = sc.nextLine().split(","); // split the coordinates
+                    control.addCustomer( // try to add the customer
                             Integer.parseInt(chosenSeat[0].trim()),
                             Integer.parseInt(chosenSeat[1].trim()),
-                            control.getCustomers_al().size() + 1,
+                            control.getCustomers_al().size() + 1, // next customer_id
                             room_id,
                             enteredType,
                             movie_id,
                             control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
                     );
-                    successCustomer = true;
-                } catch (SeatUnknownException e) {
-                    show("" + e.getMessage());
-                } catch (SeatTakenException e) {
+                    successCustomer = true; // if the seat exist
+                } catch (SeatUnknownException e) { // if the seat is unknown
+                    show("" + e.getMessage()); // "" => Hack to use the show function
+                } catch (SeatTakenException e) { // if the seat is already taken
                     show("" + e.getMessage());
                 }
 
-            } while (!successCustomer);
+            } while (!successCustomer); // while the chosen seat is incorrect
 
 
 
@@ -126,75 +146,84 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                     show("> oui.");
                     show("> non.");
                     moreBooking = sc.next();
-                } catch (InputMismatchException e) {
+                } catch (InputMismatchException e) { // if the user type something else than 'oui' or 'non'
                     show("Veuillez entrez correctement 'oui' ou 'non'.");
                 }
-            } while ((!moreBooking.toLowerCase().equals("oui")) && (!moreBooking.toLowerCase().equals("non")));
+            } while ((!moreBooking.toLowerCase().equals("oui")) && (!moreBooking.toLowerCase().equals("non"))); // while the user type something else than 'oui' or 'non'
 
             if (moreBooking.toLowerCase().equals("oui")) { // If the user want to enter another date of show
                 book = true; // We begin back the loop
             }
 
 
-        } while (book);
+        } while (book); // while the user book a place
         
-        // Ticket de caisse...
+        // Show the receipt
         for (Map.Entry<String, Double> bookingEntry: control.getBooking().entrySet()) {
             show("> " + bookingEntry.getKey() + " - " + Math.round(bookingEntry.getValue() * 100.0) / 100.0);
         }
         
-        // Total
+        // Total to pay
         show("TOTAL A PAYER : " + Math.round(control.getTotal() * 100.0) / 100.0 + "€");
         control.setTotal(0); // Put back the total at 0;
 
         update(null, null);
     }
 
+    /**
+     * Show the full description of a movie
+     */
     private void descriptionMovie() {
-        control.retrieveMovie(movie_id);
+        control.retrieveMovie(movie_id); // we get the movie from db
         for (Movie movie : control.getMovies_al()) {
-            if (movie.getId() == movie_id) {
-                showMovieInfos(movie);
+            if (movie.getId() == movie_id) { // look for it
+                showMovieInfos(movie); // show the full description
             }
         }
     }
 
+    /**
+     * function the manage the configuration part of the app (add a movie,...)
+     * The user can chose the different available configurations (only 1 for now)
+     */
     private void movieConfig() {
 	    int choiceConfig = 0;
 
-        show("1.Ajouter un film");
+        show("1.Ajouter un film"); // only one choice, could add other one later
         do {
             try {
                 choiceConfig = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Mauvais choix !");
             }
-        } while (choiceConfig != 1);
+        } while (choiceConfig != 1); // while the user does not type 1
 
-        switch (choiceConfig) {
-            case 1:
-                addMovie();
+        switch (choiceConfig) { // according to the choice of the user
+            case 1: // if 1
+                addMovie(); // launch add movie function
                 break;
         }
     }
 
+    /**
+     * function that allow to add movie to the db
+     */
     private void addMovie() {
-        /* A FINIR !! */
 
-        String title = "";
-        String description = "";
-        String repGenres = "";
+        String title = ""; // title of the movie
+        String description = ""; // description of the movie
+        String repGenres = ""; // genres of the movie in a string (user input)
         ArrayList<String> genres = new ArrayList<String>();
-        int idRoom = 0;
+        int idRoom = 0; // id of the room
         String director = "";
         String repCast = "";
         ArrayList<String> casting = new ArrayList<String>();
         ArrayList<LocalDateTime> dates_show = new ArrayList<LocalDateTime>(); // ArrayList of shows
-        int time = 0;
+        int time = 0; // duration of the movie
         String language = "";
         double price = 0.0;
 
-        do {
+        do { // the user choose a title
             try {
                 show("Quelle est le titre du film ?");
                 title = sc.nextLine();
@@ -203,7 +232,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (title.equals(""));
 
-        do {
+        do { // the user choose a description
             try {
                 show("Donnez une description");
                 description = sc.nextLine();
@@ -212,18 +241,17 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (description.equals(""));
 
-        do {
+        do { // the user choose one or more genre(s)
             try {
                 show("Quel est (quels sont) le(s) genre(s) du film ? (séparés par une virgule)");
                 repGenres = sc.nextLine();
-                genres = new ArrayList<String>(Arrays.asList(repGenres.split(",")));
+                genres = new ArrayList<String>(Arrays.asList(repGenres.split(","))); // split the genres in an ArrayList
             } catch (InputMismatchException e) {
                 show("Genre(s) manquant(s) ou pattern incorrecte.");
             }
         } while (repGenres.equals(""));
 
         dates_show = enterDate(); // function to allow the user to enter a date of show
-
 
         show("Dans quel salle se déroule le film ?");
 
@@ -232,7 +260,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             show(room.getId() + ") " + room.getRows() + " rangées - " + room.getSeatsByRow() + " sièges par rangée - " + room.getTotSeats() + " places");
         }
 
-        do {
+        do { // the user can now choose a room
             try {
                 idRoom = sc.nextInt();
             } catch (InputMismatchException e) {
@@ -240,7 +268,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (idRoom < 1 || idRoom > control.getRooms_al().size());
 
-        do {
+        do { // the user can choose the director
             try {
                 show("Quelle est le réalisateur ?");
                 director = sc.nextLine();
@@ -249,7 +277,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (director.equals(""));
 
-        do {
+        do { // the user can choose the actors
             try {
                 show("Quels sont les acteurs principaux ? (séparés par une virgule)");
                 repCast = sc.nextLine();
@@ -259,17 +287,17 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (repCast.equals(""));
 
-        do {
+        do { // the user can choose a duration
             try {
                 show("Combien de temps dure le film ? (en minutes)");
                 String repTime = sc.nextLine();
-                time = Integer.parseInt(repTime);
+                time = Integer.parseInt(repTime); // parse the integer into a int
             } catch (InputMismatchException e) {
                 show("Durée manquante !");
             }
         } while (time == 0);
 
-        do {
+        do { // the user can chose a language
             try {
                 show("Quelle est la langue ?");
                 language = sc.nextLine();
@@ -278,30 +306,30 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (language.equals(""));
 
-        do {
+        do { // the user can chose a price
             try {
                 show("Quelle est le prix ? (€)");
                 String repPrice = sc.nextLine();
-                price = Double.parseDouble(repPrice);
+                price = Double.parseDouble(repPrice); // parse into a double
             } catch (InputMismatchException e) {
                 show("Prix manquant !");
             }
         } while (price == 0.0);
 
-
-
+        // Eventually, we add the movie to the db
+        // Movie.getCurrentId() + 1 => next id of the movie
         control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
 
         //update(null, null);
     }
 
+    /**
+     * function that allows the user to enter one or more date(s) of show
+     * @return, an ArrayList of LocalDateTime that contains all the shows entered by the user
+     */
     private ArrayList<LocalDateTime> enterDate() {
-	    /* user inputs */
-        String moreDate = "";
-
-	    /* Boolean to know if we have to do let the user enter a date again */
-        boolean enterDate = false;
-
+        String moreDate = ""; // to know if the user want to enter another date of show
+        boolean enterDate = false;  // Boolean to know if we have to let the user enter a date again
         ArrayList<LocalDateTime> dates_show = new ArrayList<LocalDateTime>(); // ArrayList of shows
 
         show("Quelle sont la ou les séances ?");
@@ -312,8 +340,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             int hour = enterHour();
             int minute = enterMinute();
 
-            LocalDateTime date = control.makeDate(day, month, year, hour, minute);
-            dates_show.add(date);
+            LocalDateTime date = control.makeDate(day, month, year, hour, minute); // we create the date
+            dates_show.add(date); // add the date to the ArrayList
 
             System.out.println("Ajouter une autre séance ?");
 
@@ -326,7 +354,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                     show("Veuillez entrez correctement 'oui' ou 'non'.");
                     sc.next();
                 }
-            } while ((!moreDate.toLowerCase().equals("oui")) && (!moreDate.toLowerCase().equals("non")));
+            } while ((!moreDate.toLowerCase().equals("oui")) && (!moreDate.toLowerCase().equals("non"))); // if the user doesn't write 'oui' or 'non'
 
             if (moreDate.toLowerCase().equals("oui")) { // If the user want to enter another date of show
                 enterDate = true; // We begin back the loop
@@ -336,6 +364,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         return dates_show; // return the ArrayList of shows
     }
 
+    /**
+     * Allows the user to enter a day
+     * @return, int, the day chosen
+     */
     private int enterDay() {
         int day = 0;
         do {
@@ -350,6 +382,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         return day;
     }
 
+    /**
+     * Allows the user to enter a month
+     * @return, int, the month chosen
+     */
     private int enterMonth() {
         int month = 0;
         do {
@@ -364,6 +400,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         return month;
     }
 
+    /**
+     * Allows the user to enter a year
+     * The year must be equals or greater than the current year
+     * @return, int, the year chosen
+     */
     private int enterYear() {
 	    int currentYear = Year.now().getValue();
         int year = 0;
@@ -379,6 +420,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         return year;
     }
 
+    /**
+     * Allows the user to enter an hour
+     * @return, int, the hour chosen
+     */
     private int enterHour() {
         int hour = 0;
         do {
@@ -393,6 +438,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         return hour;
     }
 
+    /**
+     * Allows the user to enter a minute
+     * @return, int, the minute chosen
+     */
     private int enterMinute() {
         int minute = 0;
         do {
@@ -407,23 +456,30 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         return minute;
     }
 
+    /**
+     * Show the list of movies available
+     */
     private void showMoviesList() {
         show("Liste des films:");
-        for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) {
+        for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) { // for every movie in the HashMap
             show(movieEntry.getKey() + ") " + movieEntry.getValue());
         }
         showInline("Sélectionnez un film :");
-        do {
+        do { // the user can choose one
             try {
                 movie_id = sc.nextInt();
             } catch (InputMismatchException e) {
                 show("Ce film n'existe pas, choisissez un film de la liste !");
                 sc.nextInt();
             }
-        } while (movie_id < 1 || movie_id > control.getMoviesTitles().size());
+        } while (movie_id < 1 || movie_id > control.getMoviesTitles().size()); // while the int typed is not in the list of movie
 
     }
 
+    /**
+     * Show the full description of a movie
+     * @param movie, a movie chosen
+     */
     private void showMovieInfos(Movie movie) {
         show("Description:");
         show(movie.getDescription());
@@ -444,27 +500,33 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         show(movie.getPrice() + "€");
     }
 
+    /**
+     * show a list of shows for a movie given
+     * then, the user can choose the show he wanna go
+     */
     private void showShowsList() {
-        for (Movie movie : control.getMovies_al()) {
-            if (movie.getId() == movie_id) {
-                for (int i = 0 ; i < movie.getShows().size() ; i++) {
+        for (Movie movie : control.getMovies_al()) { // for every movie
+            if (movie.getId() == movie_id) { // look for the right one
+                for (int i = 0 ; i < movie.getShows().size() ; i++) { // for every shows of this movie
                     show((i+1) + ") " + movie.getShows().get(i).getShow_start()); // Show the list of shows
                 }
-                do {
+                do { // the user can chose the show he wanna go
                     try {
                         show("Sélectionnez la séance: "); // We select the show
                         show_id = sc.nextInt(); // Id of the show
                     } catch (InputMismatchException e) {
                         show("Mauvais choix");
-                        //sc.nextInt();
                     }
-                } while (show_id < 1 || show_id > movie.getShows().size());
+                } while (show_id < 1 || show_id > movie.getShows().size()); // if the show is not in the list
                 room_id = movie.getShows().get(show_id - 1).getRoom_id(); // We get the room_id
                 show_start = movie.getShows().get(show_id - 1).getShow_start(); // We get the show_start
             }
         }
     }
 
+    /**
+     * Show the mapping of a room
+     */
     private void showRoomMap() {
         for (Room room : control.getRooms_al()) {
             if (room.getId() == room_id) {
@@ -474,6 +536,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         }
     }
 
+    /**
+     * Show every type of people available (VIP, Senior, Student,..) to apply a reduction
+     * The user can choose the corresponding one
+     */
     private void showTypeOfPeople() {
         show("Quelle type de personne êtes-vous ?\n");
         for (String type : control.retrieveTypes()) { // get all the types

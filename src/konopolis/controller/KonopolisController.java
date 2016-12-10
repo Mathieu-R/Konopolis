@@ -119,7 +119,7 @@ public class KonopolisController {
      * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
      * @return LocalDateTime, a LocalDateTime constructed from the parameters passed in the function
      */
-	public static LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
+	public LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
         return LocalDateTime.of(year, month, day, hours, minutes);
     }
 
@@ -246,7 +246,4 @@ public class KonopolisController {
         this.booking = booking;
     }
 
-    public static void main(String[] args) {
-        System.out.println(KonopolisController.makeDate(29, 12, 2016, 13, 00));
-    }
 }
