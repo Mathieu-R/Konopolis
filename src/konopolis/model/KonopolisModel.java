@@ -320,7 +320,7 @@ public class KonopolisModel extends Observable {
     	
         String sql = "SELECT s.seat_id, s.customer_id, customer_type, sRow, sColumn "
                    + "FROM tbseats as s "
-                   + "natural join tbcustomersseats "
+                   //+ "natural join tbcustomersseats "
                    + "natural join tbcustomers "
                    + "natural join tbcustomerstype "
                    + "WHERE movie_room_id = "
@@ -896,7 +896,7 @@ public class KonopolisModel extends Observable {
     }
     
     /**
-     * create a new Customer instance, add it to the ArrayList of customers and insert it into the db
+     * insert a new customer into the db
      * @param x, position in x of the customer seat
      * @param y, position in y of the customer seat
      * @param customer_id, id of the customer
@@ -907,20 +907,14 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
-    	
     	PreparedStatement addCt = null;
-    	PreparedStatement addSt = null;
     	
     	String addCustomer = "INSERT INTO tbcustomers(seat_id, customer_type_id) "
     						+ "VALUES (?, ?)";
     	
-    	String addSeat = "INSERT INTO tbseats(customer_id, sRow, sColumn, movie_room_id) "
-    				+ "VALUES (?, ?, ?, ?)";
-    	
     	this.createConnection(); // Create connection to DB
     	
     	try {
-        	conn.setAutoCommit(false); // The way to do sql transactions => avoid to commit transaction after every request
         	
         	addCt = conn.prepareStatement(addCustomer); // Prepared Request
         	
@@ -928,15 +922,8 @@ public class KonopolisModel extends Observable {
         	addCt.setInt(2, retrieveCustomerTypeId(type));
         	addCt.executeUpdate();
 
-            addSt = conn.prepareStatement(addSeat);
-        	
-        	addSt.setInt(1, customer_id);
-        	addSt.setInt(2, y); // Row
-        	addSt.setInt(3, x); // Column
-        	addSt.setInt(4, retrieveMovieRoomId(movie_id, room_id, show_start));
-        	addSt.executeUpdate();
-        	
-        	conn.commit(); // Commit the transaction
+            addSeat(customer_id, x, y, movie_id, room_id, show_start);
+
         	
     	} catch (SQLException e) {
     		e.printStackTrace();
@@ -956,19 +943,6 @@ public class KonopolisModel extends Observable {
 					e.printStackTrace();
 				}
     		}
-    		if (addSt != null) {
-				try {
-					addSt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-    		}
-    		
-    		try {
-				conn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 
             try {
                 conn.close();
@@ -976,6 +950,60 @@ public class KonopolisModel extends Observable {
                 e.printStackTrace();
             }
     	}
+    }
+
+    /**
+     * add a seat booked by a customer for a show given
+     * @param customer_id
+     * @param x
+     * @param y
+     * @param movie_id
+     * @param room_id
+     * @param show_start
+     */
+    public void addSeat(int customer_id, int x, int y, int movie_id, int room_id, LocalDateTime show_start) {
+        PreparedStatement addSt = null;
+
+        String addSeat = "INSERT INTO tbseats(customer_id, sRow, sColumn, movie_room_id) "
+                + "VALUES (?, ?, ?, ?)";
+
+        this.createConnection(); // Create connection to DB
+
+        try {
+            addSt = conn.prepareStatement(addSeat);
+
+            addSt.setInt(1, customer_id);
+            addSt.setInt(2, y); // Row
+            addSt.setInt(3, x); // Column
+            addSt.setInt(4, retrieveMovieRoomId(movie_id, room_id, show_start));
+            addSt.executeUpdate();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+        } finally {
+            if (addSt != null) {
+                try {
+                    addSt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
     
     /**
