@@ -112,7 +112,6 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         showRoomMap(); // show the mapping of the room
 
         do {
-
             showTypeOfPeople(); // show all the type of people (to know the reduction to apply)
 
             do {
@@ -129,10 +128,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                             control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
                     );
                     successCustomer = true; // if the seat exist
-                } catch (SeatUnknownException e) { // if the seat is unknown
+                } catch (RuntimeException e) { // if the seat is unknown
                     show("" + e.getMessage()); // "" => Hack to use the show function
-                } catch (SeatTakenException e) { // if the seat is already taken
-                    show("" + e.getMessage());
                 }
 
             } while (!successCustomer); // while the chosen seat is incorrect
@@ -153,6 +150,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
             if (moreBooking.toLowerCase().equals("oui")) { // If the user want to enter another date of show
                 book = true; // We begin back the loop
+            } else {
+                book = false;
             }
 
 

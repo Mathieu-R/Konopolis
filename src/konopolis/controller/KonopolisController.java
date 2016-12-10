@@ -68,7 +68,7 @@ public class KonopolisController {
      * @param movie_id
      * @param show_start
      */
-	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) throws RuntimeException {
 
 		double reduction = 0;
 
@@ -93,9 +93,9 @@ public class KonopolisController {
                     model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
 
                 } catch (SeatUnknownException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 } catch (SeatTakenException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
 
             }
