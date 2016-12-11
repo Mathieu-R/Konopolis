@@ -315,11 +315,15 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (price == 0.0);
 
-        // Eventually, we add the movie to the db
-        // Movie.getCurrentId() + 1 => next id of the movie
-        control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
+        try {
+            // Eventually, we try to add the movie to the db
+            // Movie.getCurrentId() + 1 => next id of the movie
+            control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
+        } catch (RuntimeException e) {
+            update(null, e);
+        }
 
-        //update(null, null);
+        update(null, null);
     }
 
     /**
@@ -357,6 +361,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
             if (moreDate.toLowerCase().equals("oui")) { // If the user want to enter another date of show
                 enterDate = true; // We begin back the loop
+            } else {
+                enterDate = false;
             }
         } while (enterDate); // While the user want to enter a date of show
 
@@ -612,7 +618,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
 	@Override
 	public void update(Observable obs, Object obj) {
-		//init();
+        show((String) obj);
+		init();
 	}
 }
 

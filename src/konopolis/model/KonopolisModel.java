@@ -38,7 +38,7 @@ public class KonopolisModel extends Observable {
     
     public KonopolisModel() {
     	registerDriver(); // Only done at the launching of the app;
-    	notifyObservers();
+    	//notifyObservers();
     }
 
     /**
@@ -499,7 +499,7 @@ public class KonopolisModel extends Observable {
 		return 0;
     }
     
-    public int retrieveLanguageId(String language) {
+    public int retrieveLanguageId(String language) throws RuntimeException {
         PreparedStatement getLgId = null;
     	String languageId = "SELECT language_id "
     						+ "FROM tblanguages "
@@ -514,7 +514,9 @@ public class KonopolisModel extends Observable {
             getLgId.setString(1, language);
     		rs = getLgId.executeQuery();
     	} catch(SQLException e) {
-    		//e.printStackTrace();
+            setChanged();
+            notifyObservers("Cette langue n'existe pas !");
+            throw new RuntimeException(e);
     	}
     	
     	try {
@@ -669,10 +671,47 @@ public class KonopolisModel extends Observable {
         }
 		return 0;
     }
-    
+
+    /**
+     * Retrieve a movie_id based on its name
+     * @param title
+     * @return
+     */
+    public int retrieveMovieId(String title) {
+        PreparedStatement getMvId = null;
+
+        String getMovieId = "SELECT movie_id from tbmovies " +
+                            "WHERE title = ?";
+        this.createConnection();
+        ResultSet rs = null;
+
+        try {
+            getMvId = conn.prepareStatement(getMovieId);
+            getMvId.setString(1, title);
+            rs = getMvId.executeQuery();
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        }
+        try {
+            if (rs.next()) {
+                return (rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (getMvId != null) {
+                try {
+                    getMvId.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return 0;
+    }
+
     /**
      * Add a movie in the db
-     * @param movie_id, the id of the movie
      * @param room_id, the id of the room that broadcast the movie
      * @param title, the title of the movie
      * @param description, the description of the movie
@@ -684,7 +723,7 @@ public class KonopolisModel extends Observable {
      * @param price, the price of the movie
      * @param genres, an ArrayList of String that are the genres of the movie
      */
-    public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+    public void addMovie(/*int movie_id,*/ int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
     	PreparedStatement addMv = null;
 
     	String addMovie = "INSERT INTO tbmovies(title, description, director, time, language_id, price) "
@@ -704,7 +743,8 @@ public class KonopolisModel extends Observable {
     		addMv.setDouble(6, price);
     		
     		addMv.executeUpdate();
-    		
+
+    		int movie_id = retrieveMovieId(title);
     		// If the movie is successfully added to the db, 
     		addGenres(movie_id, genres); // We add the genres
     		addShows(movie_id, room_id, shows_start); // We add the shows

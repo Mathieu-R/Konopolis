@@ -161,19 +161,21 @@ public class KonopolisController {
      */
 	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
 		ArrayList<Show> shows = new ArrayList<Show>();
-		
-		// For every start of a show 
-		// We create an instance of Show Class 
-		// That we put in the ArrayList shows
-		// This ArrayList will be added to the Movie instance
-		for (LocalDateTime show_start: shows_start) {
-			// show_start, show_end, movie_id, room_id
-			shows.add(new Show(show_start, show_start.plus(time, ChronoUnit.MINUTES), movie_id, room_id));
-		}
-		
-		model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
 
-		model.addMovie(movie_id, room_id, title, description, director, shows_start, casting, time, language, price, genres);
+		try {
+            model.addMovie(room_id, title, description, director, shows_start, casting, time, language, price, genres);
+            // For every start of a show
+            // We create an instance of Show Class
+            // That we put in the ArrayList shows
+            // This ArrayList will be added to the Movie instance
+            for (LocalDateTime show_start: shows_start) {
+                // show_start, show_end, movie_id, room_id
+                shows.add(new Show(show_start, show_start.plus(time, ChronoUnit.MINUTES), movie_id, room_id));
+            }
+            model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
+        } catch (RuntimeException e) {
+		    throw new RuntimeException(e);
+        }
 	}
 
     /**
