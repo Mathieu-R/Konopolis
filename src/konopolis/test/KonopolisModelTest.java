@@ -5,7 +5,7 @@ import src.konopolis.model.KonopolisModel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,7 +21,7 @@ public class KonopolisModelTest {
     public void retrieveOrCreateGenreId() throws Exception {
         int genre_id = model.retrieveOrCreateGenreId("Action");
         show("" + genre_id);
-        assertEquals(6, genre_id);
+        assertEquals(26, genre_id);
     }
 
     @Test
@@ -55,21 +55,28 @@ public class KonopolisModelTest {
 
     @Test
     public void retrieveAllMoviesTitles() throws Exception {
-        final HashMap<Integer, String> moviesList = model.retrieveAllMoviesTitles(); // retrieve all the titles
+        final LinkedHashMap<Integer, String> moviesList = model.retrieveAllMoviesTitles(); // retrieve all the titles
         moviesList.forEach((key, value) -> {
             show(key + " => " + value);
-            //AssertEq
+            // Some test later
         });
     }
 
     @Test
     public void retrieveMovie() throws Exception {
-
+        assertEquals("Samba",model.retrieveMovie(1).getTitle());
+        model.getMovies_al().forEach(movie -> {
+            if (movie.getId() == 1) {
+                assertEquals("Samba", movie.getTitle());
+            }
+        });
     }
 
     @Test
     public void retrieveRoom() throws Exception {
-
+        LocalDateTime show = makeDate(19, 12, 2016, 15, 30);
+        assertEquals("Samba", model.retrieveRoom(1,1, show).getMovie().getTitle());
+        assertEquals(450, model.retrieveRoom(1,1, show).getTotSeats());
     }
 
     @Test

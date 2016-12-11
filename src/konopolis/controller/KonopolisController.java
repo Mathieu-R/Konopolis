@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * @author nathan
@@ -19,7 +20,7 @@ public class KonopolisController {
 
 	private KonopolisModel model;
 	private ArrayList<String> types = new ArrayList<String>();
-	private HashMap<Integer, String> moviesTitles = new HashMap<Integer, String>();
+	private LinkedHashMap<Integer, String> moviesTitles = new LinkedHashMap<Integer, String>();
 	private HashMap<String, Double> booking = new HashMap<String, Double>();
 
 	private KonopolisView view = null;
@@ -32,18 +33,19 @@ public class KonopolisController {
 
     /**
      * Retrieve all the movies titles
-     * @return
+     * @return HashMap of all the movies titles
      */
-	public HashMap<Integer, String> retrieveAllMoviesTitles() {
+	public LinkedHashMap<Integer, String> retrieveAllMoviesTitles() {
 	    return this.moviesTitles = model.retrieveAllMoviesTitles();
 	}
 
     /**
      * Retrieve a movie according it id
      * @param movie_id
+     * @return movie, a Movie instance
      */
-	public void retrieveMovie(int movie_id){
-		model.retrieveMovie(movie_id);
+	public Movie retrieveMovie(int movie_id){
+		return model.retrieveMovie(movie_id);
 	}
 
     /**
@@ -51,9 +53,10 @@ public class KonopolisController {
      * @param movie_id
      * @param room_id
      * @param show_start
+     * @return room, a Room instance
      */
-	public void retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
-		model.retrieveRoom(movie_id, room_id, show_start);
+	public Room retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
+		return model.retrieveRoom(movie_id, room_id, show_start);
 	}
 
     /**
@@ -67,9 +70,9 @@ public class KonopolisController {
      * @param movie_id
      * @param show_start
      */
-	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) throws RuntimeException {
+	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
 
-		double reduction = 0;
+		double reduction = 0.0;
 
 		// We create the new customer
 		for (Room room : model.getRooms_al()) {
@@ -99,7 +102,6 @@ public class KonopolisController {
 
             }
         }
-
 
 	}
 
@@ -245,11 +247,11 @@ public class KonopolisController {
         this.view = view;
     }
 
-    public HashMap<Integer, String> getMoviesTitles() {
+    public LinkedHashMap<Integer, String> getMoviesTitles() {
         return moviesTitles;
     }
 
-    public void setMoviesTitles(HashMap<Integer, String> moviesTitles) {
+    public void setMoviesTitles(LinkedHashMap<Integer, String> moviesTitles) {
         this.moviesTitles = moviesTitles;
     }
 

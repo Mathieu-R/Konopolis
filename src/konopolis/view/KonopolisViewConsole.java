@@ -98,7 +98,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
     }
 
     /**
-     * function that book a seat for a movie show
+     * method that book a seat for a movie show
      */
     private void bookMovie() {
         boolean book = false; // true if the user wanna buy another place
@@ -116,7 +116,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
             do {
                 try {
-                    show("Sélectionner votre place en x,y (colonne, rangée)");
+                    show("Sélectionner votre place en x,y (siège, rangée)");
                     chosenSeat = sc.nextLine().split(","); // split the coordinates
                     control.addCustomer( // try to add the customer
                             Integer.parseInt(chosenSeat[0].trim()),
@@ -129,7 +129,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                     );
                     successCustomer = true; // if the seat exist
                 } catch (RuntimeException e) { // if the seat is unknown
-                    show("" + e.getMessage()); // "" => Hack to use the show function
+                    //show("" + e.getMessage()); // "" => Hack to use the show function
                 }
 
             } while (!successCustomer); // while the chosen seat is incorrect
@@ -166,7 +166,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         show("TOTAL A PAYER : " + Math.round(control.getTotal() * 100.0) / 100.0 + "€");
         control.setTotal(0); // Put back the total at 0;
 
-        update(null, null);
+        //update(null, null);
     }
 
     /**
@@ -320,10 +320,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             // Movie.getCurrentId() + 1 => next id of the movie
             control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
         } catch (RuntimeException e) {
-            update(null, e);
+            //update(null, e);
         }
 
-        update(null, null);
+        //update(null, null);
     }
 
     /**
@@ -465,19 +465,24 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
      * Show the list of movies available
      */
     private void showMoviesList() {
+        // The number in the list (1,2,3) is not equals the movie_id but the position of the movie_id and its title in the LinkedHashMap (+ 1)
+        int movieListNumber = 0;
         show("Liste des films:");
+        int index = 1;
         for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) { // for every movie in the HashMap
-            show(movieEntry.getKey() + ") " + movieEntry.getValue());
+            show(index++ + ") " + movieEntry.getValue());
         }
         showInline("Sélectionnez un film : ");
         do { // the user can choose one
             try {
-                movie_id = sc.nextInt();
+                movieListNumber = sc.nextInt(); // get the number of the list (which is equals the position of the movie in the LinkedHashMap + 1)
+                movie_id = (new ArrayList<Integer>(control.getMoviesTitles().keySet())).get(movieListNumber - 1); // get the right id according its position in the LinkedHashMap
+                //show(Integer.toString(movie_id));
             } catch (InputMismatchException e) {
                 show("Ce film n'existe pas, choisissez un film de la liste !");
                 sc.nextInt();
             }
-        } while (movie_id < 1 || movie_id > control.getMoviesTitles().size()); // while the int typed is not in the list of movie
+        } while (movieListNumber < 1 || movieListNumber > control.getMoviesTitles().size()); // while the int typed is not in the list of movie
 
     }
 
@@ -515,6 +520,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 for (int i = 0 ; i < movie.getShows().size() ; i++) { // for every shows of this movie
                     show((i+1) + ") " + control.dateInFrench(movie.getShows().get(i).getShow_start())); // Show the list of shows
                 }
+
                 do { // the user can chose the show he wanna go
                     try {
                         show("Sélectionnez la séance: "); // We select the show
@@ -567,14 +573,15 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
      * The user can choose the corresponding one
      */
     private void showTypeOfPeople() {
-        show("Quelle type de personne êtes-vous ?\n");
+        show("Quel type de personne êtes-vous ?\n");
         for (String type : control.retrieveTypes()) { // get all the types
             show("> " + type); // show it the the console
         }
+        sc.nextLine(); // flush the buffer of the scanner
         do {
             try {
                 enteredType = sc.nextLine(); // get the type entered by the user
-                show("" + enteredType);
+                //show("" + enteredType);
             } catch (InputMismatchException e) {
                 show("Ce type n'existe pas.");
                 //enteredType = sc.next();
@@ -618,8 +625,8 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
 	@Override
 	public void update(Observable obs, Object obj) {
-        show((String) obj);
-		init();
+        //show((String) obj);
+		//init();
 	}
 }
 
