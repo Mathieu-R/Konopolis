@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static org.junit.Assert.assertEquals;
+
 public class KonopolisModelTest {
+
     private KonopolisModel model;
 
     public KonopolisModelTest() {
@@ -15,8 +18,43 @@ public class KonopolisModelTest {
     }
 
     @Test
+    public void retrieveOrCreateGenreId() throws Exception {
+        int genre_id = model.retrieveOrCreateGenreId("Action");
+        show("" + genre_id);
+        assertEquals(6, genre_id);
+    }
+
+    @Test
+    public void addMovie() throws Exception {
+        // Description
+        String description = "Samba, sénégalais en France depuis 10 ans, collectionne les petits boulots ;" +
+                " Alice est une cadre supérieure épuisée par un burn out." +
+                " Lui essaye par tous les moyens d'obtenir ses papiers," +
+                " alors qu'elle tente de se reconstruire par le bénévolat dans une association." +
+                " Chacun cherche à sortir de son impasse jusqu'au jour où leurs destins se croisent... " +
+                "Entre humour et émotion, leur histoire se fraye un autre chemin vers le bonheur. " +
+                "Et si la vie avait plus d'imagination qu'eux ?";
+        // Shows
+        LocalDateTime show1 = makeDate(19, 12, 2016, 15, 30);
+        LocalDateTime show2 = makeDate(20,12, 2016,17,15);
+        ArrayList<LocalDateTime> shows = new ArrayList<LocalDateTime>();
+        shows.add(show1);
+        shows.add(show2);
+        // Casting
+        ArrayList<String> casting = new ArrayList<String>();
+        casting.add("Omar Sy");
+        casting.add("Charlotte Gainsbourg");
+        casting.add("Tahar Rahim");
+        // genres
+        ArrayList<String> genres = new ArrayList<String>();
+        genres.add("Comédie");
+        genres.add("Drame");
+        // ADD MOVIE METHOD
+        model.addMovie(2, "Samba", description, "Eric Toledano", shows, casting, 118, "Français", 10, genres);
+    }
+
+    @Test
     public void retrieveAllMoviesTitles() throws Exception {
-        addMovie(); // add a movie to the db
         final HashMap<Integer, String> moviesList = model.retrieveAllMoviesTitles(); // retrieve all the titles
         moviesList.forEach((key, value) -> {
             show(key + " => " + value);
@@ -64,10 +102,7 @@ public class KonopolisModelTest {
 
     }
 
-    @Test
-    public void retrieveOrCreateGenreId() throws Exception {
 
-    }
 
     @Test
     public void retrieveOrCreateCastId() throws Exception {
@@ -77,35 +112,6 @@ public class KonopolisModelTest {
     @Test
     public void retrieveMovieId() throws Exception {
 
-    }
-
-    @Test
-    public void addMovie() throws Exception {
-        // Description
-        String description = "Samba, sénégalais en France depuis 10 ans, collectionne les petits boulots ;" +
-                " Alice est une cadre supérieure épuisée par un burn out." +
-                " Lui essaye par tous les moyens d'obtenir ses papiers," +
-                " alors qu'elle tente de se reconstruire par le bénévolat dans une association." +
-                " Chacun cherche à sortir de son impasse jusqu'au jour où leurs destins se croisent... " +
-                "Entre humour et émotion, leur histoire se fraye un autre chemin vers le bonheur. " +
-                "Et si la vie avait plus d'imagination qu'eux ?";
-        // Shows
-        LocalDateTime show1 = makeDate(19, 12, 2016, 15, 30);
-        LocalDateTime show2 = makeDate(20,12, 2016,17,15);
-        ArrayList<LocalDateTime> shows = new ArrayList<LocalDateTime>();
-        shows.add(show1);
-        shows.add(show2);
-        // Casting
-        ArrayList<String> casting = new ArrayList<String>();
-        casting.add("Omar Sy");
-        casting.add("Charlotte Gainsbourg");
-        casting.add("Tahar Rahim");
-        // genres
-        ArrayList<String> genres = new ArrayList<String>();
-        genres.add("Comédie");
-        genres.add("Drame");
-        // ADD MOVIE METHOD
-        model.addMovie(2, "Samba", description, "Eric Toledano", shows, casting, 118, "Français", 10, genres);
     }
 
     @Test
