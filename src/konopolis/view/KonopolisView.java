@@ -6,7 +6,6 @@ import src.konopolis.model.KonopolisModel;
 import java.util.Observer;
 /**
  * @author nathan
- *
  */
 public abstract class KonopolisView implements Observer {
 	
