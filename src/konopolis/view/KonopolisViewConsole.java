@@ -118,6 +118,12 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 try {
                     show("Sélectionner votre place en x,y (siège, rangée)");
                     chosenSeat = sc.nextLine().split(","); // split the coordinates
+                    //LocalDateTime show_start; // temp variable that will contain the beginning date of the show
+                    control.getMovies_al().forEach(movie -> { // Lambda => forEach movie in the movies ArrayList
+                        if (movie.getId() == movie_id) { // Look for the right one
+                            LocalDateTime show_start = movie.getShows().get(show_id - 1).getShow_start(); // get its show_start
+                        }
+                    });
                     control.addCustomer( // try to add the customer
                             Integer.parseInt(chosenSeat[0].trim()),
                             Integer.parseInt(chosenSeat[1].trim()),
@@ -125,11 +131,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                             room_id,
                             enteredType,
                             movie_id,
-                            control.getMovies_al().get(movie_id - 1).getShows().get(show_id - 1).getShow_start()
+                            show_start
                     );
                     successCustomer = true; // if the seat exist
                 } catch (RuntimeException e) { // if the seat is unknown
-                    //show("" + e.getMessage()); // "" => Hack to use the show function
+                    show("" + e.getMessage()); // "" => Hack to use the show function
                 }
 
             } while (!successCustomer); // while the chosen seat is incorrect

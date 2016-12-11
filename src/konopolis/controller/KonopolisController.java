@@ -44,7 +44,7 @@ public class KonopolisController {
      * @param movie_id
      * @return movie, a Movie instance
      */
-	public Movie retrieveMovie(int movie_id){
+	public Movie retrieveMovie(int movie_id) {
 		return model.retrieveMovie(movie_id);
 	}
 
@@ -71,7 +71,6 @@ public class KonopolisController {
      * @param show_start
      */
 	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
-
 		double reduction = 0.0;
 
 		// We create the new customer
@@ -79,7 +78,7 @@ public class KonopolisController {
             if (room.getId() == room_id) {
                 final Customer newCust;
                 try { // try to create the customer
-                    newCust = new Customer(x, y, room, type, customer_id);
+                    newCust = new Customer(x, y, room, type);
                     reduction = newCust.getReduction(); // get the reduction
 
                     // Price
@@ -92,7 +91,7 @@ public class KonopolisController {
                     }
 
                     // Finally, add the customer to the db if everything else is ok
-                    model.addCustomer(x, y, type, room_id, movie_id, show_start);
+                    model.addCustomer(x, y, type, movie_id, room_id, show_start);
 
                 } catch (SeatUnknownException e) {
                     throw new RuntimeException(e);

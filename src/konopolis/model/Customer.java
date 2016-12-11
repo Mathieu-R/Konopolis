@@ -32,15 +32,39 @@ public class Customer {
 
 		switch(this.type) {
 			case 'J': this.reduction = 0.5;
+			    break;
 			case 'E': this.reduction = 0.3;
+			    break;
 			case 'S': this.reduction = 0.4;
+			    break;
 			case 'V': this.reduction = 0.7;
+			    break;
 		}
 		Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 
-		
 	}
-	
+
+	public Customer(int x, int y, Room room, String type) throws SeatUnknownException, SeatTakenException {
+		currentId++;
+		this.room = room;
+
+		this.room.giveSeat(x, y);
+		this.type = type.charAt(0); // First charachter of the type
+
+		switch(this.type) {
+			case 'J': this.reduction = 0.5;
+			    break;
+			case 'E': this.reduction = 0.3;
+			    break;
+			case 'S': this.reduction = 0.4;
+			    break;
+			case 'V': this.reduction = 0.7;
+			    break;
+		}
+		Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+
+	}
+
 	public Customer(int x, int y, Room room, String type, double reduction, int id) throws SeatUnknownException, SeatTakenException {
 		currentId++;
 		this.id = id;
