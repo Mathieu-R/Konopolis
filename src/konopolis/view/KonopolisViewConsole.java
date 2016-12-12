@@ -200,15 +200,16 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         show("Espace réservé aux administrateurs ! Veuillez vous authentifier.");
         do {
             try {
+                sc.nextLine(); // We have to flush the buffer before
                 showInline("Nom d'utilisateur: ");
-                username = sc.nextLine();
+                username = sc.nextLine(); // username
                 showInline("Mot de passe: ");
-                password = sc.nextLine();
-                successAuth = control.authUser(username, password);
-            } catch(InvalidUserException e) {
+                password = sc.nextLine(); // password
+                successAuth = control.authUser(username, password); // try to connect the user
+            } catch(InvalidUserException e) { // username or/and password invalid
                 show("" + e.getMessage());
             }
-        } while (!successAuth);
+        } while (!successAuth); // while the user is not connected
 
         show("1.Ajouter un film"); // only one choice, could add other one later
         do {
@@ -246,6 +247,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         do { // the user choose a title
             try {
+                sc.nextLine(); // flush the buffer
                 show("Quelle est le titre du film ?");
                 title = sc.nextLine();
             } catch (InputMismatchException e) {

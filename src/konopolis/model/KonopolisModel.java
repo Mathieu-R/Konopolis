@@ -2,12 +2,10 @@ package src.konopolis.model;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -82,7 +80,7 @@ public class KonopolisModel extends Observable {
 
     public void createUser(String username, String password) {
         PreparedStatement createUser = null;
-        String makeUser = "INSERT INTO tbadmins(userame, hash) VALUES (?,?)";
+        String makeUser = "INSERT INTO tbadmins(username, hash) VALUES (?,?)";
 
         this.createConnection();
         try {
@@ -91,12 +89,12 @@ public class KonopolisModel extends Observable {
             createUser = conn.prepareStatement(makeUser);
             createUser.setString(1, username);
             createUser.setString(2, hash);
+            createUser.executeUpdate();
         } catch(SQLException e) {
-            try {
-                conn.rollback();
-            } catch(SQLException err) {
-                err.printStackTrace();
-            }
+            e.printStackTrace();
+        } finally {
+            pstatementCloser(createUser);
+            connectionCloser(conn);
         }
     }
 
@@ -109,7 +107,7 @@ public class KonopolisModel extends Observable {
         try {
             getUser = conn.prepareStatement(auth);
             getUser.setString(1, username);
-            getUser.executeQuery();
+            rs = getUser.executeQuery();
         } catch(SQLException e) {
             e.printStackTrace();
         }
@@ -130,6 +128,9 @@ public class KonopolisModel extends Observable {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            pstatementCloser(getUser);
+            connectionCloser(conn);
         }
         return false;
     }

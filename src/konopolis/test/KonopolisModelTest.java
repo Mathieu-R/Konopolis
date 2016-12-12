@@ -1,6 +1,7 @@
 package src.konopolis.test;
 
 import org.junit.Test;
+import src.konopolis.model.InvalidUserException;
 import src.konopolis.model.KonopolisModel;
 
 import java.time.LocalDateTime;
@@ -26,8 +27,16 @@ public class KonopolisModelTest {
 
     @Test
     public void authUser() throws Exception {
-        assertFalse(model.authUser("admin", "brol"));
         assertTrue(model.authUser("admin", "monsuperpassword"));
+    }
+
+    @Test(expected = InvalidUserException.class)
+    public void authUserWrongPassword() {
+        try {
+            assertFalse(model.authUser("admin", "brol"));
+        } catch (InvalidUserException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
