@@ -1,8 +1,9 @@
-package src.konopolis.test;
+package konopolis.test;
 
-import src.konopolis.model.KonopolisModel;
-import src.konopolis.controller.KonopolisController;
-import src.konopolis.view.KonopolisViewConsole;
+import konopolis.controller.KonopolisController;
+import konopolis.model.KonopolisModel;
+import konopolis.view.KonopolisViewConsole;
+import konopolis.view.KonopolisViewGUI;
 
 /**
  * @author nathan
@@ -22,10 +23,10 @@ public class KonopolisTest {
 		KonopolisController control = new KonopolisController(konMod);
 		
 		// View instance
-		KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, control);
+		KonopolisViewGUI konView = new KonopolisViewGUI(konMod, control);
 		
 		// We add the view to the controller
-		control.addView(konViewConsole);
+		control.addView(konView);
 		
 	}
 

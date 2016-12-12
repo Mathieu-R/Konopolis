@@ -1,4 +1,4 @@
-package src.konopolis.model;
+package konopolis.model;
 
 public class TooMuchSeatsException extends Exception {
     public TooMuchSeatsException() {

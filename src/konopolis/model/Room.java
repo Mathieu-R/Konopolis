@@ -1,4 +1,4 @@
-package src.konopolis.model;
+package konopolis.model;
 
 import java.util.ArrayList;
 
@@ -52,9 +52,8 @@ public class Room {
      * @param id, id of the room
      */
     public Room(int rows, int seatsByRow, Movie movie, int id) throws TooMuchSeatsException {
-        System.out.println("rows: " + rows + " / columns: " + seatsByRow);
         if (rows > 20 || seatsByRow > 35) {
-            throw new TooMuchSeatsException("Too much rows or seats by row");
+            throw new TooMuchSeatsException("Trop de rangée ou de siège par rangée");
         }
         
         currentId++;
@@ -93,13 +92,13 @@ public class Room {
      * @param y, column of the seat
      */
     public void giveSeat(int x, int y) throws SeatUnknownException, SeatTakenException {
-        if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
-            throw new SeatUnknownException("This seat doesn't exist");
+        if (y > rows || x > seatsByRow || y <= 0 || x <= 0) { // If we exceed the room capacity
+            throw new SeatUnknownException("Ce siège n'existe pas !");
         }
-        if (seats.get(x-1).get(y-1).isTaken()) { // If the seat is taken
-            throw new SeatTakenException("This seat is already taken");
+        if (seats.get(y-1).get(x-1).isTaken()) { // If the seat is taken
+            throw new SeatTakenException("Ce siège est dékà pris !");
         }
-        seats.get(x-1).get(y-1).setTaken(true);
+        seats.get(y-1).get(x-1).setTaken(true);
     }
 
     /**
@@ -108,13 +107,13 @@ public class Room {
      * @param y, column of the seat
      */
     public void cancelSeat(int x, int y) throws SeatUnknownException, SeatNotTakenException {
-        if ((y-1) > rows || (x-1) > seatsByRow) { // If we exceed the room capacity
-            throw new SeatUnknownException("This seat doesn't exist");
+        if (y > rows || x > seatsByRow || y <= 0 || x <= 0) { // If we exceed the room capacity
+            throw new SeatUnknownException("Ce siège n'existe pas !");
         }
-        if (!seats.get(x-1).get(y-1).isTaken()) { // If the seat is not taken
-            throw new SeatNotTakenException("This seat is not taken yet, why cancel this reservation ?, it doesn't make sens !");
+        if (!seats.get(y-1).get(x-1).isTaken()) { // If the seat is not taken
+            throw new SeatNotTakenException("Ce siège n'est pas réservé, pourquoi annuler une réservation imaginaire ?");
         }
-        seats.get(x-1).get(y-1).setTaken(false);
+        seats.get(y-1).get(x-1).setTaken(false);
     }
 
     /**
@@ -126,20 +125,6 @@ public class Room {
                 seat.setTaken(false); // The seat is not reserved
             }
         }
-    }
-
-    /**
-     * Show the console representation of the room
-     */
-    public void displayRoom() {
-        for (ArrayList<Seat> sitsRow : seats) { // For Each row
-            for (Seat seat : sitsRow) { // For Each seat
-                if (seat.isTaken()) System.out.print("[X]"); // If the seat is taken
-                else System.out.print("[O]"); // Otherwise, if the seat is available
-            }
-            System.out.print("\n"); // Turn back to the line for every row
-        }
-
     }
 
     /**

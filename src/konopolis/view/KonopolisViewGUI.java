@@ -6,6 +6,8 @@ package konopolis.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JComboBox moviesList;
 	private JComboBox showsList;
 	private JButton config;
+	
+	private JLabel defaultDisplay=new JLabel();
 
 	
 	private int movie_id = 0;
@@ -50,6 +54,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
+		//Define defaultDiplay
+		defaultDisplay.setIcon(new ImageIcon("img/Konopolus_1.0.jpg"));
 		init();
 	}
 
@@ -76,17 +82,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		//Define panelSelect
 		
 		panelSelect=new JPanel();
-		panelSelect.setSize(400, 100);
-		panelSelect.setMinimumSize(new Dimension(500,100));
+		panelSelect.setSize(400, 200);
+		panelSelect.setMinimumSize(new Dimension(500,200));
 		panelSelect.setBorder(BorderFactory.createLineBorder(Color.black));
 		panelSelect.setVisible(true);
 		
 		//Define panelDisplay
 			
 		panelDisplay=new JPanel();
-		panelDisplay.setBackground(Color.CYAN);
-		panelDisplay.setSize(400,350);
-		panelDisplay.setMinimumSize(new Dimension(500,350));
+		panelDisplay.setBackground(Color.WHITE);
+		panelDisplay.add(defaultDisplay);
+		panelDisplay.setSize(400,250);
+		panelDisplay.setMinimumSize(new Dimension(500,250));
 		panelDisplay.setBorder(BorderFactory.createLineBorder(Color.black));
 		panelDisplay.setVisible(true);
 		
@@ -112,6 +119,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		//Define ComboBox movies
 		
 		moviesList.setPreferredSize(new Dimension(175,25));
+		moviesList.addActionListener(new ActionListener() {
+			   public void actionPerformed(ActionEvent eventSource) {
+				   
+				   //choiceMovie contains the selected movie
+				   String choiceMovie = (String) moviesList.getSelectedItem();
+				   
+				   //Display the choice
+				   System.out.println(choiceMovie);
+				   
+				   //===========================================================================================>Split choiceMovie to get ID
+			   }
+		});
 		
 		//Create a default show ComboBox
 		
@@ -124,8 +143,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		
 		//Define config button
 		
-		config=new JButton("Configuration");
-		config.addActionListener(null);//======================> Ajouter event pop nuvelle fenêtre config
+		config = new JButton("Configuration");
+		config.addActionListener(null);//=====================================================================> Ajouter event pop nuvelle fenêtre config
 		
 		//Add ComboBox + button at panelSelect
 		
@@ -137,6 +156,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		
 		frame.add(panelSelect,BorderLayout.NORTH);
 		frame.add(panelDisplay);
+		frame.validate();
 		frame.pack();
 		
 	}

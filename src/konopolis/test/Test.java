@@ -1,12 +1,12 @@
 /**
  * 
  */
-package src.konopolis.test;
+package konopolis.test;
 
-import src.konopolis.controller.KonopolisController;
-import src.konopolis.model.KonopolisModel;
-import src.konopolis.view.KonopolisView;
-import src.konopolis.view.KonopolisViewConsole;
+import konopolis.controller.KonopolisController;
+import konopolis.model.KonopolisModel;
+import konopolis.view.KonopolisView;
+import konopolis.view.KonopolisViewConsole;
 
 /**
  * @author natha

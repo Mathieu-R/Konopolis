@@ -1,12 +1,11 @@
-package src.konopolis.view;
+package konopolis.view;
 
-import src.konopolis.controller.KonopolisController;
-import src.konopolis.model.KonopolisModel;
+import konopolis.controller.KonopolisController;
+import konopolis.model.KonopolisModel;
 
 import java.util.Observer;
 /**
  * @author nathan
- *
  */
 public abstract class KonopolisView implements Observer {
 	

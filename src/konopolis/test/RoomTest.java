@@ -1,9 +1,9 @@
-package src.konopolis.test;
+package konopolis.test;
 
 import java.util.ArrayList;
 
-import src.konopolis.model.Room;
-import src.konopolis.model.Seat;
+import konopolis.model.Room;
+import konopolis.model.Seat;
 
 import static org.junit.Assert.*;
 

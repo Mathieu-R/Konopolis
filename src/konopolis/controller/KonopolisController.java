@@ -1,18 +1,18 @@
 
-package src.konopolis.controller;
+package konopolis.controller;
 
-import src.konopolis.model.*;
-import src.konopolis.view.KonopolisView;
+import konopolis.model.*;
+import konopolis.view.KonopolisView;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * @author nathan
- *
  */
 public class KonopolisController {
 	 
@@ -20,7 +20,7 @@ public class KonopolisController {
 
 	private KonopolisModel model;
 	private ArrayList<String> types = new ArrayList<String>();
-	private HashMap<Integer, String> moviesTitles = new HashMap<Integer, String>();
+	private LinkedHashMap<Integer, String> moviesTitles = new LinkedHashMap<Integer, String>();
 	private HashMap<String, Double> booking = new HashMap<String, Double>();
 
 	private KonopolisView view = null;
@@ -33,18 +33,19 @@ public class KonopolisController {
 
     /**
      * Retrieve all the movies titles
-     * @return
+     * @return HashMap of all the movies titles
      */
-	public HashMap<Integer, String> retrieveAllMoviesTitles() {
+	public LinkedHashMap<Integer, String> retrieveAllMoviesTitles() {
 	    return this.moviesTitles = model.retrieveAllMoviesTitles();
 	}
 
     /**
      * Retrieve a movie according it id
      * @param movie_id
+     * @return movie, a Movie instance
      */
-	public void retrieveMovie(int movie_id){
-		model.retrieveMovie(movie_id);
+	public Movie retrieveMovie(int movie_id) {
+		return model.retrieveMovie(movie_id);
 	}
 
     /**
@@ -52,9 +53,10 @@ public class KonopolisController {
      * @param movie_id
      * @param room_id
      * @param show_start
+     * @return room, a Room instance
      */
-	public void retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
-		model.retrieveRoom(movie_id, room_id, show_start);
+	public Room retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
+		return model.retrieveRoom(movie_id, room_id, show_start);
 	}
 
     /**
@@ -69,28 +71,36 @@ public class KonopolisController {
      * @param show_start
      */
 	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
-
-		double reduction = 0;
+		double reduction = 0.0;
 
 		// We create the new customer
 		for (Room room : model.getRooms_al()) {
             if (room.getId() == room_id) {
-                final Customer newCust = new Customer(x, y, room, type, customer_id); // Create the customer
-                reduction = newCust.getReduction(); // get the reduction
+                final Customer newCust;
+                try { // try to create the customer
+                    newCust = new Customer(x, y, room, type);
+                    reduction = newCust.getReduction(); // get the reduction
+
+                    // Price
+                    for (Movie movie : model.getMovies_al()) {
+                        if (movie.getId() == movie_id) {
+                            final double reducedPrice = movie.getPrice() - movie.getPrice() * reduction; // apply the reduction
+                            booking.put(type, reducedPrice); // add the type and reducedPrice to the HashMap
+                            total += reducedPrice; // add the price to the total;
+                        }
+                    }
+
+                    // Finally, add the customer to the db if everything else is ok
+                    model.addCustomer(x, y, type, movie_id, room_id, show_start);
+
+                } catch (SeatUnknownException e) {
+                    throw new RuntimeException(e);
+                } catch (SeatTakenException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         }
-
-        // Price
-
-        for (Movie movie : model.getMovies_al()) {
-            if (movie.getId() == movie_id) {
-            	final double reductedPrice = movie.getPrice() - movie.getPrice() * reduction;
-            	booking.put(type, reductedPrice); // add the type and reductedPrice to the HashMap 
-                total += reductedPrice; // add the price to the total;
-            }
-        }
-
-		model.addCustomer(x, y, customer_id, room_id, type, movie_id, show_start);
 	}
 
     /**
@@ -115,14 +125,23 @@ public class KonopolisController {
     /**
      * Create a Date object from a day, month, year, hours and minutes
      * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
-     * @return Date, a Date object constructed from the parameters passed in the function
+     * @return LocalDateTime, a LocalDateTime constructed from the parameters passed in the function
      */
-	public static LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
-        /*Calendar c = Calendar.getInstance(); // new instance of Calendar
-        c.set(day, month - 1, year, hours, minutes, 0); // set a date
-        System.out.println("Date created: " + c.getTime());
-        return c.getTime();*/
+	public LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
         return LocalDateTime.of(year, month, day, hours, minutes);
+    }
+
+    public String dateInFrench(LocalDateTime date) {
+	    String[] days = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
+        String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
+	    final int dayName = date.getDayOfWeek().getValue(); // day of week in number (1 -> 7)
+        final int day = date.getDayOfMonth();
+        final int month = date.getMonthValue(); // month of the year (1 -> 12)
+        final int year = date.getYear();
+        final int hour = date.getHour();
+        final String minutes = date.getMinute() < 10 ? "0" + Integer.toString(date.getMinute()) : Integer.toString(date.getMinute());
+
+        return ("Le " + days[dayName - 1] + " " + day + " " + months[month - 1] + " " + year + " à " + hour + "h" + minutes);
     }
 
     /**
@@ -142,19 +161,21 @@ public class KonopolisController {
      */
 	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
 		ArrayList<Show> shows = new ArrayList<Show>();
-		
-		// For every start of a show 
-		// We create an instance of Show Class 
-		// That we put in the ArrayList shows
-		// This ArrayList will be added to the Movie instance
-		for (LocalDateTime show_start: shows_start) {
-			// show_start, show_end, movie_id, room_id
-			shows.add(new Show(show_start, show_start.plus(time, ChronoUnit.MINUTES), movie_id, room_id));
-		}
-		
-		model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
 
-		model.addMovie(movie_id, room_id, title, description, director, shows_start, casting, time, language, price, genres);
+		try {
+            model.addMovie(room_id, title, description, director, shows_start, casting, time, language, price, genres);
+            // For every start of a show
+            // We create an instance of Show Class
+            // That we put in the ArrayList shows
+            // This ArrayList will be added to the Movie instance
+            for (LocalDateTime show_start: shows_start) {
+                // show_start, show_end, movie_id, room_id
+                shows.add(new Show(show_start, show_start.plus(time, ChronoUnit.MINUTES), movie_id, room_id));
+            }
+            model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
+        } catch (RuntimeException e) {
+		    throw new RuntimeException(e);
+        }
 	}
 
     /**
@@ -224,11 +245,11 @@ public class KonopolisController {
         this.view = view;
     }
 
-    public HashMap<Integer, String> getMoviesTitles() {
+    public LinkedHashMap<Integer, String> getMoviesTitles() {
         return moviesTitles;
     }
 
-    public void setMoviesTitles(HashMap<Integer, String> moviesTitles) {
+    public void setMoviesTitles(LinkedHashMap<Integer, String> moviesTitles) {
         this.moviesTitles = moviesTitles;
     }
 
@@ -248,7 +269,4 @@ public class KonopolisController {
         this.booking = booking;
     }
 
-    public static void main(String[] args) {
-        System.out.println(KonopolisController.makeDate(29, 12, 2016, 13, 00));
-    }
 }
