@@ -1,5 +1,7 @@
 package src.konopolis.model;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import javax.xml.transform.Result;
 import java.sql.*;
 import java.sql.Date;
@@ -80,22 +82,20 @@ public class KonopolisModel extends Observable {
 
     public void createUser(String username, String password) {
         PreparedStatement createUser = null;
-        String makeUser = "INSERT INTO tbadmins(userame, hash, salt) VALUES (?,?,?)";
+        String makeUser = "INSERT INTO tbadmins(userame, hash) VALUES (?,?)";
 
         this.createConnection();
         try {
-
-            byte[] salt = getSalt(); // get the salt
+            String hash = BCrypt.hashpw(password, BCrypt.gensalt(16)); // hash password
 
             createUser = conn.prepareStatement(makeUser);
             createUser.setString(1, username);
-            createUser.setString(2, new String(salt, "UTF-8"));
-            createUser.setString(3, /* */);
+            createUser.setString(2, hash);
         } catch(SQLException e) {
             try {
                 conn.rollback();
             } catch(SQLException err) {
-                err.printStackTrace;
+                err.printStackTrace();
             }
         }
     }
@@ -111,19 +111,27 @@ public class KonopolisModel extends Observable {
             getUser.setString(1, username);
             getUser.executeQuery();
         } catch(SQLException e) {
-            e.printStackTrace;
+            e.printStackTrace();
         }
 
         try {
             if (!rs.isBeforeFirst()) { // if the user does not exist
-                throw new InvalidUserException("Cette utilisateur n'existe pas !");
+                throw new InvalidUserException("Cette utilisateur / mot de passe n'existe pas !");
             }
 
             while(rs.next()) {
                 rs.getString("username");
-                rs.getString("hash");
+                final String hash = rs.getString("hash");
+
+                if (BCrypt.checkpw(password, hash)) { // Verify if the password match the hash in db
+                    return true;
+                }
+                throw new InvalidUserException("Cette utilisateur / mot de passe n'existe pas !");
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -1020,44 +1028,6 @@ public class KonopolisModel extends Observable {
     private LocalDateTime dateToLocalDateTime(Date show) {
     	Instant instant = Instant.ofEpochMilli(show.getTime());
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-    }
-
-    /**
-     * Hash a password
-     * @param password, the password in clear
-     * @return, the hashed password
-     */
-    private String hashPassword(String password, byte[] salt) {
-
-        String hashedPassword = null;
-        final int iterations = 1000; // number of iterations
-        final int bytes = 512; // number of bytes (key length)
-
-        hashedPassword = pbkdf2(password, salt, iterations, bytes);
-        
-        return toHex(hashedPassword); // return the hashed password
-    }
-
-    /**
-     * Generate a salt for the hash (of the password)
-     * @return, bytes Array, the salt generated
-     */
-    private byte[] getSalt() throws NoSuchAlgorithmException
-    {
-        SecureRandom sr = new SecureRandom();
-        byte[] salt = new byte[16];
-        sr.nextBytes(salt); // generate a number of random bytes
-        return salt;
-    }
-
-    /**
-     * Generate a hased password based on the "pbkdf2 => password based key derivation function"
-     * @return hased password in an Array of bytes format
-     */
-    private byte[] pbkdf2(String password, byte[] salt, int iterations, int bytes) throws InvalidKeyException {
-        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, bytes); // spec
-        SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM); // new SecretKeyFactory object that uses the pbkdf2 hash method
-        return skf.generateSecret(spec).getEncoded(); // create an pbkdf2 hashed password from the spec
     }
 
     /**

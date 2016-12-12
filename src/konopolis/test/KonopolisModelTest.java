@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class KonopolisModelTest {
 
@@ -15,6 +17,17 @@ public class KonopolisModelTest {
 
     public KonopolisModelTest() {
         this.model = new KonopolisModel();
+    }
+
+    @Test
+    public void createUser() throws Exception {
+        model.createUser("admin", "monsuperpassword");
+    }
+
+    @Test
+    public void authUser() throws Exception {
+        assertFalse(model.authUser("admin", "brol"));
+        assertTrue(model.authUser("admin", "monsuperpassword"));
     }
 
     @Test

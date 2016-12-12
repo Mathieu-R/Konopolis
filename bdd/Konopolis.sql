@@ -1,7 +1,6 @@
 CREATE table tbAdmins (
 	username CHAR(30) PRIMARY KEY NOT NULL,
-	hash VARCHAR(255) NOT NULL,
-	salt VARCHAR(25) NOT NULL
+	hash VARCHAR(255) NOT NULL
 );
 
 CREATE table tbIncomes (

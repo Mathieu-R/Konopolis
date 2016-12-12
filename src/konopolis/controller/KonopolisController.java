@@ -34,7 +34,7 @@ public class KonopolisController {
     /*
      * authentify a user
      */
-    public boolean authUser(String username,String password) throws InvalideUserException {
+    public boolean authUser(String username,String password) throws InvalidUserException {
         return model.authUser(username, password);
     }
 
