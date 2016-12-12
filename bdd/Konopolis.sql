@@ -1,3 +1,9 @@
+CREATE table tbAdmins (
+	username CHAR(30) PRIMARY KEY NOT NULL,
+	hash VARCHAR(255) NOT NULL,
+	salt VARCHAR(25) NOT NULL
+);
+
 CREATE table tbIncomes (
 	incomes DOUBLE PRIMARY KEY
 );
@@ -16,7 +22,7 @@ CREATE table tbMovies (
 	language_id int NOT NULL,
 	price double NOT NULL,
 	CONSTRAINT mvUnique UNIQUE (title),
-  FOREIGN KEY (language_id) REFERENCES tbLanguages(language_id) ON UPDATE CASCADE
+  	FOREIGN KEY (language_id) REFERENCES tbLanguages(language_id) ON UPDATE CASCADE
 );
 
 CREATE table tbGenres (

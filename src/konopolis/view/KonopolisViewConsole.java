@@ -193,6 +193,22 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
      */
     private void movieConfig() {
 	    int choiceConfig = 0;
+        String username = "";
+        String password = "";
+
+        show("Espace réservé aux administrateurs ! Veuillez vous authentifier.");
+        do {
+            try {
+                showInline("Nom d'utilisateur: ");
+                username = sc.nextLine();
+                showInline("Mot de passe: ")
+                password = sc.nextLine();
+                control.authUser(username, password);
+                successAuth = true;
+            } catch(InvalidUserException e) {
+                show("" + e.getMessage());
+            } 
+        } while (!successAuth);
 
         show("1.Ajouter un film"); // only one choice, could add other one later
         do {

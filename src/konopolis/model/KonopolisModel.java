@@ -78,6 +78,54 @@ public class KonopolisModel extends Observable {
        }
     }
 
+    public void createUser(String username, String password) {
+        PreparedStatement createUser = null;
+        String makeUser = "INSERT INTO tbadmins(userame, hash, salt) VALUES (?,?,?)";
+
+        this.createConnection();
+        try {
+
+            byte[] salt = getSalt(); // get the salt
+
+            createUser = conn.prepareStatement(makeUser);
+            createUser.setString(1, username);
+            createUser.setString(2, new String(salt, "UTF-8"));
+            createUser.setString(3, /* */);
+        } catch(SQLException e) {
+            try {
+                conn.rollback();
+            } catch(SQLException err) {
+                err.printStackTrace;
+            }
+        }
+    }
+
+    public boolean authUser(String username, String password) throws InvalidUserException {
+        PreparedStatement getUser = null;
+        String auth = "SELECT username, hash FROM tbadmins where username = ?";
+        
+        this.createConnection();
+        ResultSet rs = null;
+        try {
+            getUser = conn.prepareStatement(auth);
+            getUser.setString(1, username);
+            getUser.executeQuery();
+        } catch(SQLException e) {
+            e.printStackTrace;
+        }
+
+        try {
+            if (!rs.isBeforeFirst()) { // if the user does not exist
+                throw new InvalidUserException("Cette utilisateur n'existe pas !");
+            }
+
+            while(rs.next()) {
+                rs.getString("username");
+                rs.getString("hash");
+            }
+        }
+    }
+
     /**
      * Retrieve all the movies titles from the db
      * That's what we want at the launching of our app
@@ -972,6 +1020,44 @@ public class KonopolisModel extends Observable {
     private LocalDateTime dateToLocalDateTime(Date show) {
     	Instant instant = Instant.ofEpochMilli(show.getTime());
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
+    /**
+     * Hash a password
+     * @param password, the password in clear
+     * @return, the hashed password
+     */
+    private String hashPassword(String password, byte[] salt) {
+
+        String hashedPassword = null;
+        final int iterations = 1000; // number of iterations
+        final int bytes = 512; // number of bytes (key length)
+
+        hashedPassword = pbkdf2(password, salt, iterations, bytes);
+        
+        return toHex(hashedPassword); // return the hashed password
+    }
+
+    /**
+     * Generate a salt for the hash (of the password)
+     * @return, bytes Array, the salt generated
+     */
+    private byte[] getSalt() throws NoSuchAlgorithmException
+    {
+        SecureRandom sr = new SecureRandom();
+        byte[] salt = new byte[16];
+        sr.nextBytes(salt); // generate a number of random bytes
+        return salt;
+    }
+
+    /**
+     * Generate a hased password based on the "pbkdf2 => password based key derivation function"
+     * @return hased password in an Array of bytes format
+     */
+    private byte[] pbkdf2(String password, byte[] salt, int iterations, int bytes) throws InvalidKeyException {
+        PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterations, bytes); // spec
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM); // new SecretKeyFactory object that uses the pbkdf2 hash method
+        return skf.generateSecret(spec).getEncoded(); // create an pbkdf2 hashed password from the spec
     }
 
     /**

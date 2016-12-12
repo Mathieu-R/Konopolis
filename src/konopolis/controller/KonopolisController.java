@@ -31,6 +31,14 @@ public class KonopolisController {
 
 	/* Methods */
 
+    /*
+     * authentify a user
+     */
+    public boolean authUser(String username,String password) throws InvalideUserException {
+        return model.authUser(username, password);
+    }
+
+
     /**
      * Retrieve all the movies titles
      * @return HashMap of all the movies titles
