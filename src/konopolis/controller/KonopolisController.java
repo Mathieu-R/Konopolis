@@ -213,8 +213,8 @@ public class KonopolisController {
         return model.getRooms_al();
     }
 
-    public ArrayList<Show> getShows_al() {
-        return model.getShows_al();
+    public ArrayList<Show> getShows_al(int movieId) {
+        return model.retrieveMovie(movieId).getShows();
     }
 
     public ArrayList<Customer> getCustomers_al() {
@@ -267,6 +267,24 @@ public class KonopolisController {
 
     public void setBooking(HashMap<String, Double> booking) {
         this.booking = booking;
+    }
+    
+    public String[] getArrayShows(int movie_id){
+    	
+    	System.out.println(movie_id);
+    	
+    	model.retrieveMovie(movie_id);
+    	
+    	System.out.println(model.getShows_al().get(0).getRoom_id());
+    	
+		String [] arrayShows = new String [model.getShows_al().size()];
+    	
+		/*for(int i=0;i<model.getShows_al().size();i++){
+			arrayShows[i] = "Salle "+model.getShows_al().get(i).getRoom_id()+" - "+model.getShows_al().get(i).getShow_start().toString();
+		}
+		*/
+    	return null;
+    	
     }
 
 }

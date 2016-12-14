@@ -116,7 +116,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
             do {
                 try {
-                    show("S√©lectionner votre place en x,y (si√®ge, rang√©e)");
+                    show("SÈlectionner votre place en x,y (si√®ge, rangÈe)");
                     chosenSeat = sc.nextLine().split(","); // split the coordinates
                     //LocalDateTime show_start; // temp variable that will contain the beginning date of the show
                     control.getMovies_al().forEach(movie -> { // Lambda => forEach movie in the movies ArrayList
@@ -248,7 +248,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         do { // the user choose one or more genre(s)
             try {
-                show("Quel est (quels sont) le(s) genre(s) du film ? (s√©par√©s par une virgule)");
+                show("Quel est (quels sont) le(s) genre(s) du film ? (sÈparÈs par une virgule)");
                 repGenres = sc.nextLine();
                 genres = new ArrayList<String>(Arrays.asList(repGenres.split(","))); // split the genres in an ArrayList
             } catch (InputMismatchException e) {
@@ -258,11 +258,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         dates_show = enterDate(); // function to allow the user to enter a date of show
 
-        show("Dans quel salle se d√©roule le film ?");
+        show("Dans quel salle se dÈroule le film ?");
 
         control.retrieveAllRooms(); // Get all the rooms
         for (Room room : control.getRooms_al()) { // Show every room
-            show(room.getId() + ") " + room.getRows() + " rang√©es - " + room.getSeatsByRow() + " si√®ges par rang√©e - " + room.getTotSeats() + " places");
+            show(room.getId() + ") " + room.getRows() + " rangÈes - " + room.getSeatsByRow() + " si√®ges par rangÈe - " + room.getTotSeats() + " places");
         }
 
         do { // the user can now choose a room
@@ -275,20 +275,20 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         do { // the user can choose the director
             try {
-                show("Quelle est le r√©alisateur ?");
+                show("Quelle est le rÈalisateur ?");
                 director = sc.nextLine();
             } catch (InputMismatchException e) {
-                show("R√©alisateur manquant !");
+                show("RÈalisateur manquant !");
             }
         } while (director.equals(""));
 
         do { // the user can choose the actors
             try {
-                show("Quels sont les acteurs principaux ? (s√©par√©s par une virgule)");
+                show("Quels sont les acteurs principaux ? (sÈparÈs par une virgule)");
                 repCast = sc.nextLine();
                 casting = new ArrayList<String>(Arrays.asList(repCast.split(",")));
             } catch (InputMismatchException e) {
-                show("Acteur(s) manquant(s) ou pattern non-respect√©");
+                show("Acteur(s) manquant(s) ou pattern non-respectÈ");
             }
         } while (repCast.equals(""));
 
@@ -298,7 +298,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                 String repTime = sc.nextLine();
                 time = Integer.parseInt(repTime); // parse the integer into a int
             } catch (InputMismatchException e) {
-                show("Dur√©e manquante !");
+                show("DurÈe manquante !");
             }
         } while (time == 0);
 
@@ -341,7 +341,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         boolean enterDate = false;  // Boolean to know if we have to let the user enter a date again
         ArrayList<LocalDateTime> dates_show = new ArrayList<LocalDateTime>(); // ArrayList of shows
 
-        show("Quelle sont la ou les s√©ances ?");
+        show("Quelle sont la ou les sÈances ?");
         do { // The user can enter a date of show
             int day = enterDay();
             int month = enterMonth();
@@ -352,7 +352,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             LocalDateTime date = control.makeDate(day, month, year, hour, minute); // we create the date
             dates_show.add(date); // add the date to the ArrayList
 
-            System.out.println("Ajouter une autre s√©ance ?");
+            System.out.println("Ajouter une autre sÈance ?");
 
             do { // ask if the user want to enter another date of show
                 try {
@@ -421,10 +421,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         int year = 0;
         do {
             try {
-                showInline("Ann√©e (" + currentYear + " - 2018): ");
+                showInline("AnnÈe (" + currentYear + " - 2018): ");
                 year = sc.nextInt();
             } catch (InputMismatchException e) {
-                show("Entrez une ann√©e entre " + currentYear + " et 2.");
+                show("Entrez une annÈe entre " + currentYear + " et 2.");
                 sc.nextInt();
             }
         } while (year < currentYear || year > 2018);
@@ -478,7 +478,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) { // for every movie in the HashMap
             show(index++ + ") " + movieEntry.getValue());
         }
-        showInline("S√©lectionnez un film : ");
+        showInline("SÈlectionnez un film : ");
         do { // the user can choose one
             try {
                 movieListNumber = sc.nextInt(); // get the number of the list (which is equals the position of the movie in the LinkedHashMap + 1)
@@ -500,7 +500,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         show("Description:");
         show(movie.getDescription());
         show("---------------------------------------------------------");
-        show("R√©alisateur: " + movie.getDirector());
+        show("RÈalisateur: " + movie.getDirector());
         show("Acteurs principaux: ");
         for (String acteur : movie.getCasting()){
             show("> " + acteur);
@@ -529,7 +529,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
                 do { // the user can chose the show he wanna go
                     try {
-                        show("S√©lectionnez la s√©ance: "); // We select the show
+                        show("SÈlectionnez la sÈance: "); // We select the show
                         show_id = sc.nextInt(); // Id of the show
                     } catch (InputMismatchException e) {
                         show("Mauvais choix");

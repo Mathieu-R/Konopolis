@@ -36,7 +36,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JPanel panelSelect;
 	private JPanel panelDisplay;
 	private JComboBox moviesList;
-	private JComboBox showsList;
+	private JComboBox<String> showsList;
 	private JButton config;
 	
 	private JLabel defaultDisplay=new JLabel();
@@ -101,9 +101,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		
 		//Fill the ArrayList with movie's titles
 		
-		for (Map.Entry<Integer, String> movieEntry: control.retrieveAllMoviesTitles().entrySet()) {
-			listTitles.add(movieEntry.getKey()+"."+movieEntry.getValue());
-        }
+		for (Map.Entry<Integer, String> entry : control.retrieveAllMoviesTitles().entrySet()) {
+		    
+			listTitles.add(entry.getKey()+"."+entry.getValue());
+			
+			
+		}
 		
 		//Fill a simple array of titles
 		
@@ -114,32 +117,50 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		 
 		//Give the list to the ComboBox
 		
-		moviesList=new JComboBox(titles);
+		moviesList=new JComboBox<Object>(titles);
+		
+		//Create a default show ComboBox
+		
+				showsList=new JComboBox<String>();
+				showsList.addItem("Veuillez choisir un film");
+				showsList.setPreferredSize(new Dimension(175,25));
 		
 		//Define ComboBox movies
 		
 		moviesList.setPreferredSize(new Dimension(175,25));
 		moviesList.addActionListener(new ActionListener() {
-			   public void actionPerformed(ActionEvent eventSource) {
+			  
+				public void actionPerformed(ActionEvent eventSource) {
 				   
 				   //choiceMovie contains the selected movie
 				   String choiceMovie = (String) moviesList.getSelectedItem();
 				   
-				   //Display the choice
-				   System.out.println(choiceMovie);
+				   //Split the id and the title of the movie selected
+				   String [] splitChoice=choiceMovie.split(".");
+				   
+				   //Remove of all the shows currently displayed in the list
+				   showsList.removeAllItems();
+				   
+				   
+				control.getArrayShows(Integer.parseInt(splitChoice[0]));
+				  
+				  
+				   /*
+				    * for(int i=0;i<control.getArrayShows(Integer.parseInt(splitChoice[0])).length;i++){
+					   showsList.addItem(control.getArrayShows(Integer.parseInt(splitChoice[0]))[i]);
+				   }
+				   */
+				  
 				   
 				   //===========================================================================================>Split choiceMovie to get ID
 			   }
 		});
 		
-		//Create a default show ComboBox
 		
-		String[]shows={"Veuillez choisir un film"};
-		showsList=new JComboBox(shows);
 		
 		//Define ComboBox movies
 		
-		showsList.setPreferredSize(new Dimension(175,25));
+		
 		
 		//Define config button
 		
@@ -160,4 +181,6 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		frame.pack();
 		
 	}
+	
+	
 }
