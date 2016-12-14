@@ -24,7 +24,7 @@ import java.util.*;
 public class KonopolisModel extends Observable {
     
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false"; // auto reconnection and no ssl connection (not prod ready)
+    private String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false"; // auto reconnection and no ssl connection (not prod ready)
     private final String USER = "root";
     private final String PWD = "root";
 
@@ -235,18 +235,19 @@ public class KonopolisModel extends Observable {
                 // For every date String
                 for (String show : shows) {
                 	LocalDateTime show_start = stringToLocalDateTime(show);
-                	
+
                 	// end of the show => start of the show + time in minutes
             		final LocalDateTime show_end = show_start.plus(time, ChronoUnit.MINUTES);
-            		
+
             		// Add an instance of show => id = movie_id
             		shows_al.add(new Show(show_start, show_end, id, room_id));
                 }
 
                 movie = new Movie(id, title, description, genres, shows_al, director, casting, time, language, price);
                 // Push every Movie' instance in this ArrayList
-                movies_al.clear(); // A changer, il faudrait vérifier si le film existe déjà, dans ce cas ne pas faire la requête une seconde fois
-                movies_al.add(movie);
+                //movies_al.clear(); // A changer, il faudrait vérifier si le film existe déjà, dans ce cas ne pas faire la requête une seconde fois
+                if (!movies_al.contains(movie)) movies_al.add(movie); // if the movie is not present, we add it
+
                 //setChanged();
                 //notifyObservers();
             }
@@ -270,17 +271,21 @@ public class KonopolisModel extends Observable {
      */
     public Room retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
         Room room = null;
+        PreparedStatement getRm = null;
     	//rooms_al.clear();
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms "
-        		   + "WHERE movie_id = " + movie__id + " and room_id = " + room_id + " and show_start = " + "'" + show__start + "'";
+        		   + "WHERE movie_id = ? and room_id = ? and show_start = ? ";
         
         this.createConnection();
-        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
-            rs = stmt.executeQuery(sql);
+            getRm = conn.prepareStatement(sql);
+            getRm.setInt(1, movie__id);
+            getRm.setInt(2, room_id);
+            getRm.setTimestamp(3, Timestamp.valueOf(show__start));
+            rs = getRm.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1060,13 +1065,18 @@ public class KonopolisModel extends Observable {
     /**
      * Getters and Setters
      */
-    
+
+
     public String getDB_DRIVER() {
         return DB_DRIVER;
     }
 
     public String getDB_URL() {
         return DB_URL;
+    }
+
+    public void setDB_URL(String DB_URL) {
+        this.DB_URL = DB_URL;
     }
 
     public String getUSER() {

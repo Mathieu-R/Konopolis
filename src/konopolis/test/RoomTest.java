@@ -50,85 +50,40 @@ public class RoomTest {
      * Test that an attempt to create an too great room throws TooMuchSeatsException
      */
     @org.junit.Test(expected = TooMuchSeatsException.class)
-    public void overSeats() {
-        try {
-            Room overRows = new Room(21, 35, 1); // Too much rows
-        } catch (TooMuchSeatsException e) {
-            e.printStackTrace();
-        }
-        try {
-            Room overSitsByRow = new Room(20, 36, 1); // Too much seats by rows
-        } catch (TooMuchSeatsException e) {
-            e.printStackTrace();
-        }
+    public void overSeats() throws TooMuchSeatsException {
+        Room overRows = new Room(21, 35, 1); // Too much rows
+        Room overSitsByRow = new Room(20, 36, 1); // Too much seats by rows
     }
 
     /**
      * Test that an attemps to book an unknows seat throws an SeatUnknowsException
      */
     @org.junit.Test(expected = SeatUnknownException.class)
-    public void unknownSeat() {
-        Room room1 = null;
-        try {
-            room1 = new Room(10, 10, 1);
-        } catch (TooMuchSeatsException e) {
-            e.printStackTrace();
-        }
-        try {
-            room1.giveSeat(11, 10); // This seat doesn't exist
-        } catch (SeatUnknownException e) {
-            e.printStackTrace();
-        } catch (SeatTakenException e) {
-            e.printStackTrace();
-        }
+    public void unknownSeat() throws TooMuchSeatsException, SeatUnknownException, SeatTakenException {
+        Room room1 = new Room(10, 10, 1);
+        room1.giveSeat(11, 10); // This seat doesn't exist
+
     }
 
     /**
      * Test that an attempt to book a seat already taken throws a SeatTakenException
      */
     @org.junit.Test(expected = SeatTakenException.class)
-    public void takenSeat() {
-        Room room1 = null;
-        try {
-            room1 = new Room(10, 10, 1);
-        } catch (TooMuchSeatsException e) {
-            e.printStackTrace();
-        }
-        try {
-            room1.giveSeat(10, 10);
-        } catch (SeatUnknownException e) {
-            e.printStackTrace();
-        } catch (SeatTakenException e) {
-            e.printStackTrace();
-        }
+    public void takenSeat() throws TooMuchSeatsException, SeatUnknownException, SeatTakenException {
+        Room room1 = new Room(10, 10, 1);
+        room1.giveSeat(10, 10); // We book the seat a first time
+        room1.giveSeat(10, 10); // This seat is already taken
 
-        try {
-            room1.giveSeat(10, 10); // This seat is already taken
-        } catch (SeatUnknownException e) {
-            e.printStackTrace();
-        } catch (SeatTakenException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
      * Test that an attempt to cancel the booking of a seat not booked throws a SeatNotTakenException
      */
     @org.junit.Test(expected = SeatNotTakenException.class)
-    public void notTakenSeat() {
-        Room room1 = null;
-        try {
-            room1 = new Room(10, 10, 1);
-        } catch (TooMuchSeatsException e) {
-            e.printStackTrace();
-        }
-        try {
-            room1.cancelSeat(10, 10); // This seat is not taken
-        } catch (SeatUnknownException e) {
-            e.printStackTrace();
-        } catch (SeatNotTakenException e) {
-            e.printStackTrace();
-        }
+    public void notTakenSeat() throws TooMuchSeatsException, SeatUnknownException, SeatNotTakenException {
+        Room room1 = new Room(10, 10, 1);
+        room1.cancelSeat(10, 10); // This seat is not taken
+
     }
 
     @org.junit.Test
@@ -210,26 +165,4 @@ public class RoomTest {
             }
         }
     }
-
-    //@org.junit.Test
-    /*public void displayRoom() {
-        Room room1 = null;
-        try {
-            room1 = new Room(10, 10, 1);
-        } catch (TooMuchSeatsException e) {
-            e.printStackTrace();
-        }
-        try {
-            room1.giveSeat(1, 1);
-        } catch (SeatUnknownException e) {
-            e.printStackTrace();
-        } catch (SeatTakenException e) {
-            e.printStackTrace();
-        }
-        room1.displayRoom();
-        /* No Test */
-    //}*/
-
-
-
 }
