@@ -211,6 +211,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
             }
         } while (!successAuth); // while the user is not connected
 
+        show("Faites votre choix: ");
         show("1.Ajouter un film"); // only one choice, could add other one later
         do {
             try {

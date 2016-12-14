@@ -185,33 +185,41 @@ public class KonopolisModel extends Observable {
     
     public Movie retrieveMovie(int movie_id) {
         Movie movie = null;
+        PreparedStatement getMv = null;
         
 	    String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(cast) " 
 					+ "from tbmoviescasts "
-					+ "natural join tbcasts) as casting,"
+					+ "natural join tbcasts "
+                    + "where movie_id = ? ) as casting, "
 			        + "(select group_concat(genre) " 
 					+ "from tbmoviesgenres "
-					+ "natural join tbgenres) as genres,"
+					+ "natural join tbgenres "
+                    + "where movie_id = ? ) as genres, "
 					+ "(select group_concat(show_start) "
 					+ "from tbmovies "
-					+ "natural join tbmoviesrooms) as shows,"
+					+ "natural join tbmoviesrooms "
+                    + "where movie_id = ? ) as shows, "
 			        + "time, language, price "
 			        + "from tbmovies as m "
 			        + "natural join tblanguages "
 			        + "natural join tbmoviesrooms as mr "
-			        + "where m.movie_id = " + movie_id + " "
+			        + "where m.movie_id = ? "
 	    			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
 	    
 	    			// What about 2 rooms for one same movie ?
 	    			// Consider Group By
         
         this.createConnection();
-        this.createStatement();
-        
         ResultSet rs = null; // Execute the sql query and put the results in the results set
+
         try {
-            rs = stmt.executeQuery(sql);
+            getMv = conn.prepareStatement(sql);
+            getMv.setInt(1, movie_id);
+            getMv.setInt(2, movie_id);
+            getMv.setInt(3, movie_id);
+            getMv.setInt(4, movie_id);
+            rs = getMv.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
