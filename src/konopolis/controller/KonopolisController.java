@@ -56,6 +56,9 @@ public class KonopolisController {
 		return model.retrieveMovie(movie_id);
 	}
 
+	public int retrieveMovieId(String title) {
+	    return model.retrieveMovieId(title);
+    }
     /**
      * Retrieve a room where a movie is broadcasted (for a show given)
      * @param movie_id
