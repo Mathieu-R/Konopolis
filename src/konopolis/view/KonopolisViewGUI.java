@@ -23,20 +23,18 @@ import java.util.Observer;
  * @author nathan
  *
  */
-public class KonopolisViewGUI extends KonopolisView implements Observer {
+public class KonopolisViewGUI extends KonopolisView implements Observer, ActionListener {
 	
-	//Instantiate elements of GUI
-	private JFrame frame;
-	private JPanel panelSelect;
-	private JPanel panelDisplay;
-	private JPanel panelInfo;
-	private JComboBox moviesList;
-	private JComboBox<String> showsList;
-	private JButton config;
-	private JTextArea infos;
-	
-	private JLabel displayRoom =new JLabel();
-
+	// Instantiate elements of GUI
+	private JFrame frame = new JFrame("Konopolis");
+	private JPanel panelSelect = new JPanel();
+	private JPanel panelDisplay = new JPanel();
+	private JPanel panelInfo = new JPanel();
+	private JComboBox<String> moviesList = new JComboBox<String>();
+	private JComboBox<String> showsList = new JComboBox<String>();
+	private JButton config = new JButton("Configuration");
+	private JTextArea infos = new JTextArea();
+	private JLabel displayRoom = new JLabel();
 	
 	private int movie_id = 0;
 	private int room_id = 0;
@@ -45,8 +43,6 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private LocalDateTime show_start;
 	private ArrayList<String> listTitles = new ArrayList<String>();
 	private Room selectedRoom;
-	private String [] shows = new String [50];
-	
 	
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
@@ -57,14 +53,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		init();
 	}
 
-	public void update(Observable arg0, Object arg1) {
-
-	}
-
 	public void init() {
 		
-		//Define frame
-		frame = new JFrame("Konopolis");
+		// Define frame
 		frame.setVisible(true);
 		frame.setSize(1200,900);
 		frame.setLocationRelativeTo(null);
@@ -75,12 +66,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		
 		
 		// Define panelSelect
-		panelSelect = new JPanel();
 		panelSelect.setSize(400, 200);
 		panelSelect.setMinimumSize(new Dimension(500,200));
 		panelSelect.setBorder(BorderFactory.createLineBorder(Color.black));
 		panelSelect.setVisible(true);
-		
+
 		// Label
 		JLabel selectAMovie = new JLabel("Sélectionnez un film: ");
 
@@ -96,32 +86,19 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 			titles[i] = listTitles.get(i);
 		}
 		 
-		//Give the list to the ComboBox
-		moviesList=new JComboBox<String>(titles);
-		//moviesList.setSelectedIndex();
+		// Give the list to the ComboBox
+		moviesList = new JComboBox<String>(titles);
+        moviesList.setActionCommand("Movies"); // Action for ActionListener
 		
-		//Create a default show ComboBox
-		showsList=new JComboBox<String>();
+		// Create a default show ComboBox
+		showsList.setActionCommand("Shows"); // Action for ActionListener
 		showsList.setPreferredSize(new Dimension(300,25));
 
 		//Define ComboBox movies
 		moviesList.setPreferredSize(new Dimension(300,25));
 
-		moviesList.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent eventSource) {
-				displayShows();
-	    	}
-		});
-
 		// Define config button
-		config = new JButton("Configuration");
-
-		config.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayAuth();
-            }
-        });// TODO => Ajouter event pop nouvelle fenêtre config
+		config.setActionCommand("Config");
 		
 		// Add Label, ComboBox + button at panelSelect
         panelSelect.add(selectAMovie);
@@ -129,43 +106,27 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		panelSelect.add(showsList);
 		panelSelect.add(config);
 		
-		//Add TextField to the pabelDisplay
-		infos = new JTextArea();
+		// Add TextField to the labelDisplay
 		infos.setWrapStyleWord(true);
 		infos.setEditable(false);
 		infos.setSize(new Dimension(200,500));
-		infos.setFont(new Font("Roboto", Font.BOLD,16));
+		infos.setFont(new Font("Roboto", Font.BOLD, 16));
 		infos.setBackground(Color.LIGHT_GRAY);
-		infos.setBorder(BorderFactory.createCompoundBorder(
-		        infos.getBorder(),
-		        BorderFactory.createEmptyBorder(10, 10, 10, 10)
-                )
-        );
-		
-		//Define panelDisplay
-		
-		panelDisplay = new JPanel();
-		panelDisplay.setSize(500,500);
-		panelDisplay.setBackground(Color.WHITE);
-		panelDisplay.setBorder(BorderFactory.createLineBorder(Color.black));
-		panelDisplay.setVisible(true);
-		panelDisplay.setMinimumSize(new Dimension(500, 500));
+		infos.setBorder(BorderFactory.createCompoundBorder(infos.getBorder(), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 				
 		//Define panelInfo
-				
-		panelInfo = new JPanel();
 		panelInfo.setBackground(Color.lightGray);
 		panelInfo.add(infos);
 		
 		//Add panels to frame
 		
 		frame.add(panelSelect,BorderLayout.NORTH);
+		//frame.add(panelDisplay);
 		frame.add(panelInfo, BorderLayout.SOUTH);
 		frame.validate();
 		frame.pack();
 
         displayShows();
-		
 	}
     /**
      * Fill the ComboBox of Shows
@@ -187,35 +148,52 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         }
         //Select the first item of the list
         showsList.setSelectedIndex(0);
-        showsList.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent eventSource) {
-                displayRoom();
-           }
-        });
     }
 
     /**
      * Display the room at the moment of the show
      */
     private void displayRoom() {
+        int size = 0;
+        int rows = 0;
+        int columns = 0;
+
+        // Select the show
         Show selectedShow = control.getShows_al().get(showsList.getSelectedIndex());
-        //System.out.println(showsList.getSelectedIndex());
+        // Select the room and its customers
         selectedRoom = control.retrieveRoom(selectedShow.getMovie_id(), selectedShow.getRoom_id(), selectedShow.getShow_start());
-        panelDisplay = new JPanel(new GridLayout(selectedRoom.getRows(), selectedRoom.getSeatsByRow()));
+        // size of room (rows, seats by row)
+        rows = selectedRoom.getRows();
+        columns = selectedRoom.getSeatsByRow();
+        // size of every seat of the mapping
+        if (rows >= 30 || columns >= 30) {
+            size = 25;
+        } else if (rows > 20 && rows < 30 || columns > 20 && columns < 30) {
+            size = 50;
+        } else {
+            size = 75;
+        }
+        System.out.println(size);
+        // Remove the last mapping
+        // Then, new Grid (will contain the mapping of the room)
+        panelDisplay.removeAll();
+        panelDisplay.setLayout(new GridLayout(rows, columns));
+        panelDisplay.setPreferredSize(new Dimension(rows * size, columns * size));
+
         //JButton[][] grid = new JButton[selectedRoom.getRows()][selectedRoom.getSeatsByRow()]; // grid of JButtons
-        for (int y = 0; y < selectedRoom.getRows(); y++) {
-            for (int x = 0; x < selectedRoom.getSeatsByRow(); x++) {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
                 // Button
-                JButton seat = new JButton(x + ", " + y);
-                seat.setBorder(BorderFactory.createEmptyBorder());
+                JButton seat = new JButton((y + 1) + ", " + (x + 1));
+                seat.setOpaque(true);
                 seat.setBorderPainted(false);
+                seat.setActionCommand("Book");
+
                 if (selectedRoom.getSeats().get(y).get(x).isTaken()) {
                     seat.setBackground(Color.decode("#e74c3c"));
                 } else {
-                    seat.setBackground(Color.gray);
+                    seat.setBackground(Color.lightGray);
                 }
-                seat.setPreferredSize(new Dimension(75, 75));
-                seat.setMargin(new Insets(0, 0, 0, 0));
 
                 // Event Listener
                 int finalX = x;
@@ -230,30 +208,45 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
                     @Override
                     public void mouseExited(MouseEvent e) {
-                        seat.setBackground(Color.gray);
-                        /*if(seat.getBackground().equals("#27ae60")) {
-                            seat.setBackground(Color.gray);
-                        }*/
+                        if(seat.getBackground().equals(Color.decode("#27ae60"))) {
+                            seat.setBackground(Color.lightGray);
+                        }
                     }
                 });
 
-                // Panel for buttons
-                JPanel panelButtons = new JPanel();
-                panelButtons.setPreferredSize(new Dimension(75, 75));
-                panelButtons.setBorder(BorderFactory.createEmptyBorder());
-                panelButtons.add(seat);
-
                 // Add to the Map
-                panelDisplay.add(panelButtons);
+				panelDisplay.add(seat);
             }
         }
+        panelDisplay.repaint();
+        panelDisplay.revalidate();
         // Add the Map to the Jframe
-        frame.add(panelDisplay,BorderLayout.CENTER);
-        //frame.pack(); // set correct size for frame
+        frame.add(panelDisplay, BorderLayout.CENTER);
     }
 
     private void displayAuth() {
         // TODO auth form
         // if ok => config
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+        if (cmd.equals("Movie")) {
+
+        }
+        else if (cmd.equals("Show")) {
+            displayRoom();
+        }
+        else if (cmd.equals("Config")) {
+            displayAuth();
+        }
+        else if (cmd.equals("Book")) {
+            //
+        }
+    }
+
+    public void update(Observable arg0, Object arg1) {
+
     }
 }
