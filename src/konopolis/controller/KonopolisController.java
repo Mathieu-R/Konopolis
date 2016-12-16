@@ -31,6 +31,14 @@ public class KonopolisController {
 
 	/* Methods */
 
+    /*
+     * authentify a user
+     */
+    public boolean authUser(String username,String password) throws InvalidUserException {
+        return model.authUser(username, password);
+    }
+
+
     /**
      * Retrieve all the movies titles
      * @return HashMap of all the movies titles
@@ -133,7 +141,7 @@ public class KonopolisController {
 
     public String dateInFrench(LocalDateTime date) {
 	    String[] days = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
-        String[] months = {"Janvier", "FÃ©vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "AoÃ»t", "Septembre", "Octobre", "Novembre", "DÃ©cembre"};
+        String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
 	    final int dayName = date.getDayOfWeek().getValue(); // day of week in number (1 -> 7)
         final int day = date.getDayOfMonth();
         final int month = date.getMonthValue(); // month of the year (1 -> 12)
@@ -141,7 +149,7 @@ public class KonopolisController {
         final int hour = date.getHour();
         final String minutes = date.getMinute() < 10 ? "0" + Integer.toString(date.getMinute()) : Integer.toString(date.getMinute());
 
-        return ("Le " + days[dayName - 1] + " " + day + " " + months[month - 1] + " " + year + " Ã  " + hour + "h" + minutes);
+        return ("Le " + days[dayName - 1] + " " + day + " " + months[month - 1] + " " + year + " à  " + hour + "h" + minutes);
     }
 
     /**
@@ -213,8 +221,8 @@ public class KonopolisController {
         return model.getRooms_al();
     }
 
-    public ArrayList<Show> getShows_al(int movieId) {
-        return model.retrieveMovie(movieId).getShows();
+    public ArrayList<Show> getShows_al() {
+        return model.getShows_al();
     }
 
     public ArrayList<Customer> getCustomers_al() {
@@ -269,22 +277,7 @@ public class KonopolisController {
         this.booking = booking;
     }
     
-    public String[] getArrayShows(int movie_id){
-    	
-    	System.out.println(movie_id);
-    	
-    	model.retrieveMovie(movie_id);
-    	
-    	System.out.println(model.getShows_al().get(0).getRoom_id());
-    	
-		String [] arrayShows = new String [model.getShows_al().size()];
-    	
-		/*for(int i=0;i<model.getShows_al().size();i++){
-			arrayShows[i] = "Salle "+model.getShows_al().get(i).getRoom_id()+" - "+model.getShows_al().get(i).getShow_start().toString();
-		}
-		*/
-    	return null;
-    	
+    public int retrieveMovieId(String title){
+    	return model.retrieveMovieId(title);
     }
-
 }

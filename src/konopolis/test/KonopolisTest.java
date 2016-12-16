@@ -2,6 +2,7 @@ package konopolis.test;
 
 import konopolis.controller.KonopolisController;
 import konopolis.model.KonopolisModel;
+import konopolis.view.KonopolisView;
 import konopolis.view.KonopolisViewConsole;
 import konopolis.view.KonopolisViewGUI;
 
@@ -25,6 +26,7 @@ public class KonopolisTest {
 		// View instance
 		KonopolisViewGUI konView = new KonopolisViewGUI(konMod, control);
 		
+		new Thread(konView).start();
 		// We add the view to the controller
 		control.addView(konView);
 		
