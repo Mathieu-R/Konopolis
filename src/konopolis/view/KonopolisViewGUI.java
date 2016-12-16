@@ -1,12 +1,18 @@
 
 package src.konopolis.view;
 
+import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -21,32 +27,48 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import static javafx.application.Application.launch;
-
 /**
  * @author Mathieu
  */
-public class KonopolisViewGUI extends KonopolisView implements Observer {
+public class KonopolisViewGUI extends Application implements Observer {
 
-    ComboBox moviesList = new ComboBox(); // choiceBox => list of movies
-    ComboBox showsList = new ComboBox(); // choiceBox => list of shows (for a movie)
-    Button configButton = new Button("Configuration");
-    Pane mappingRoom = new Pane();
-    Group booking = new Group();
+    public static KonopolisController control;
+    public static KonopolisModel model;
+
+    ComboBox moviesList; // choiceBox => list of movies
+    ComboBox showsList; // choiceBox => list of shows (for a movie)
+    Button configButton;
+    Pane mappingRoom;
+    Group booking;
+
+    BorderPane container;
+    TilePane descriptionPanel;
 
     Room selectedRoom;
 
-    public KonopolisViewGUI(KonopolisController controller, KonopolisModel model) {
-        super(model, controller);
-        init();
+    public KonopolisViewGUI(/*KonopolisController controller, KonopolisModel model*/) {
+        /*this.control = controller;
+        this.model = model;
+        model.addObserver(this);*/
+        //launch(args);
     }
 
-    @Override
-    public void init() {
-        launch();
+    public void addObserverLazy() {
+        model.addObserver(this);
+    }
+
+    public static void initialize(String[] args) {
+        launch(args);
     }
 
     public void start(Stage stage) throws Exception {
+
+        moviesList = new ComboBox(); // choiceBox => list of movies
+        showsList = new ComboBox(); // choiceBox => list of shows (for a movie)
+        configButton = new Button("Configuration");
+        mappingRoom = new Pane();
+        booking = new Group();
+
         stage.setWidth(1200); // 1200px
         stage.setHeight(900); // 900 px
         stage.setTitle("Konopolis");
@@ -55,44 +77,90 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         Scene scene = new Scene(root); // Scene
         scene.setFill(Paint.valueOf("#2c3e50")); // Background
 
-        Group config = new Group(); // Config
+        // Container
+        container = new BorderPane();
 
-        Label selectAMovie = new Label("Sélectionnez un film"); // Label
+        // Top Bar
+        HBox hbox = new HBox();
+        hbox.setPadding(new Insets(15,12,15,12));
+        hbox.setSpacing(10);
+        hbox.setPrefWidth(1200);
+        hbox.setStyle("-fx-background-color: #fff; -fx-display: flex; -fx-justify-content: center");
+
+        //Group config = new Group(); // Config
+
+        Label selectAMovie = new Label("Sélectionnez un film: "); // Label
         selectAMovie.setFont(new Font("Roboto", 16));
 
         //moviesList = new ComboBox(); // choiceBox => list of movies
         control.retrieveAllMoviesTitles().forEach((key, value) -> {
             moviesList.getItems().add(value);
         });
+
+        moviesList.getSelectionModel().select(0);
+        displayShows(0);
+        displayRoom(0);
+
+        hbox.getChildren().addAll(selectAMovie, moviesList, showsList, configButton);
+
+        // Infos box
+        TilePane descriptionPanel = new TilePane();
+        descriptionPanel.setPadding(new Insets(5, 10, 5, 10));
+        descriptionPanel.setStyle("-fx-background-color: #fff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,.2), 10, 1.0, 0, 0); -fx-height: 100%; -fx-width: 250px");
+
+        // Add elements to the container
+        container.setTop(hbox);
+        container.setRight(descriptionPanel);
+        // Add elements to the config group
+        //config.getChildren().add(selectAMovie /*, moviesList, showsList, configButton*/);
+
+        // Init
+        root.getChildren().add(container); // Add the children group to the root group
+        stage.setScene(scene); // Add the scene to the stage
+        stage.show(); // Open the curtains
+
+        // Events
         // onclick on a movie => launch the displayShows method
         moviesList.setOnAction(event -> displayShows(moviesList.getSelectionModel().getSelectedIndex()));
 
         //showsList = new ComboBox(); // choiceBox => list of shows (for a movie)
         showsList.setOnAction(event -> displayRoom(showsList.getSelectionModel().getSelectedIndex()));
-
-        // Add elements to the config group
-        config.getChildren().addAll(selectAMovie, moviesList, showsList, configButton);
-
-        // Init
-        root.getChildren().add(config); // Add the children group to the root group
-        stage.setScene(scene); // Add the scene to the stage
-        stage.show(); // Open the curtains
     }
 
     private void displayShows(int moviesListNumber) {
-        int movie_id = (new ArrayList<Integer>(control.getMoviesTitles().keySet())).get(moviesListNumber - 1); // get the right id according its position in the LinkedHashMap
+        System.out.println(moviesListNumber);
+        int movie_id = (new ArrayList<Integer>(control.getMoviesTitles().keySet())).get(moviesListNumber); // get the right id according its position in the LinkedHashMap
         Movie movie = control.retrieveMovie(movie_id);
         showsList.getItems().clear();
-        /*infos.setText(
-                movie.getDescription() +
-                        " Prix: " + movie.getPrice()
-        );*/
 
         for(Show sh: movie.getShows()){
             showsList.getItems().add("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
+
+        displayDescription(movie);
         //Select the first item of the list
-        //showsList.setSelectedIndex(0);
+        showsList.getSelectionModel().select(0);
+    }
+
+    private void displayDescription(Movie movie) {
+        ArrayList<Label> descriptionLabels = new ArrayList<Label>();
+        descriptionLabels.add(new Label("Title: " + movie.getTitle()));
+        descriptionLabels.add(new Label("Description: "));
+        descriptionLabels.add(new Label(movie.getDescription()));
+        descriptionLabels.add(new Label("Réalisateur: " + movie.getDirector()));
+        descriptionLabels.add(new Label("Acteurs principaux: "));
+        for (String acteur : movie.getCasting()){
+            descriptionLabels.add(new Label("> " + acteur));
+        }
+        descriptionLabels.add(new Label("Genres: "));
+        for(String genre : movie.getGenres()){
+            descriptionLabels.add(new Label("> " + genre));
+        }
+        descriptionLabels.add(new Label("Langue: " + movie.getLanguage()));
+        descriptionLabels.add(new Label("Durée: " + movie.getTime() + "min"));
+        descriptionLabels.add(new Label("Prix: " + movie.getPrice() +"€"));
+
+        descriptionPanel.getChildren().addAll(descriptionLabels);
     }
 
     /**
@@ -104,7 +172,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         int columns = 0;
 
         // Select the show
-        Show selectedShow = control.getShows_al().get(showsListNumber - 1);
+        Show selectedShow = control.getShows_al().get(showsListNumber);
         // Select the room and its customers
         selectedRoom = control.retrieveRoom(selectedShow.getMovie_id(), selectedShow.getRoom_id(), selectedShow.getShow_start());
         // size of room (rows, seats by row)
@@ -122,14 +190,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         // Remove the last mapping
         // Then, new Grid (will contain the mapping of the room)
         mappingRoom.getChildren().removeAll();
-        //panelDisplay.setLayout(new GridLayout(rows, columns));
-        //panelDisplay.setPreferredSize(new Dimension(rows * size, columns * size));
+        mappingRoom.setPrefSize(rows * size, columns * size);
 
-        //JButton[][] grid = new JButton[selectedRoom.getRows()][selectedRoom.getSeatsByRow()]; // grid of JButtons
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 // Button
-                Button seat = new Button((y + 1) + ", " + (x + 1));
+                Button seat = new Button();
                 seat.setStyle("transition: color .2s;");
 
                 if (selectedRoom.getSeats().get(y).get(x).isTaken()) {
@@ -162,12 +228,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 mappingRoom.getChildren().add(seat);
             }
         }
-        mappingRoom.setStyle("-fx-box-shadow: 0 0 2px rgba(0, 0, 0, .2); -fx-border-radius: 3px"); // CSS style
-        booking.getChildren().add(mappingRoom);
-        //panelDisplay.repaint();
-        //panelDisplay.revalidate();
-        // Add the Map to the Jframe
-        //frame.add(panelDisplay, BorderLayout.CENTER);
+        //mappingRoom.setStyle("-fx-effect: three-pass-box, rgba(0, 0, 0, .2), 10, 0, 0, 0; -fx-background-radius: 3px"); // CSS style
+        container.setCenter(mappingRoom);
     }
 
     private void booking() {
@@ -175,7 +237,31 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void auth() {
+        Stage stage = new Stage();
+        stage.setTitle("Se connecter");
+        stage.setWidth(500);
+        stage.setHeight(250);
+        Group root = new Group();
+        Scene scene = new Scene(root);
+
+        Group auth = new Group();
+        Label userLabel = new Label("Nom d'utilisateur");
+        Label pwLabel = new Label("Nom d'utilisateur");
+        TextField username = new TextField();
+        TextField password = new TextField();
+        Button login = new Button("Se connecter");
+
+        login.setOnAction(event -> makeAuth());
+
+
+        auth.getChildren().addAll(userLabel, username, pwLabel, password, login);
+        stage.setScene(scene);
+        stage.show();
         // TODO auth admin
+    }
+
+    private boolean makeAuth() {
+        return true;
     }
 
     @Override
@@ -184,6 +270,6 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     public static void main(String[] args) {
-        launch(args);
+
     }
 }

@@ -2,7 +2,7 @@
 package src.konopolis.controller;
 
 import src.konopolis.model.*;
-import src.konopolis.view.KonopolisView;
+import src.konopolis.view.KonopolisViewGUI;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,7 +23,7 @@ public class KonopolisController {
 	private LinkedHashMap<Integer, String> moviesTitles = new LinkedHashMap<Integer, String>();
 	private HashMap<String, Double> booking = new HashMap<String, Double>();
 
-	private KonopolisView view = null;
+	private KonopolisViewGUI view = null;
 
 	public KonopolisController(KonopolisModel m) {
 	       this.model = m;
@@ -200,7 +200,7 @@ public class KonopolisController {
      * add a view to the controller
      * @param view, a view (console, gui,...)
      */
-	public void addView(KonopolisView view) {
+	public void addView(KonopolisViewGUI view) {
 		this.view = view;
 	}
 
@@ -248,11 +248,11 @@ public class KonopolisController {
         this.types = types;
     }
 
-    public KonopolisView getView() {
+    public KonopolisViewGUI getView() {
         return view;
     }
 
-    public void setView(KonopolisView view) {
+    public void setView(KonopolisViewGUI view) {
         this.view = view;
     }
 

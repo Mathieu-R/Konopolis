@@ -24,7 +24,11 @@ public class KonopolisTest {
 		
 		// View instance
 		//KonopolisViewConsole konViewConsole = new KonopolisViewConsole(konMod, controlCLI);
-		KonopolisViewGUI konopolisViewGUI = new KonopolisViewGUI(controlGUI, konMod);
+		KonopolisViewGUI konopolisViewGUI = new KonopolisViewGUI(/*controlGUI, konMod*/);
+		KonopolisViewGUI.model = konMod;
+        KonopolisViewGUI.control = controlGUI;
+        konopolisViewGUI.addObserverLazy();
+        KonopolisViewGUI.initialize(args);
 
 		// We add the view to the controller
 		//controlCLI.addView(konViewConsole);
