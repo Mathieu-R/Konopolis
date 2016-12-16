@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -43,7 +44,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     private Object[][] dataBooking = {};
     private String titlesFields[] = {"Place", "Type"};
-    JTable bookBufferTable = new JTable(dataBooking, titlesFields); // Table => Buffer of booking
+    JTable bookBufferTable = new JTable(new DefaultTableModel()); // Table => Buffer of booking
+    private ArrayList<ArrayList<Object>> dataCustomer = new ArrayList<ArrayList<Object>>();
 
 	//private int movie_id = 0;
 	//private int room_id = 0;
@@ -160,6 +162,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         bookingPanel.setMinimumSize(new Dimension(300, 900));
 
         bookBufferTable.setPreferredSize(new Dimension(280, 500));
+        //bookBufferTable.addColumn();
         bookingPanel.add(new JScrollPane(bookBufferTable));
     }
 
@@ -307,9 +310,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void addToBookBuffer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
+        //Object data = new Object(){x, y, type, movie_id, room_id, show_start};
+        //dataCustomer.add();
         JComboBox<String> typesListofUser = typesList;
         typesListofUser.setSelectedItem(type);
         Object[] data = {(x + ", " + y), typesListofUser};
+
         DefaultTableModel model = (DefaultTableModel) bookBufferTable.getModel();
         model.addRow(data);
     }
