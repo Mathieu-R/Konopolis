@@ -313,31 +313,43 @@ public class KonopolisViewGUI extends KonopolisView implements Observer ,Runnabl
 	                int finalY = y;
 	                seat.addMouseListener(new MouseAdapter() {
 	                	boolean clicked=false;
+	                	String change;
 	                    @Override
 	                    public void mouseEntered(MouseEvent e) {
 	                        if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken() && seat.getIcon().equals(emptySit))) {
+	                        	change+="\n"+seat.getIcon().toString()+"-->";
 	                            seat.setIcon(selectionSit);;
+	                            change+=seat.getIcon().toString();
+	                            System.out.println(change);
 	                        }
 	                    }
 
 	                    @Override
 	                    public void mouseExited(MouseEvent e) {
-	                        if(seat.getIcon().equals(waitingSit) && !clicked) {
+	                        if(seat.getIcon().equals(selectionSit) && !clicked) {
+	                        	change+="\n"+seat.getIcon().toString()+"-->";
 	                            seat.setIcon(emptySit);
+	                            change+=seat.getIcon().toString();
+	                            System.out.println(change);
 	                            clicked=false;
 	                        }
 	                    }
 	                    
 	                    public void mouseClicked(MouseEvent e){
 	                    	 if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken() && seat.getIcon().equals(emptySit))) {
-	                    		 	System.out.println(seat.getIcon().toString());
+	                    		 	change+="\n"+seat.getIcon().toString()+"-->";
 	                    		 	seat.setIcon(waitingSit);
+	                    		 	change+=seat.getIcon().toString();
+		                            System.out.println(change);
 		                            clicked=true;
-		                            System.out.println(seat.getIcon().toString());
+		                      
 		                           
 		                     } 
 	                    	 else if(seat.getIcon().equals(waitingSit) ){
+	                    		 change+="\n"+seat.getIcon().toString()+"-->";
 		                    	 seat.setIcon(emptySit);
+		                    	 change+=seat.getIcon().toString();
+		                          System.out.println(change);
 		                    	 msgUser.setText("Siège rendu");
 		                     }
 	                    	 else{
