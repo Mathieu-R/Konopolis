@@ -23,17 +23,19 @@ import java.util.Observer;
  * @author nathan
  *
  */
-public class KonopolisViewGUI extends KonopolisView implements Observer, ActionListener {
+public class KonopolisViewGUI extends KonopolisView implements Observer {
 
 	// Instantiate elements of GUI
 	private JFrame frame;
-	private JPanel panelSelect = new JPanel();
-	private JPanel panelDisplay = new JPanel();
-	private JPanel panelInfo = new JPanel();
+	private JPanel toolbar = new JPanel();
+	private JPanel mappingRoom = new JPanel();
+	private JPanel descriptionPanel = new JPanel();
+	private JPanel bookingPanel = new JPanel();
+	private JPanel statusbar = new JPanel();
 	private JComboBox<String> moviesList = new JComboBox<String>();
 	private JComboBox<String> showsList = new JComboBox<String>();
 	private JButton config = new JButton("Configuration");
-	private JTextArea infos = new JTextArea();
+	private JTextArea status = new JTextArea();
 	private JLabel displayRoom = new JLabel();
 
 	private int movie_id = 0;
@@ -51,177 +53,156 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
-		//Define defaultDiplay
-		displayRoom .setIcon(new ImageIcon("img/Konopolus_1.0.jpg"));
-		displayRoom.setSize(500,250);
-		displayRoom.setBackground(Color.WHITE);
 		init();
 	}
 
 	public void init() {
-        frame = new JFrame("Konopolis");
-
-		// Define frame
+	    // Create main Frame
+        frame = new JFrame("Konopolis"); // Title
 		frame.setVisible(true);
-		frame.setSize(750,750);
-		frame.setMinimumSize(new Dimension(750, 750));
+		frame.setSize(1500,900);
+		frame.setMinimumSize(new Dimension(1500, 900));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(true);
 		frame.setAlwaysOnTop(false);
 
-		displayRoom.setIcon(new ImageIcon("img/Konopolus_1.0.jpg"));
-		displayRoom.setBackground(Color.white);
+		// Make all the panel
+		makeToolbar();
+		makeRoomMapping();
+		makeDescriptionPanel();
+		makeStatusBar();
+		makeBookingPanel();
 
-		// Define panelSelect
-		panelSelect.setSize(400, 200);
-		//panelSelect.setMinimumSize(new Dimension(500,200));
-		panelSelect.setBorder(BorderFactory.createLineBorder(Color.black));
-		panelSelect.setLayout(new FlowLayout());
-		panelSelect.setVisible(true);
+        // Add panels to the frame
+        frame.add(toolbar, BorderLayout.NORTH);
+        frame.add(mappingRoom, BorderLayout.CENTER);
+        frame.add(descriptionPanel, BorderLayout.EAST);
+        frame.add(bookingPanel, BorderLayout.WEST);
+        frame.add(statusbar, BorderLayout.SOUTH);
 
-		// Label
-		JLabel selectAMovie = new JLabel("Sélectionnez un film: ");
+		frame.validate(); // Validate
+		frame.pack(); // Pack
 
-		//Fill the ArrayList with movie's titles
-		for (Map.Entry<Integer, String> entry : control.retrieveAllMoviesTitles().entrySet()) {
-			listTitles.add(entry.getValue());
-		}
+		// Show the list of shows for the movie selected
+        //displayShows(0);
+        addEventListeners(); // Launch the events listeners
+	}
 
-		//Fill a simple array of titles
-		String [] titles = new String [listTitles.size()];
+	public void makeToolbar() {
+        // Define the toolbar
+        toolbar.setSize(400, 200);
+        toolbar.setBorder(BorderFactory.createLineBorder(Color.black));
+        toolbar.setLayout(new FlowLayout());
+        toolbar.setVisible(true);
 
-		for(int i = 0 ; i<listTitles.size() ; i++){
-			titles[i] = listTitles.get(i);
-		}
+        // Label
+        JLabel selectAMovie = new JLabel("Sélectionnez un film: "); // Label
 
-		// Give the list to the ComboBox
-		moviesList = new JComboBox<String>(titles);
+        // Fill the ArrayList with movie's titles
+        for (Map.Entry<Integer, String> entry : control.retrieveAllMoviesTitles().entrySet()) {
+            moviesList.addItem(entry.getValue());
+        }
+
+        moviesList.setPreferredSize(new Dimension(300,25));
         moviesList.setActionCommand("Movies"); // Action for ActionListener
-        moviesList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayShows();
-            }
-        });
+        moviesList.setSelectedIndex(0);
 
-		// Create a default show ComboBox
-		showsList.setActionCommand("Shows"); // Action for ActionListener
-        showsList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayRoom();
-            }
-        });
 
-		showsList.setPreferredSize(new Dimension(300,25));
+        // Create a default show ComboBox
+        showsList.setPreferredSize(new Dimension(300,25));
+        showsList.setActionCommand("Shows"); // Action for ActionListener
 
-		//Define ComboBox movies
-		moviesList.setPreferredSize(new Dimension(300,25));
 
-		// Define config button
-		config.setActionCommand("Config");
-		config.addActionListener(this);
+        // Define config button
+        config.setActionCommand("Config");
 
-		// Add Label, ComboBox + button at panelSelect
-        panelSelect.add(selectAMovie);
-		panelSelect.add(moviesList);
-		panelSelect.add(showsList);
-		panelSelect.add(config);
+        // Add Label, ComboBoxs + Button at the toolbar
+        toolbar.add(selectAMovie);
+        toolbar.add(moviesList);
+        toolbar.add(showsList);
+        toolbar.add(config);
+    }
 
-		// Add TextField to the labelDisplay
-		infos.setWrapStyleWord(true);
-		infos.setEditable(false);
-		infos.setSize(new Dimension(500,100));
-		infos.setFont(new Font("Roboto", Font.BOLD, 16));
-		infos.setBackground(Color.LIGHT_GRAY);
-		infos.setBorder(BorderFactory.createCompoundBorder(infos.getBorder(), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+    public void makeDescriptionPanel() {
+        // Define descriptionPanel
+        descriptionPanel.setBackground(Color.lightGray);
+        descriptionPanel.setPreferredSize(new Dimension(250, 900));
+        descriptionPanel.setMinimumSize(new Dimension(250, 900));
+    }
 
-        JScrollPane scrollInfos = new JScrollPane(infos);
+    public void makeBookingPanel() {
+        bookingPanel.setBackground(Color.lightGray);
+        descriptionPanel.setPreferredSize(new Dimension(300, 900));
+        descriptionPanel.setMinimumSize(new Dimension(300, 900));
+    }
+
+    public void makeStatusBar() {
+        statusbar.setBackground(Color.LIGHT_GRAY);
+        statusbar.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        status.setWrapStyleWord(true);
+        status.setEditable(false);
+        status.setSize(new Dimension(300,100));
+        status.setFont(new Font("Roboto", Font.BOLD, 16));
+        status.setBackground(Color.LIGHT_GRAY);
+        status.setBorder(BorderFactory.createCompoundBorder(status.getBorder(), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+
+        JScrollPane scrollInfos = new JScrollPane(status);
         scrollInfos.setPreferredSize(new Dimension(frame.getWidth(),100));
 
-		//Define panelInfo
-		panelInfo.setBackground(Color.lightGray);
-        panelInfo.setPreferredSize(new Dimension(500,100));
-		panelInfo.add(infos);
-
-		panelDisplay = new JPanel();
-		panelDisplay.add(displayRoom);
-		panelDisplay.setBackground(Color.WHITE);
-		panelDisplay.setPreferredSize(new Dimension(250, 250));
-        panelDisplay.setVisible(true);
-
-        JButton confirm = new JButton("Confirmer");
-        confirm.setActionCommand("Confirm");
-        confirm.addActionListener(this);
-
-        //Define textArea msgUser
-
-        JTextArea msgUser=new JTextArea();
+        JTextArea msgUser = new JTextArea();
         msgUser.setEditable(false);
         msgUser.setPreferredSize(new Dimension(600,20));
         msgUser.setBackground(Color.LIGHT_GRAY);
         msgUser.setText("Test");
 
+        //JPanel statusbar = new JPanel();
+        statusbar.add(msgUser,BorderLayout.LINE_START);
+    }
 
-        //Define panelCommand
+    public void makeRoomMapping() {
+        // Icon when there is no show selected
+        displayRoom.setIcon(new ImageIcon("img/Konopolis_1.0.jpg"));
+        displayRoom.setBackground(Color.white);
 
-        JPanel panelCommand = new JPanel();
-        panelCommand.add(msgUser,BorderLayout.LINE_START);
-        panelCommand.add(confirm, BorderLayout.EAST);
-        panelCommand.setBackground(Color.LIGHT_GRAY);
-        panelCommand.setBorder(BorderFactory.createLineBorder(Color.black));
+        // Panel that will contain the mapping of the room
+        //mappingRoom = new JPanel();
+        mappingRoom.add(displayRoom);
+        mappingRoom.setBackground(Color.WHITE);
+        mappingRoom.setPreferredSize(new Dimension(900, 900));
+        mappingRoom.setMinimumSize(new Dimension(900, 900));
+        mappingRoom.setVisible(true);
+    }
 
-        //Add panels to frame
-
-        frame.add(panelSelect,BorderLayout.NORTH);
-        frame.add(panelDisplay,BorderLayout.CENTER);
-        frame.add(panelInfo,BorderLayout.SOUTH);
-        frame.add(panelCommand,BorderLayout.SOUTH);
-
-		//Add panels to frame
-
-		frame.add(panelSelect,BorderLayout.NORTH);
-		//frame.add(panelDisplay);
-		frame.add(panelInfo, BorderLayout.SOUTH);
-		frame.validate();
-		frame.pack();
-
-        displayShows();
-	}
     /**
      * Fill the ComboBox of Shows
      */
-    private void displayShows() {
-        //System.out.println(moviesList.getSelectedItem() + " - " + moviesList.getSelectedIndex());
-        String choiceMovie = (String) moviesList.getSelectedItem();
-        int idMovie = control.retrieveMovieId(choiceMovie);
-        //System.out.println(idMovie);
+    private void displayShows(String title) {
+        int idMovie = control.retrieveMovieId(title);
+        System.out.println(idMovie);
         Movie movie = control.retrieveMovie(idMovie);
         showsList.removeAllItems();
-        infos.setText(
-                movie.getDescription() +
-                " Prix: " + movie.getPrice()
-        );
 
         for(Show sh: movie.getShows()){
+            System.out.println(sh.getShow_start());
             showsList.addItem("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
         //Select the first item of the list
-        showsList.setSelectedIndex(0);
+        //showsList.setSelectedIndex(0);
     }
 
     /**
      * Display the room at the moment of the show
      */
-    private void displayRoom() {
+    private void displayRoom(int moviesListNumber) {
         int size = 0;
         int rows = 0;
         int columns = 0;
-
+        System.out.println("movieListNumber: " + moviesListNumber);
         // Select the show
-        Show selectedShow = control.getShows_al().get(showsList.getSelectedIndex());
+        Show selectedShow = control.getShows_al().get(moviesListNumber);
         // Select the room and its customers
         selectedRoom = control.retrieveRoom(selectedShow.getMovie_id(), selectedShow.getRoom_id(), selectedShow.getShow_start());
         // size of room (rows, seats by row)
@@ -229,25 +210,24 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
         columns = selectedRoom.getSeatsByRow();
         // size of every seat of the mapping
         if (rows >= 30 || columns >= 30) {
-            size = 25;
+            size = 15;
         } else if (rows > 20 && rows < 30 || columns > 20 && columns < 30) {
-            size = 50;
+            size = 30;
         } else {
-            size = 75;
+            size = 45;
         }
-        System.out.println(size);
         // Remove the last mapping
         // Then, new Grid (will contain the mapping of the room)
-        panelDisplay.removeAll();
-        panelDisplay.setLayout(new GridLayout(rows, columns));
-        panelDisplay.setPreferredSize(new Dimension(rows * size, columns * size));
+        mappingRoom.removeAll();
+        mappingRoom.setLayout(new GridLayout(rows, columns));
+        mappingRoom.setPreferredSize(new Dimension(rows * size, columns * size));
 
         //JButton[][] grid = new JButton[selectedRoom.getRows()][selectedRoom.getSeatsByRow()]; // grid of JButtons
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 // Button
                 JButton seat = new JButton();
-                seat.setOpaque(false);
+                seat.setOpaque(true);
                 seat.setBorderPainted(false);
                 seat.setContentAreaFilled(false);
                 seat.setActionCommand("Book");
@@ -280,13 +260,13 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
                     }
                 });
                 // Add to the Map
-				panelDisplay.add(seat);
+				mappingRoom.add(seat);
             }
         }
-        panelDisplay.repaint();
-        panelDisplay.revalidate();
+        mappingRoom.repaint();
+        mappingRoom.revalidate();
         // Add the Map to the Jframe
-        frame.add(panelDisplay, BorderLayout.CENTER);
+        frame.add(mappingRoom, BorderLayout.CENTER);
     }
 
     private void displayAuth() {
@@ -294,23 +274,31 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
         // if ok => config
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("click");
-        System.out.println(e.getActionCommand());
-        String cmd = e.getActionCommand();
-        if (cmd.equals("Movie")) {
+    private void addEventListeners() {
+        moviesList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox comboBox = (JComboBox) e.getSource();
+                String title = comboBox.getSelectedItem().toString();
+                displayShows(title);
+            }
+        });
 
-        }
-        else if (cmd.equals("Show")) {
-            displayRoom();
-        }
-        else if (cmd.equals("Config")) {
-            displayAuth();
-        }
-        else if (cmd.equals("Book")) {
-            //
-        }
+        showsList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox comboBox = (JComboBox) e.getSource();
+                int index = comboBox.getSelectedIndex();
+                displayRoom(index);
+            }
+        });
+
+        config.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayAuth();
+            }
+        });
     }
 
     public void update(Observable arg0, Object arg1) {

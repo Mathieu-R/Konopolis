@@ -239,7 +239,9 @@ public class KonopolisModel extends Observable {
                 int time = rs.getInt("time");
                 String language = rs.getString("language");
                 double price = rs.getDouble("price");
-  
+
+                shows_al.clear(); // clear old shows before adding new one
+
                 // For every date String
                 for (String show : shows) {
                 	LocalDateTime show_start = stringToLocalDateTime(show);
