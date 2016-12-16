@@ -2,6 +2,8 @@
 package src.konopolis.view;
 
 import javafx.application.Application;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -9,13 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import src.konopolis.controller.KonopolisController;
 import src.konopolis.model.KonopolisModel;
@@ -23,6 +23,7 @@ import src.konopolis.model.Movie;
 import src.konopolis.model.Room;
 import src.konopolis.model.Show;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -35,16 +36,12 @@ public class KonopolisViewGUI extends Application implements Observer {
     public static KonopolisController control;
     public static KonopolisModel model;
 
-    ComboBox moviesList; // choiceBox => list of movies
-    ComboBox showsList; // choiceBox => list of shows (for a movie)
-    Button configButton;
-    Pane mappingRoom;
-    Group booking;
-
-    BorderPane container;
-    TilePane descriptionPanel;
-
     Room selectedRoom;
+
+    private BorderPane root;
+    private Stage stage;
+    private GridPane mappingRoom;
+
 
     public KonopolisViewGUI(/*KonopolisController controller, KonopolisModel model*/) {
         /*this.control = controller;
@@ -61,93 +58,50 @@ public class KonopolisViewGUI extends Application implements Observer {
         launch(args);
     }
 
-    public void start(Stage stage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
 
-        moviesList = new ComboBox(); // choiceBox => list of movies
-        showsList = new ComboBox(); // choiceBox => list of shows (for a movie)
-        configButton = new Button("Configuration");
-        mappingRoom = new Pane();
-        booking = new Group();
-
-        stage.setWidth(1200); // 1200px
-        stage.setHeight(900); // 900 px
+        this.stage = primaryStage;
         stage.setTitle("Konopolis");
 
-        Group root = new Group(); // Root
-        Scene scene = new Scene(root); // Scene
-        scene.setFill(Paint.valueOf("#2c3e50")); // Background
-
-        // Container
-        container = new BorderPane();
-
-        // Top Bar
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15,12,15,12));
-        hbox.setSpacing(10);
-        hbox.setPrefWidth(1200);
-        hbox.setStyle("-fx-background-color: #fff; -fx-display: flex; -fx-justify-content: center");
-
-        //Group config = new Group(); // Config
-
-        Label selectAMovie = new Label("Sélectionnez un film: "); // Label
-        selectAMovie.setFont(new Font("Roboto", 16));
+        // Init mainGUI fxml
+        initLayout();
 
         //moviesList = new ComboBox(); // choiceBox => list of movies
         control.retrieveAllMoviesTitles().forEach((key, value) -> {
-            moviesList.getItems().add(value);
+            control.moviesList.getItems().add(value);
         });
 
-        moviesList.getSelectionModel().select(0);
+        control.moviesList.getSelectionModel().select(0);
         displayShows(0);
         displayRoom(0);
 
-        hbox.getChildren().addAll(selectAMovie, moviesList, showsList, configButton);
-
-        // Infos box
-        TilePane descriptionPanel = new TilePane();
-        descriptionPanel.setPadding(new Insets(5, 10, 5, 10));
-        descriptionPanel.setStyle("-fx-background-color: #fff; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,.2), 10, 1.0, 0, 0); -fx-height: 100%; -fx-width: 250px");
-
-        // Add elements to the container
-        container.setTop(hbox);
-        container.setRight(descriptionPanel);
-        // Add elements to the config group
-        //config.getChildren().add(selectAMovie /*, moviesList, showsList, configButton*/);
-
-        // Init
-        root.getChildren().add(container); // Add the children group to the root group
-        stage.setScene(scene); // Add the scene to the stage
-        stage.show(); // Open the curtains
-
         // Events
         // onclick on a movie => launch the displayShows method
-        moviesList.setOnAction(event -> displayShows(moviesList.getSelectionModel().getSelectedIndex()));
+        control.moviesList.setOnAction(event -> displayShows(control.moviesList.getSelectionModel().getSelectedIndex()));
 
         //showsList = new ComboBox(); // choiceBox => list of shows (for a movie)
-        showsList.setOnAction(event -> displayRoom(showsList.getSelectionModel().getSelectedIndex()));
+        control.showsList.setOnAction(event -> displayRoom(control.showsList.getSelectionModel().getSelectedIndex()));
     }
 
     private void displayShows(int moviesListNumber) {
-        System.out.println(moviesListNumber);
         int movie_id = (new ArrayList<Integer>(control.getMoviesTitles().keySet())).get(moviesListNumber); // get the right id according its position in the LinkedHashMap
         Movie movie = control.retrieveMovie(movie_id);
-        showsList.getItems().clear();
+        control.showsList.getItems().clear();
 
-        for(Show sh: movie.getShows()){
-            showsList.getItems().add("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
+        for(Show sh: movie.getShows()) {
+            control.showsList.getItems().add("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
 
         displayDescription(movie);
         //Select the first item of the list
-        showsList.getSelectionModel().select(0);
+        control.showsList.getSelectionModel().select(0);
     }
 
     private void displayDescription(Movie movie) {
         ArrayList<Label> descriptionLabels = new ArrayList<Label>();
-        descriptionLabels.add(new Label("Title: " + movie.getTitle()));
-        descriptionLabels.add(new Label("Description: "));
+        descriptionLabels.add(new Label(movie.getTitle()));
         descriptionLabels.add(new Label(movie.getDescription()));
-        descriptionLabels.add(new Label("Réalisateur: " + movie.getDirector()));
+        descriptionLabels.add(new Label(movie.getDirector()));
         descriptionLabels.add(new Label("Acteurs principaux: "));
         for (String acteur : movie.getCasting()){
             descriptionLabels.add(new Label("> " + acteur));
@@ -160,7 +114,7 @@ public class KonopolisViewGUI extends Application implements Observer {
         descriptionLabels.add(new Label("Durée: " + movie.getTime() + "min"));
         descriptionLabels.add(new Label("Prix: " + movie.getPrice() +"€"));
 
-        descriptionPanel.getChildren().addAll(descriptionLabels);
+        control.descriptionPanel.getChildren().addAll(descriptionLabels);
     }
 
     /**
@@ -229,7 +183,7 @@ public class KonopolisViewGUI extends Application implements Observer {
             }
         }
         //mappingRoom.setStyle("-fx-effect: three-pass-box, rgba(0, 0, 0, .2), 10, 0, 0, 0; -fx-background-radius: 3px"); // CSS style
-        container.setCenter(mappingRoom);
+        root.setCenter(mappingRoom);
     }
 
     private void booking() {
@@ -267,6 +221,21 @@ public class KonopolisViewGUI extends Application implements Observer {
     @Override
     public void update(Observable o, Object arg) {
 
+    }
+
+    public void initLayout() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("fxml-views/mainGUI.fxml"));
+            root = (BorderPane) loader.load();
+
+            Scene scene = new Scene(root);
+            scene.setFill(Paint.valueOf("#2c3e50")); // Background
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

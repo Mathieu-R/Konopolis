@@ -1,6 +1,11 @@
 
 package src.konopolis.controller;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
 import src.konopolis.model.*;
 import src.konopolis.view.KonopolisViewGUI;
 
@@ -24,6 +29,12 @@ public class KonopolisController {
 	private HashMap<String, Double> booking = new HashMap<String, Double>();
 
 	private KonopolisViewGUI view = null;
+
+    @FXML public ComboBox moviesList;
+    @FXML public ComboBox showsList;
+    @FXML public Button config;
+    @FXML public FlowPane descriptionPanel;
+    @FXML public VBox appStatus;
 
 	public KonopolisController(KonopolisModel m) {
 	       this.model = m;
