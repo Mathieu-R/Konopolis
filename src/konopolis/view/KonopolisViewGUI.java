@@ -24,9 +24,9 @@ import java.util.Observer;
  *
  */
 public class KonopolisViewGUI extends KonopolisView implements Observer, ActionListener {
-	
+
 	// Instantiate elements of GUI
-	private JFrame frame = new JFrame("Konopolis");
+	private JFrame frame;
 	private JPanel panelSelect = new JPanel();
 	private JPanel panelDisplay = new JPanel();
 	private JPanel panelInfo = new JPanel();
@@ -35,7 +35,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 	private JButton config = new JButton("Configuration");
 	private JTextArea infos = new JTextArea();
 	private JLabel displayRoom = new JLabel();
-	
+
 	private int movie_id = 0;
 	private int room_id = 0;
 	private int show_id = 0;
@@ -48,7 +48,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
     private ImageIcon takenSit = new ImageIcon("img/takenSit.png");
     private ImageIcon waitingSit = new ImageIcon("img/waitingSit.png");
     private ImageIcon selectionSit = new ImageIcon("img/selectionSit.png");
-	
+
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
 		//Define defaultDiplay
@@ -59,20 +59,26 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 	}
 
 	public void init() {
-		
+        frame = new JFrame("Konopolis");
+
 		// Define frame
 		frame.setVisible(true);
 		frame.setSize(750,750);
+		frame.setMinimumSize(new Dimension(750, 750));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(true);
 		frame.setAlwaysOnTop(false);
-		
+
+		displayRoom.setIcon(new ImageIcon("img/Konopolus_1.0.jpg"));
+		displayRoom.setBackground(Color.white);
+
 		// Define panelSelect
 		panelSelect.setSize(400, 200);
-		panelSelect.setMinimumSize(new Dimension(500,200));
+		//panelSelect.setMinimumSize(new Dimension(500,200));
 		panelSelect.setBorder(BorderFactory.createLineBorder(Color.black));
+		panelSelect.setLayout(new FlowLayout());
 		panelSelect.setVisible(true);
 
 		// Label
@@ -82,20 +88,33 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 		for (Map.Entry<Integer, String> entry : control.retrieveAllMoviesTitles().entrySet()) {
 			listTitles.add(entry.getValue());
 		}
-		
+
 		//Fill a simple array of titles
 		String [] titles = new String [listTitles.size()];
-		
+
 		for(int i = 0 ; i<listTitles.size() ; i++){
 			titles[i] = listTitles.get(i);
 		}
-		 
+
 		// Give the list to the ComboBox
 		moviesList = new JComboBox<String>(titles);
         moviesList.setActionCommand("Movies"); // Action for ActionListener
-		
+        moviesList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayShows();
+            }
+        });
+
 		// Create a default show ComboBox
 		showsList.setActionCommand("Shows"); // Action for ActionListener
+        showsList.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayRoom();
+            }
+        });
+
 		showsList.setPreferredSize(new Dimension(300,25));
 
 		//Define ComboBox movies
@@ -103,32 +122,39 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 
 		// Define config button
 		config.setActionCommand("Config");
-		
+		config.addActionListener(this);
+
 		// Add Label, ComboBox + button at panelSelect
         panelSelect.add(selectAMovie);
 		panelSelect.add(moviesList);
 		panelSelect.add(showsList);
 		panelSelect.add(config);
-		
+
 		// Add TextField to the labelDisplay
 		infos.setWrapStyleWord(true);
 		infos.setEditable(false);
-		infos.setSize(new Dimension(200,500));
+		infos.setSize(new Dimension(500,100));
 		infos.setFont(new Font("Roboto", Font.BOLD, 16));
 		infos.setBackground(Color.LIGHT_GRAY);
 		infos.setBorder(BorderFactory.createCompoundBorder(infos.getBorder(), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
-        JScrollPanel scrollInfos=new JScrollPane(infos);
-        scrollInfos.setPreferredSize(new Dimension(frame.getWidth(),200));
+        JScrollPane scrollInfos = new JScrollPane(infos);
+        scrollInfos.setPreferredSize(new Dimension(frame.getWidth(),100));
 
 		//Define panelInfo
 		panelInfo.setBackground(Color.lightGray);
-        panelInfo.setPreferredSize(new Dimension(500,200));
+        panelInfo.setPreferredSize(new Dimension(500,100));
 		panelInfo.add(infos);
 
+		panelDisplay = new JPanel();
+		panelDisplay.add(displayRoom);
+		panelDisplay.setBackground(Color.WHITE);
+		panelDisplay.setPreferredSize(new Dimension(250, 250));
+        panelDisplay.setVisible(true);
 
         JButton confirm = new JButton("Confirmer");
         confirm.setActionCommand("Confirm");
+        confirm.addActionListener(this);
 
         //Define textArea msgUser
 
@@ -153,9 +179,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
         frame.add(panelDisplay,BorderLayout.CENTER);
         frame.add(panelInfo,BorderLayout.SOUTH);
         frame.add(panelCommand,BorderLayout.SOUTH);
-		
+
 		//Add panels to frame
-		
+
 		frame.add(panelSelect,BorderLayout.NORTH);
 		//frame.add(panelDisplay);
 		frame.add(panelInfo, BorderLayout.SOUTH);
@@ -220,16 +246,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 // Button
-                JButton seat = new JButton((y + 1) + ", " + (x + 1));
+                JButton seat = new JButton();
                 seat.setOpaque(false);
                 seat.setBorderPainted(false);
                 seat.setContentAreaFilled(false);
                 seat.setActionCommand("Book");
 
+
                 if (selectedRoom.getSeats().get(y).get(x).isTaken()) {
-                    seat.setBackground(Color.decode("#e74c3c"));
+                    seat.setIcon(takenSit);
                 } else {
-                    seat.setBackground(Color.lightGray);
+                    //seat.setBackground(Color.BLACK);
+                    seat.setIcon(emptySit);
                 }
 
                 // Event Listener
@@ -238,19 +266,19 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
                 seat.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseEntered(MouseEvent e) {
-                        if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken())) {
-                            seat.setBackground(Color.decode("#27ae60"));
+                        if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken()) && !(seat.getIcon().equals(waitingSit))) {
+                            //System.out.println("mouseentered");
+                            seat.setIcon(selectionSit);
                         }
                     }
 
                     @Override
                     public void mouseExited(MouseEvent e) {
-                        if(seat.getBackground().equals(Color.decode("#27ae60"))) {
-                            seat.setBackground(Color.lightGray);
+                        if(seat.getIcon().equals(selectionSit) && !(seat.getIcon().equals(waitingSit))) {
+                            seat.setIcon(emptySit);
                         }
                     }
                 });
-
                 // Add to the Map
 				panelDisplay.add(seat);
             }
@@ -268,6 +296,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        System.out.println("click");
+        System.out.println(e.getActionCommand());
         String cmd = e.getActionCommand();
         if (cmd.equals("Movie")) {
 
