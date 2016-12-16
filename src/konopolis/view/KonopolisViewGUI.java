@@ -43,6 +43,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 	private LocalDateTime show_start;
 	private ArrayList<String> listTitles = new ArrayList<String>();
 	private Room selectedRoom;
+
+    private ImageIcon emptySit = new ImageIcon("img/emptySit.png");
+    private ImageIcon takenSit = new ImageIcon("img/takenSit.png");
+    private ImageIcon waitingSit = new ImageIcon("img/waitingSit.png");
+    private ImageIcon selectionSit = new ImageIcon("img/selectionSit.png");
 	
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
@@ -57,13 +62,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 		
 		// Define frame
 		frame.setVisible(true);
-		frame.setSize(1200,900);
+		frame.setSize(750,750);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLayout(new BorderLayout());
 		frame.setResizable(true);
 		frame.setAlwaysOnTop(false);
-		
 		
 		// Define panelSelect
 		panelSelect.setSize(400, 200);
@@ -113,10 +117,42 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
 		infos.setFont(new Font("Roboto", Font.BOLD, 16));
 		infos.setBackground(Color.LIGHT_GRAY);
 		infos.setBorder(BorderFactory.createCompoundBorder(infos.getBorder(), BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-				
+
+        JScrollPanel scrollInfos=new JScrollPane(infos);
+        scrollInfos.setPreferredSize(new Dimension(frame.getWidth(),200));
+
 		//Define panelInfo
 		panelInfo.setBackground(Color.lightGray);
+        panelInfo.setPreferredSize(new Dimension(500,200));
 		panelInfo.add(infos);
+
+
+        JButton confirm = new JButton("Confirmer");
+        confirm.setActionCommand("Confirm");
+
+        //Define textArea msgUser
+
+        JTextArea msgUser=new JTextArea();
+        msgUser.setEditable(false);
+        msgUser.setPreferredSize(new Dimension(600,20));
+        msgUser.setBackground(Color.LIGHT_GRAY);
+        msgUser.setText("Test");
+
+
+        //Define panelCommand
+
+        JPanel panelCommand = new JPanel();
+        panelCommand.add(msgUser,BorderLayout.LINE_START);
+        panelCommand.add(confirm, BorderLayout.EAST);
+        panelCommand.setBackground(Color.LIGHT_GRAY);
+        panelCommand.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        //Add panels to frame
+
+        frame.add(panelSelect,BorderLayout.NORTH);
+        frame.add(panelDisplay,BorderLayout.CENTER);
+        frame.add(panelInfo,BorderLayout.SOUTH);
+        frame.add(panelCommand,BorderLayout.SOUTH);
 		
 		//Add panels to frame
 		
@@ -185,8 +221,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer, ActionL
             for (int x = 0; x < columns; x++) {
                 // Button
                 JButton seat = new JButton((y + 1) + ", " + (x + 1));
-                seat.setOpaque(true);
+                seat.setOpaque(false);
                 seat.setBorderPainted(false);
+                seat.setContentAreaFilled(false);
                 seat.setActionCommand("Book");
 
                 if (selectedRoom.getSeats().get(y).get(x).isTaken()) {
