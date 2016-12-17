@@ -128,6 +128,20 @@ public class Room {
     }
 
     /**
+     * Get the number of seats left
+     * @return, int, the number of seats left
+     */
+    public int getSeatsLeft() {
+        int compteur = 0;
+        for (ArrayList<Seat> seatsRow : seats) {
+            for (Seat seat : seatsRow) {
+                if (!(seat.isTaken())) compteur++; // Si le siège n'est pas pris, on incrémente le compteur
+            }
+        }
+        return compteur;
+    }
+
+    /**
      * Getters and Setters
      */
 

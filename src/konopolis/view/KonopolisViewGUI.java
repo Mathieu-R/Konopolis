@@ -52,7 +52,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	//private int show_id = 0;
 	//private String enteredType = "";
 	//private LocalDateTime show_start;
-	private Room selectedRoom;
+	//private Room selectedRoom;
 
     private ImageIcon emptySit = new ImageIcon("img/emptySit.png");
     private ImageIcon takenSit = new ImageIcon("img/takenSit.png");
@@ -102,8 +102,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         // Add panels to the frame
         frame.add(toolbar, BorderLayout.NORTH);
         frame.add(mappingRoom, BorderLayout.CENTER);
-        frame.add(descriptionPanel, BorderLayout.EAST);
-        frame.add(bookingPanel, BorderLayout.WEST);
+        frame.add(descriptionPanel, BorderLayout.WEST);
+        frame.add(bookingPanel, BorderLayout.EAST);
         frame.add(statusbar, BorderLayout.SOUTH);
 
 		frame.validate(); // Validate
@@ -207,10 +207,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     /**
      * Fill the ComboBox of Shows
      */
-    private void displayShows(String title) {
-        int idMovie = control.retrieveMovieId(title);
-        System.out.println(idMovie);
-        Movie movie = control.retrieveMovie(idMovie);
+    private void displayShows(Movie movie) {
+
         showsList.removeAllItems();
 
         for(Show sh: movie.getShows()){
@@ -221,18 +219,34 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         //showsList.setSelectedIndex(0);
     }
 
+    private void displayDescription(Movie movie) {
+        ArrayList<JLabel> descriptionLabels = new ArrayList<JLabel>();
+        descriptionLabels.add(new JLabel(movie.getTitle()));
+        descriptionLabels.add(new JLabel(movie.getDescription()));
+        descriptionLabels.add(new JLabel(movie.getDirector()));
+        descriptionLabels.add(new JLabel("Acteurs principaux: "));
+        for (String acteur : movie.getCasting()){
+            descriptionLabels.add(new JLabel("> " + acteur));
+        }
+        descriptionLabels.add(new JLabel("Genres: "));
+        for(String genre : movie.getGenres()){
+            descriptionLabels.add(new JLabel("> " + genre));
+        }
+        descriptionLabels.add(new JLabel("Langue: " + movie.getLanguage()));
+        descriptionLabels.add(new JLabel("Durée: " + movie.getTime() + "min"));
+        descriptionLabels.add(new JLabel("Prix: " + movie.getPrice() +"€"));
+
+        descriptionLabels.forEach(description -> descriptionPanel.add(description));
+        //descriptionPanel.add(descriptionLabels)
+    }
+
     /**
      * Display the room at the moment of the show
      */
-    private void displayRoom(int moviesListNumber) {
+    private void displayRoom(Room selectedRoom, int movie_id, int room_id, LocalDateTime show_start) {
         int size = 0;
         int rows = 0;
         int columns = 0;
-        System.out.println("movieListNumber: " + moviesListNumber);
-        // Select the show
-        Show selectedShow = control.getShows_al().get(moviesListNumber);
-        // Select the room and its customers
-        selectedRoom = control.retrieveRoom(selectedShow.getMovie_id(), selectedShow.getRoom_id(), selectedShow.getShow_start());
         // size of room (rows, seats by row)
         rows = selectedRoom.getRows();
         columns = selectedRoom.getSeatsByRow();
@@ -293,7 +307,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
                         String type = typesList.getSelectedItem().toString();
                         System.out.println(type);
-                        addToBookBuffer(finalX, finalY, type, selectedShow.getMovie_id(), selectedShow.getRoom_id(), selectedShow.getShow_start());
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
                     } else if (seat.getIcon().equals(waitingSeat)) {
                         seat.setIcon(emptySit);
                         removeFromBookBuffer(finalX, finalY);
@@ -307,6 +321,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         mappingRoom.revalidate();
         // Add the Map to the Jframe
         frame.add(mappingRoom, BorderLayout.CENTER);
+    }
+
+    private void displayStatus(Room selectedRoom) {
+        String roomStatus = (selectedRoom.getSeatsLeft() == 0) ? "Fermé" : "Libre";
+        JLabel roomStatusLabel = new JLabel("Status: " + roomStatus);
+        JLabel totSeats = new JLabel("Places totales: " + selectedRoom.getTotSeats());
+        JLabel seatsLeft = new JLabel("Places restantes: " + selectedRoom.getSeatsLeft());
+
+        statusbar.removeAll();
+        statusbar.add(roomStatusLabel);
+        statusbar.add(totSeats);
+        statusbar.add(seatsLeft);
     }
 
     private void addToBookBuffer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
@@ -337,18 +363,29 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         moviesList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
-                String title = comboBox.getSelectedItem().toString();
-                displayShows(title);
+                JComboBox comboBox = (JComboBox) e.getSource(); // get JComboBox
+                String title = comboBox.getSelectedItem().toString(); // get the title selected
+                int idMovie = control.retrieveMovieId(title); // retrieve movie id
+                System.out.println("FROM LISTENER => idMovie: " + idMovie);
+                Movie movie = control.retrieveMovie(idMovie); //
+                displayShows(movie);
+                displayDescription(movie);
             }
         });
 
         showsList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
-                int index = comboBox.getSelectedIndex();
-                displayRoom(index);
+                JComboBox comboBox = (JComboBox) e.getSource(); // get the comboBox
+                int index = comboBox.getSelectedIndex(); // show selected
+                System.out.println("showsListNumber: " + index);
+                Show selectedShow = control.getShows_al().get(index); // Select the show
+                int movie_id = selectedShow.getMovie_id();
+                int room_id = selectedShow.getRoom_id();
+                LocalDateTime show_start = selectedShow.getShow_start();
+                Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+                displayRoom(selectedRoom, movie_id, room_id, show_start);
+                displayStatus(selectedRoom);
             }
         });
 
