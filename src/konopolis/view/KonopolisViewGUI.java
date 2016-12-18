@@ -2,13 +2,11 @@
 package src.konopolis.view;
 
 import src.konopolis.controller.KonopolisController;
-import src.konopolis.model.KonopolisModel;
-import src.konopolis.model.Movie;
-import src.konopolis.model.Room;
-import src.konopolis.model.Show;
+import src.konopolis.model.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -33,14 +31,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JPanel toolbar = new JPanel();
 	private JPanel mappingRoom = new JPanel();
 	private JPanel descriptionPanel = new JPanel();
-	private JPanel bookingPanel = new JPanel();
+	private JPanel bookingPanel = new JPanel(new BorderLayout());
 	private JPanel statusbar = new JPanel();
+	private JDialog authDialog;
 	private JComboBox<String> moviesList = new JComboBox<String>();
 	private JComboBox<String> showsList = new JComboBox<String>();
 	private JComboBox<String> typesList = new JComboBox<String >();
 	private JButton config = new JButton("Configuration");
 	private JTextArea status = new JTextArea();
 	private JLabel displayRoom = new JLabel();
+	private JTextField username;
+	private JTextField password;
+	private JButton login;
 
     private Object[][] dataBooking = {};
     private String titlesFields[] = {"Place", "Type"};
@@ -61,7 +63,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
-        try {
+        try { // Apply the system appearance
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -83,7 +85,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		frame.setMinimumSize(new Dimension(1500, 900));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        try {
+        try { // Icon
             frame.setIconImage(ImageIO.read(new File("img/Konopolis_1.0.jpg")));
         } catch (IOException e) {
             e.printStackTrace();
@@ -98,6 +100,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		makeDescriptionPanel();
 		makeStatusBar();
 		makeBookingPanel();
+		makeAuthDialog();
 
         // Add panels to the frame
         frame.add(toolbar, BorderLayout.NORTH);
@@ -151,7 +154,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     public void makeDescriptionPanel() {
         // Define descriptionPanel
-        descriptionPanel.setBackground(Color.lightGray);
+        //descriptionPanel.setForeground(Color.white);
+        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.PAGE_AXIS));
+        descriptionPanel.setBorder(new EmptyBorder(new Insets(10,5,10,5)));
+        descriptionPanel.setBackground(Color.BLACK);
         descriptionPanel.setPreferredSize(new Dimension(250, 900));
         descriptionPanel.setMinimumSize(new Dimension(250, 900));
     }
@@ -204,6 +210,33 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         mappingRoom.setVisible(true);
     }
 
+    private void makeAuthDialog() {
+        authDialog = new JDialog(frame, "Connection");
+        authDialog.setMinimumSize(new Dimension(500, 300));
+        authDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        authDialog.setLocationRelativeTo(null);
+        authDialog.setAlwaysOnTop(true);
+        JLabel banner = new JLabel("Espace réservé aux Admins, veuillez vous connecter !");
+        banner.setFont(new Font("Roboto", Font.CENTER_BASELINE, 16));
+        banner.setForeground(Color.red);
+        username = new JTextField();
+        password = new JTextField();
+        login = new JButton("Se connecter");
+        authDialog.add(banner);
+        authDialog.add(username);
+        authDialog.add(password);
+        authDialog.add(login);
+        authDialog.setVisible(false);
+    }
+
+    private void makeConfigDialog() {
+
+    }
+
+    private void makeNewMovieDialog() {
+
+    }
+
     /**
      * Fill the ComboBox of Shows
      */
@@ -220,23 +253,25 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void displayDescription(Movie movie) {
-        ArrayList<JLabel> descriptionLabels = new ArrayList<JLabel>();
-        descriptionLabels.add(new JLabel(movie.getTitle()));
-        descriptionLabels.add(new JLabel(movie.getDescription()));
-        descriptionLabels.add(new JLabel(movie.getDirector()));
-        descriptionLabels.add(new JLabel("Acteurs principaux: "));
-        for (String acteur : movie.getCasting()){
-            descriptionLabels.add(new JLabel("> " + acteur));
-        }
-        descriptionLabels.add(new JLabel("Genres: "));
-        for(String genre : movie.getGenres()){
-            descriptionLabels.add(new JLabel("> " + genre));
-        }
-        descriptionLabels.add(new JLabel("Langue: " + movie.getLanguage()));
-        descriptionLabels.add(new JLabel("Durée: " + movie.getTime() + "min"));
-        descriptionLabels.add(new JLabel("Prix: " + movie.getPrice() +"€"));
 
-        descriptionLabels.forEach(description -> descriptionPanel.add(description));
+        descriptionPanel.setFont(new Font("Arial", Font.CENTER_BASELINE, 18));
+
+        descriptionPanel.add(new JLabel(movie.getTitle()));
+        descriptionPanel.add(new JLabel("<html><p>" + movie.getDescription() + "</p></html>"));
+        descriptionPanel.add(new JLabel(movie.getDirector()));
+        descriptionPanel.add(new JLabel("Acteurs principaux: "));
+        for (String acteur : movie.getCasting()){
+            descriptionPanel.add(new JLabel("> " + acteur));
+        }
+        descriptionPanel.add(new JLabel("Genres: "));
+        for(String genre : movie.getGenres()){
+            descriptionPanel.add(new JLabel("> " + genre));
+        }
+        descriptionPanel.add(new JLabel("Langue: " + movie.getLanguage()));
+        descriptionPanel.add(new JLabel("Durée: " + movie.getTime() + "min"));
+        descriptionPanel.add(new JLabel("Prix: " + movie.getPrice() +"€"));
+
+        //descriptionLabels.forEach(description -> descriptionPanel.add(description));
         //descriptionPanel.add(descriptionLabels)
     }
 
@@ -355,8 +390,20 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void displayAuth() {
-        // TODO auth form
-        // if ok => config
+        authDialog.setVisible(true);
+    }
+
+    private void auth() {
+        try {
+            control.authUser(username.getText().trim(), password.getText().trim());
+            // TODO
+            // show options
+            // show movie config
+        } catch (InvalidUserException e) {
+            // TODO
+            // Exception handler
+        }
+
     }
 
     private void addEventListeners() {
@@ -393,6 +440,13 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayAuth();
+            }
+        });
+
+        login.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                auth();
             }
         });
     }
