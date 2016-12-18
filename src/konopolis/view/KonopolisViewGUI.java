@@ -253,26 +253,58 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void displayDescription(Movie movie) {
+        // Title
+        JLabel title = new JLabel("<html><u>" + movie.getTitle() + "</u></html>");
+        title.setHorizontalAlignment(SwingConstants.CENTER); // align-center
+        title.setForeground(Color.white); // color
+        title.setFont(new Font("Arial", Font.BOLD, 24)); // font
+        descriptionPanel.add(title);
 
-        descriptionPanel.setFont(new Font("Arial", Font.CENTER_BASELINE, 18));
+        // Description
+        JLabel description = new JLabel("<html>" + movie.getDescription() + "</html>");
+        description.setForeground(Color.white);
+        descriptionPanel.add(description);
 
-        descriptionPanel.add(new JLabel(movie.getTitle()));
-        descriptionPanel.add(new JLabel("<html><p>" + movie.getDescription() + "</p></html>"));
-        descriptionPanel.add(new JLabel(movie.getDirector()));
-        descriptionPanel.add(new JLabel("Acteurs principaux: "));
-        for (String acteur : movie.getCasting()){
-            descriptionPanel.add(new JLabel("> " + acteur));
+        // Director
+        JLabel director = new JLabel("<html><p>" + movie.getDirector() + "</p></html>");
+        director.setHorizontalAlignment(SwingConstants.CENTER);
+        director.setForeground(Color.lightGray);
+        descriptionPanel.add(director);
+
+        // Acteurs
+        //JLabel actors = new JLabel("Acteurs principaux: ");
+        //descriptionPanel.add(actors);
+        for (String actor : movie.getCasting()){
+            JLabel curActor = new JLabel(actor);
+            curActor.setForeground(Color.white);
+            descriptionPanel.add(curActor);
         }
-        descriptionPanel.add(new JLabel("Genres: "));
+
+        // Genres
+        JLabel genres = new JLabel("Genres: ");
+        descriptionPanel.add(genres);
         for(String genre : movie.getGenres()){
-            descriptionPanel.add(new JLabel("> " + genre));
+            JLabel curGenre = new JLabel("> " + genre);
+            curGenre.setForeground(Color.white);
+            descriptionPanel.add(curGenre);
         }
-        descriptionPanel.add(new JLabel("Langue: " + movie.getLanguage()));
-        descriptionPanel.add(new JLabel("Durée: " + movie.getTime() + "min"));
-        descriptionPanel.add(new JLabel("Prix: " + movie.getPrice() +"€"));
 
-        //descriptionLabels.forEach(description -> descriptionPanel.add(description));
-        //descriptionPanel.add(descriptionLabels)
+        // Language
+        JLabel language = new JLabel("Langue: " + movie.getLanguage());
+        language.setForeground(Color.white);
+        descriptionPanel.add(language);
+
+        // Duration
+        JLabel duration = new JLabel("Durée: " + movie.getTime() + "min");
+        duration.setForeground(Color.white);
+        descriptionPanel.add(duration);
+
+        // Price
+        JLabel price = new JLabel("Prix: " + movie.getPrice() +"€");
+        price.setForeground(Color.white);
+        descriptionPanel.add(price);
+
+
     }
 
     /**
