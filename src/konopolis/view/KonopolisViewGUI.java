@@ -69,7 +69,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JComboBox<String> typesList = new JComboBox<String >();
 	private JButton config = new JButton("Configuration");
 	private JTextArea status = new JTextArea();
-	private JTextArea books=new JTextArea();
+	private JTextArea books=new JTextArea(20,10);
 	private JLabel displayRoom = new JLabel();
 	private JTextField username;
 	private JTextField password;
@@ -121,7 +121,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try { // Icon
-            frame.setIconImage(ImageIO.read(new File("img/Konopolus_1.0.jpg")));
+            frame.setIconImage(ImageIO.read(new File("img/Konopolis_1.0.jpg")));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -202,7 +202,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         bookingPanel.setPreferredSize(new Dimension(300, 900));
         bookingPanel.setMinimumSize(new Dimension(300, 900));
         bookingPanel.add(books);
-        bookBufferTable.setPreferredSize(new Dimension(280, 500));
+        bookBufferTable.setPreferredSize(new Dimension(300,900));
       
         //bookBufferTable.addColumn();
         bookingPanel.add(new JScrollPane(bookBufferTable));
@@ -571,9 +571,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     	String listBooks="";
     	for (Entry<Seat, String> entry : givenSeats.entrySet())
     	{
-    	    listBooks+="Siège "+entry.getKey()+" client:"+entry.getValue()+"\n";
+    	    listBooks+="Siège "+Math.addExact((int)entry.getKey().getRow(),1) +","+Math.addExact((int)entry.getKey().getColumn(),1)+" client:"+entry.getValue()+"\n";
     	}
     	books.setText(listBooks);
+    	System.out.println(books.getText());
+    	frame.validate();
     	frame.repaint();
     }
     
