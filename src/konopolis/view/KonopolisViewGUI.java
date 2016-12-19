@@ -201,11 +201,14 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         bookingPanel.setBackground(Color.lightGray);
         bookingPanel.setPreferredSize(new Dimension(300, 900));
         bookingPanel.setMinimumSize(new Dimension(300, 900));
-        bookingPanel.add(books);
+        books.setEditable(false);
+        books.setVisible(true);
+        bookBufferTable.add(books);
+        books.setFont(new Font("roboto",Font.BOLD,18));
         bookBufferTable.setPreferredSize(new Dimension(300,900));
       
         //bookBufferTable.addColumn();
-        bookingPanel.add(new JScrollPane(bookBufferTable));
+        bookingPanel.add(new JScrollPane(books));
     }
 
     public void makeStatusBar() {
@@ -439,11 +442,13 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     		
                     		seat.setIcon(waitingSeat);
                     		givenSeats.put(new Seat(finalY,finalX),(String)typesList.getSelectedItem());
+                    		
                     		displayBooks();
                     		
                     	}else if(isWaiting){
                     		seat.setIcon(emptySit);
                     		givenSeats.remove(new Seat(finalY,finalX));
+                    		
                     		displayBooks();
                     	}
                     	isWaiting=false;
