@@ -213,19 +213,33 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     private void makeAuthDialog() {
         authDialog = new JDialog(frame, "Connection");
         authDialog.setMinimumSize(new Dimension(500, 300));
+        authDialog.setForeground(Color.white);
         authDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         authDialog.setLocationRelativeTo(null);
-        authDialog.setAlwaysOnTop(true);
+        JPanel authPanel = new JPanel(new FlowLayout());
+        //authDialog.setAlwaysOnTop(true);
         JLabel banner = new JLabel("Espace réservé aux Admins, veuillez vous connecter !");
         banner.setFont(new Font("Roboto", Font.CENTER_BASELINE, 16));
         banner.setForeground(Color.red);
+        banner.setHorizontalAlignment(SwingConstants.CENTER);
+        banner.setVerticalAlignment(SwingConstants.TOP);
+        JLabel usernameLabel = new JLabel("Nom d'utilisateur: ");
+        usernameLabel.setPreferredSize(new Dimension(100, 30));
         username = new JTextField();
+        username.setPreferredSize(new Dimension(300, 30));
+        username.setMinimumSize(new Dimension(100, 50));
+        JLabel passwordLabel = new JLabel("Mot de passe: ");
+        passwordLabel.setPreferredSize(new Dimension(100, 30));
         password = new JTextField();
+        password.setPreferredSize(new Dimension(300, 30));
         login = new JButton("Se connecter");
-        authDialog.add(banner);
-        authDialog.add(username);
-        authDialog.add(password);
-        authDialog.add(login);
+        authPanel.add(banner);
+        authPanel.add(usernameLabel);
+        authPanel.add(username);
+        authPanel.add(passwordLabel);
+        authPanel.add(password);
+        authPanel.add(login);
+        authDialog.add(authPanel);
         authDialog.setVisible(false);
     }
 
@@ -368,6 +382,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         }
                     }
                 });
+
                 seat.addActionListener(e -> {
                     if (!(seat.getIcon().equals(takenSit))) {
                         seat.setIcon(waitingSeat);
@@ -426,6 +441,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void auth() {
+        System.out.println("auth");
         try {
             control.authUser(username.getText().trim(), password.getText().trim());
             // TODO
