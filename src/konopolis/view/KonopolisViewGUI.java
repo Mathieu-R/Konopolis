@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -42,10 +44,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import konopolis.controller.KonopolisController;
-import konopolis.model.InvalidUserException;
 import konopolis.model.KonopolisModel;
 import konopolis.model.Movie;
 import konopolis.model.Room;
+import konopolis.model.Seat;
 import konopolis.model.Show;
 
 /**
@@ -67,6 +69,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JComboBox<String> typesList = new JComboBox<String >();
 	private JButton config = new JButton("Configuration");
 	private JTextArea status = new JTextArea();
+	private JTextArea books=new JTextArea();
 	private JLabel displayRoom = new JLabel();
 	private JTextField username;
 	private JTextField password;
@@ -76,6 +79,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     private String titlesFields[] = {"Place", "Type"};
     JTable bookBufferTable = new JTable(new DefaultTableModel()); // Table => Buffer of booking
     private ArrayList<ArrayList<Object>> dataCustomer = new ArrayList<ArrayList<Object>>();
+    
+    private HashMap<Seat,String> givenSeats= new HashMap<Seat,String>();
+    
+    boolean isWaiting=false;
 
 	//private int movie_id = 0;
 	//private int room_id = 0;
@@ -194,8 +201,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         bookingPanel.setBackground(Color.lightGray);
         bookingPanel.setPreferredSize(new Dimension(300, 900));
         bookingPanel.setMinimumSize(new Dimension(300, 900));
-
+        bookingPanel.add(books);
         bookBufferTable.setPreferredSize(new Dimension(280, 500));
+      
         //bookBufferTable.addColumn();
         bookingPanel.add(new JScrollPane(bookBufferTable));
     }
@@ -353,6 +361,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      * Display the room at the moment of the show
      */
     private void displayRoom(Room selectedRoom, int movie_id, int room_id, LocalDateTime show_start) {
+    	
         int size = 0;
         int rows = 0;
         int columns = 0;
@@ -394,20 +403,51 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 // Event Listener
                 int finalX = x;
                 int finalY = y;
+                
+                
                 seat.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken()) && !(seat.getIcon().equals(waitingSeat))) {
                             //System.out.println("mouseentered");
                             seat.setIcon(selectionSeat);
+                        }else if(seat.getIcon().equals(waitingSeat)){
+                        	
+                        	isWaiting=true;
+                        	seat.setIcon(selectionSeat);
+                        	
                         }
                     }
 
                     @Override
                     public void mouseExited(MouseEvent e) {
-                        if(seat.getIcon().equals(selectionSeat) && !(seat.getIcon().equals(waitingSeat))) {
-                            seat.setIcon(emptySit);
+                        if(seat.getIcon().equals(selectionSeat) && !isWaiting) {
+                            
+                        	seat.setIcon(emptySit);
+      
                         }
+                        else if(isWaiting){
+                        	 
+                        	seat.setIcon(waitingSeat);
+                        	
+                        }
+                        isWaiting=false;
+                    }
+                 
+                    public void mouseClicked(MouseEvent e){
+                    	if(!isWaiting){
+                    		
+                    		seat.setIcon(waitingSeat);
+                    		givenSeats.put(new Seat(finalY,finalX),(String)typesList.getSelectedItem());
+                    		displayBooks();
+                    		
+                    	}else if(isWaiting){
+                    		seat.setIcon(emptySit);
+                    		givenSeats.remove(new Seat(finalY,finalX));
+                    		displayBooks();
+                    	}
+                    	isWaiting=false;
+                    	
                     }
                 });
 
@@ -526,7 +566,17 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             }
         });*/
     }
-
+    
+    public void displayBooks(){
+    	String listBooks="";
+    	for (Entry<Seat, String> entry : givenSeats.entrySet())
+    	{
+    	    listBooks+="Siège "+entry.getKey()+" client:"+entry.getValue()+"\n";
+    	}
+    	books.setText(listBooks);
+    	frame.repaint();
+    }
+    
     public void update(Observable arg0, Object arg1) {
 
     }
