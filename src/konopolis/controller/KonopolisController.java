@@ -1,8 +1,5 @@
 
-package src.konopolis.controller;
-
-import src.konopolis.model.*;
-import src.konopolis.view.KonopolisView;
+package konopolis.controller;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,6 +7,15 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import konopolis.model.Customer;
+import konopolis.model.KonopolisModel;
+import konopolis.model.Movie;
+import konopolis.model.Room;
+import konopolis.model.SeatTakenException;
+import konopolis.model.SeatUnknownException;
+import konopolis.model.Show;
+import konopolis.view.KonopolisView;
 
 /**
  * @author nathan
@@ -31,14 +37,6 @@ public class KonopolisController {
 
 	/* Methods */
 
-    /*
-     * authentify a user
-     */
-    public boolean authUser(String username,String password) throws InvalidUserException {
-        return model.authUser(username, password);
-    }
-
-
     /**
      * Retrieve all the movies titles
      * @return HashMap of all the movies titles
@@ -55,10 +53,11 @@ public class KonopolisController {
 	public Movie retrieveMovie(int movie_id) {
 		return model.retrieveMovie(movie_id);
 	}
+	
+	public int retrieveMovieId(String title){
+		return model.retrieveMovieId(title);
+	}
 
-	public int retrieveMovieId(String title) {
-	    return model.retrieveMovieId(title);
-    }
     /**
      * Retrieve a room where a movie is broadcasted (for a show given)
      * @param movie_id

@@ -1,11 +1,11 @@
-package src.konopolis.model;
+package konopolis.model;
 
-import org.mindrot.jbcrypt.BCrypt;
-
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -24,9 +24,9 @@ import java.util.*;
 public class KonopolisModel extends Observable {
     
 	private final String DB_DRIVER = "com.mysql.jdbc.Driver";
-    private String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false"; // auto reconnection and no ssl connection (not prod ready)
+    private final String DB_URL = "jdbc:mysql://localhost:3306/konopolis?autoReconnect=true&useSSL=false"; // auto reconnection and no ssl connection (not prod ready)
     private final String USER = "root";
-    private final String PWD = "root";
+    private final String PWD = "H1perGl0bulle";
 
 	private ArrayList<Movie> movies_al = new ArrayList<Movie>(); // ArrayList of Movies to be able to manage them
     private ArrayList<Show> shows_al = new ArrayList<Show>(); // ArrayList of Shows => contain every instance of shows for a specific movie
@@ -76,63 +76,6 @@ public class KonopolisModel extends Observable {
        } catch (SQLException e) {
            e.printStackTrace();
        }
-    }
-
-    public void createUser(String username, String password) {
-        PreparedStatement createUser = null;
-        String makeUser = "INSERT INTO tbadmins(username, hash) VALUES (?,?)";
-
-        this.createConnection();
-        try {
-            String hash = BCrypt.hashpw(password, BCrypt.gensalt(16)); // hash password
-
-            createUser = conn.prepareStatement(makeUser);
-            createUser.setString(1, username);
-            createUser.setString(2, hash);
-            createUser.executeUpdate();
-        } catch(SQLException e) {
-            e.printStackTrace();
-        } finally {
-            pstatementCloser(createUser);
-            connectionCloser(conn);
-        }
-    }
-
-    public boolean authUser(String username, String password) throws InvalidUserException {
-        PreparedStatement getUser = null;
-        String auth = "SELECT username, hash FROM tbadmins where username = ?";
-        
-        this.createConnection();
-        ResultSet rs = null;
-        try {
-            getUser = conn.prepareStatement(auth);
-            getUser.setString(1, username);
-            rs = getUser.executeQuery();
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            if (!rs.isBeforeFirst()) { // if the user does not exist
-                throw new InvalidUserException("Cette utilisateur / mot de passe n'existe pas !");
-            }
-
-            while(rs.next()) {
-                rs.getString("username");
-                final String hash = rs.getString("hash");
-
-                if (BCrypt.checkpw(password, hash)) { // Verify if the password match the hash in db
-                    return true;
-                }
-                throw new InvalidUserException("Cette utilisateur / mot de passe n'existe pas !");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            pstatementCloser(getUser);
-            connectionCloser(conn);
-        }
-        return false;
     }
 
     /**
@@ -185,41 +128,33 @@ public class KonopolisModel extends Observable {
     
     public Movie retrieveMovie(int movie_id) {
         Movie movie = null;
-        PreparedStatement getMv = null;
         
 	    String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
 					+ "(select group_concat(cast) " 
 					+ "from tbmoviescasts "
-					+ "natural join tbcasts "
-                    + "where movie_id = ? ) as casting, "
+					+ "natural join tbcasts) as casting,"
 			        + "(select group_concat(genre) " 
 					+ "from tbmoviesgenres "
-					+ "natural join tbgenres "
-                    + "where movie_id = ? ) as genres, "
+					+ "natural join tbgenres) as genres,"
 					+ "(select group_concat(show_start) "
 					+ "from tbmovies "
-					+ "natural join tbmoviesrooms "
-                    + "where movie_id = ? ) as shows, "
+					+ "natural join tbmoviesrooms) as shows,"
 			        + "time, language, price "
 			        + "from tbmovies as m "
 			        + "natural join tblanguages "
 			        + "natural join tbmoviesrooms as mr "
-			        + "where m.movie_id = ? "
+			        + "where m.movie_id = " + movie_id + " "
 	    			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
 	    
 	    			// What about 2 rooms for one same movie ?
 	    			// Consider Group By
         
         this.createConnection();
+        this.createStatement();
+        
         ResultSet rs = null; // Execute the sql query and put the results in the results set
-
         try {
-            getMv = conn.prepareStatement(sql);
-            getMv.setInt(1, movie_id);
-            getMv.setInt(2, movie_id);
-            getMv.setInt(3, movie_id);
-            getMv.setInt(4, movie_id);
-            rs = getMv.executeQuery();
+            rs = stmt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -239,25 +174,22 @@ public class KonopolisModel extends Observable {
                 int time = rs.getInt("time");
                 String language = rs.getString("language");
                 double price = rs.getDouble("price");
-
-                shows_al.clear(); // clear old shows before adding new one
-
+  
                 // For every date String
                 for (String show : shows) {
                 	LocalDateTime show_start = stringToLocalDateTime(show);
-
+                	
                 	// end of the show => start of the show + time in minutes
             		final LocalDateTime show_end = show_start.plus(time, ChronoUnit.MINUTES);
-
+            		
             		// Add an instance of show => id = movie_id
             		shows_al.add(new Show(show_start, show_end, id, room_id));
                 }
 
                 movie = new Movie(id, title, description, genres, shows_al, director, casting, time, language, price);
                 // Push every Movie' instance in this ArrayList
-                //movies_al.clear(); // A changer, il faudrait vérifier si le film existe déjà, dans ce cas ne pas faire la requête une seconde fois
-                if (!movies_al.contains(movie)) movies_al.add(movie); // if the movie is not present, we add it
-
+                movies_al.clear(); // A changer, il faudrait vérifier si le film existe déjà, dans ce cas ne pas faire la requête une seconde fois
+                movies_al.add(movie);
                 //setChanged();
                 //notifyObservers();
             }
@@ -281,21 +213,17 @@ public class KonopolisModel extends Observable {
      */
     public Room retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
         Room room = null;
-        PreparedStatement getRm = null;
     	//rooms_al.clear();
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
         		   + "FROM tbmoviesrooms natural join tbrooms "
-        		   + "WHERE movie_id = ? and room_id = ? and show_start = ? ";
+        		   + "WHERE movie_id = " + movie__id + " and room_id = " + room_id + " and show_start = " + "'" + show__start + "'";
         
         this.createConnection();
+        this.createStatement();
 
         ResultSet rs = null; // Execute the sql query and put the results in the results set
         try {
-            getRm = conn.prepareStatement(sql);
-            getRm.setInt(1, movie__id);
-            getRm.setInt(2, room_id);
-            getRm.setTimestamp(3, Timestamp.valueOf(show__start));
-            rs = getRm.executeQuery();
+            rs = stmt.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1075,18 +1003,13 @@ public class KonopolisModel extends Observable {
     /**
      * Getters and Setters
      */
-
-
+    
     public String getDB_DRIVER() {
         return DB_DRIVER;
     }
 
     public String getDB_URL() {
         return DB_URL;
-    }
-
-    public void setDB_URL(String DB_URL) {
-        this.DB_URL = DB_URL;
     }
 
     public String getUSER() {

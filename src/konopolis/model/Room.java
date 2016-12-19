@@ -1,4 +1,4 @@
-package src.konopolis.model;
+package konopolis.model;
 
 import java.util.ArrayList;
 
@@ -115,6 +115,21 @@ public class Room {
         }
         seats.get(y-1).get(x-1).setTaken(false);
     }
+    
+    public int getSeatsLeft(){
+    	int seatsTaken=0;
+    	
+    	
+    	for(int j=0;j<seats.size();j++){
+    		for(int i=0;i<seats.get(j).size();i++){
+    			if(seats.get(j).get(i).isTaken()){
+    				seatsTaken++;
+    			}
+    		}
+    	}
+    	
+    	return totSeats-seatsTaken;
+    }
 
     /**
      * Empty the room, which means that no seats are taken
@@ -125,20 +140,6 @@ public class Room {
                 seat.setTaken(false); // The seat is not reserved
             }
         }
-    }
-
-    /**
-     * Get the number of seats left
-     * @return, int, the number of seats left
-     */
-    public int getSeatsLeft() {
-        int compteur = 0;
-        for (ArrayList<Seat> seatsRow : seats) {
-            for (Seat seat : seatsRow) {
-                if (!(seat.isTaken())) compteur++; // Si le siège n'est pas pris, on incrémente le compteur
-            }
-        }
-        return compteur;
     }
 
     /**

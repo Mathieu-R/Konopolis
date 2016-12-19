@@ -1,11 +1,20 @@
-package src.konopolis.view;
-
-import src.konopolis.controller.KonopolisController;
-import src.konopolis.model.*;
+package konopolis.view;
 
 import java.time.LocalDateTime;
 import java.time.Year;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Scanner;
+
+import konopolis.controller.KonopolisController;
+import konopolis.model.KonopolisModel;
+import konopolis.model.Movie;
+import konopolis.model.Room;
+import konopolis.model.Seat;
 
 /**
  * Console view
@@ -193,25 +202,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
      */
     private void movieConfig() {
 	    int choiceConfig = 0;
-        String username = "";
-        String password = "";
-        boolean successAuth = false;
 
-        show("Espace réservé aux administrateurs ! Veuillez vous authentifier.");
-        do {
-            try {
-                sc.nextLine(); // We have to flush the buffer before
-                showInline("Nom d'utilisateur: ");
-                username = sc.nextLine(); // username
-                showInline("Mot de passe: ");
-                password = sc.nextLine(); // password
-                successAuth = control.authUser(username, password); // try to connect the user
-            } catch(InvalidUserException e) { // username or/and password invalid
-                show("" + e.getMessage());
-            }
-        } while (!successAuth); // while the user is not connected
-
-        show("Faites votre choix: ");
         show("1.Ajouter un film"); // only one choice, could add other one later
         do {
             try {
@@ -248,7 +239,6 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         do { // the user choose a title
             try {
-                sc.nextLine(); // flush the buffer
                 show("Quelle est le titre du film ?");
                 title = sc.nextLine();
             } catch (InputMismatchException e) {

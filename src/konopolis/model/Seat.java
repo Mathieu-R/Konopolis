@@ -1,5 +1,5 @@
 
-package src.konopolis.model;
+package konopolis.model;
 
 
 

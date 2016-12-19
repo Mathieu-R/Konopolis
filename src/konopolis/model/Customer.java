@@ -1,4 +1,4 @@
-package src.konopolis.model;
+package konopolis.model;
 
 /**
  * @author Nathan D. - Groupe 3
