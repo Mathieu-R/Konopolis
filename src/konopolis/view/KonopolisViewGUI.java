@@ -68,6 +68,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JComboBox<String> showsList = new JComboBox<String>();
 	private JComboBox<String> typesList = new JComboBox<String >();
 	private JButton config = new JButton("Configuration");
+	private JButton confirm= new JButton("Confirmer");
 	private JTextArea status = new JTextArea();
 	private JTextArea books=new JTextArea(20,10);
 	private JLabel displayRoom = new JLabel();
@@ -77,12 +78,14 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     private Object[][] dataBooking = {};
     private String titlesFields[] = {"Place", "Type"};
+    
     JTable bookBufferTable = new JTable(new DefaultTableModel()); // Table => Buffer of booking
     private ArrayList<ArrayList<Object>> dataCustomer = new ArrayList<ArrayList<Object>>();
     
     private HashMap<Seat,String> givenSeats= new HashMap<Seat,String>();
     
     boolean isWaiting=false;
+    boolean isBlocked=false;
 
 	//private int movie_id = 0;
 	//private int room_id = 0;
@@ -116,7 +119,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	    // Create main Frame
         frame = new JFrame("Konopolis"); // Title
 		frame.setVisible(true);
-		frame.setSize(1500,900);
+		frame.setSize(1500,700);
 		frame.setMinimumSize(new Dimension(1500, 900));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -209,6 +212,25 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
       
         //bookBufferTable.addColumn();
         bookingPanel.add(new JScrollPane(books));
+        bookingPanel.add(confirm,BorderLayout.SOUTH);
+        
+        //Define Confirm button
+        
+        confirm.setVisible(true);
+        confirm.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for (Entry<Seat, String> entry : givenSeats.entrySet())
+		    	{
+		    	    makeBook(entry.getKey().getColumn(), entry.getKey().getRow() ,entry.getValue(),control.retrieveMovieId((String)moviesList.getSelectedItem()),control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
+
+		    	}
+				 init();
+				
+			}
+        	
+        });
     }
 
     public void makeStatusBar() {
@@ -412,13 +434,14 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken()) && !(seat.getIcon().equals(waitingSeat))) {
-                            //System.out.println("mouseentered");
                             seat.setIcon(selectionSeat);
                         }else if(seat.getIcon().equals(waitingSeat)){
                         	
                         	isWaiting=true;
                         	seat.setIcon(selectionSeat);
                         	
+                        }else if(seat.getIcon().equals(takenSit)){
+                        	isBlocked=true;
                         }
                     }
 
@@ -435,10 +458,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         	
                         }
                         isWaiting=false;
+                        isBlocked=false;
                     }
                  
                     public void mouseClicked(MouseEvent e){
-                    	if(!isWaiting){
+                    	if(!isWaiting && !isBlocked){
                     		
                     		seat.setIcon(waitingSeat);
                     		givenSeats.put(new Seat(finalY,finalX),(String)typesList.getSelectedItem());
@@ -450,6 +474,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     		givenSeats.remove(new Seat(finalY,finalX));
                     		
                     		displayBooks();
+                    	}else if(isBlocked){
+                    		//Do nothing
                     	}
                     	isWaiting=false;
                     	
@@ -506,7 +532,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     private void makeBook(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
-        control.addCustomer(x, y, 0, room_id, type, movie_id, show_start);
+        control.addCustomer(x, y,room_id, type, movie_id, show_start);
     }
 
     private void displayAuth() {

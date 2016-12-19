@@ -80,7 +80,7 @@ public class KonopolisController {
      * @param movie_id
      * @param show_start
      */
-	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+	public void addCustomer(int x, int y,int room_id, String type, int movie_id, LocalDateTime show_start) {
 		double reduction = 0.0;
 
 		// We create the new customer
@@ -143,7 +143,7 @@ public class KonopolisController {
 
     public String dateInFrench(LocalDateTime date) {
 	    String[] days = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
-        String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
+        String[] months = {"Janvier", "F�vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "D�cembre"};
 	    final int dayName = date.getDayOfWeek().getValue(); // day of week in number (1 -> 7)
         final int day = date.getDayOfMonth();
         final int month = date.getMonthValue(); // month of the year (1 -> 12)
@@ -187,6 +187,7 @@ public class KonopolisController {
 		    throw new RuntimeException(e);
         }
 	}
+	
 
     /**
      * Retrieve all the rooms available
