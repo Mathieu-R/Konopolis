@@ -86,8 +86,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     
     boolean isWaiting=false;
     boolean isBlocked=false;
+    boolean isEmpty=false;
     
     private String selectedMovie;
+    private String selectedShow;
 
 	//private int movie_id = 0;
 	//private int room_id = 0;
@@ -225,7 +227,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		    	    makeBook(Math.addExact(entry.getKey().getColumn(), 1),Math.addExact(entry.getKey().getRow(), 1),entry.getValue(),control.retrieveMovieId((String)moviesList.getSelectedItem()),control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
 
 		    	}
-				makeRoomMapping();
+				books.setText("");
 			}
         	
         });
@@ -257,6 +259,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     public void makeRoomMapping() {
         // Icon when there is no show selected
+    if(!(moviesList.getSelectedIndex() >= 0)){	
         displayRoom.setIcon(new ImageIcon("img/Konopolis_1.0.jpg"));
         displayRoom.setBackground(Color.white);
 
@@ -267,6 +270,21 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         mappingRoom.setPreferredSize(new Dimension(900, 900));
         mappingRoom.setMinimumSize(new Dimension(900, 900));
         mappingRoom.setVisible(true);
+    }else{
+    	String title=(String)moviesList.getSelectedItem();
+    	int idMovie = control.retrieveMovieId(title);
+    	Movie movie = control.retrieveMovie(idMovie);
+    	displayShows(movie);
+    	int index = showsList.getSelectedIndex(); // show selected
+        System.out.println("showsListNumber: " + index);
+        Show selectedShow = control.getShows_al().get(index); // Select the show
+        int movie_id = control.retrieveMovieId((String)moviesList.getSelectedItem());
+        int room_id = selectedShow.getRoom_id();
+        LocalDateTime show_start = selectedShow.getShow_start();
+        Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+        displayRoom(selectedRoom, movie_id, room_id, show_start);
+        displayStatus(selectedRoom);
+    }
     }
 
     private void makeAuthDialog() {
@@ -433,6 +451,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     public void mouseEntered(MouseEvent e) {
                         if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken()) && !(seat.getIcon().equals(waitingSeat))) {
                             seat.setIcon(selectionSeat);
+                            isEmpty=true;
                         }else if(seat.getIcon().equals(waitingSeat)){
                         	
                         	isWaiting=true;
@@ -440,6 +459,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         	
                         }else if(seat.getIcon().equals(takenSit)){
                         	isBlocked=true;
+                        }else if(seat.getIcon().equals(emptySit)){
+                        	
+                        	System.out.println(seat.getIcon().toString());
                         }
                     }
 
@@ -457,6 +479,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         }
                         isWaiting=false;
                         isBlocked=false;
+                        isEmpty=false;
                     }
                  
                     public void mouseClicked(MouseEvent e){
@@ -464,19 +487,19 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     		
                     		seat.setIcon(waitingSeat);
                     		givenSeats.put(new Seat(finalY,finalX),(String)typesList.getSelectedItem());
-                    		
+                    		isWaiting=true;
+                    		isEmpty=false;
                     		displayBooks();
                     		
                     	}else if(isWaiting){
                     		seat.setIcon(emptySit);
                     		givenSeats.remove(new Seat(finalY,finalX));
-                    		
+                    		isWaiting=false;
                     		displayBooks();
                     	}else if(isBlocked){
+                    		isWaiting=false;
                     		//Do nothing
-                    	}
-                    	isWaiting=false;
-                    	
+                    	}            	
                     }
                 });
 
@@ -555,9 +578,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         moviesList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-	              String title =(String) moviesList.getSelectedItem(); // get the title selected
-	             if(!(selectedMovie==title)){  
-	                selectedMovie=title;
+	             String title =(String) moviesList.getSelectedItem(); // get the title selected	              
+	             if(!(selectedMovie.equals(title))){  
+	            	selectedMovie= (String)moviesList.getSelectedItem();
 	                int idMovie = control.retrieveMovieId(title); // retrieve movie id
 	                System.out.println("FROM LISTENER => idMovie: " + idMovie);
 	                Movie movie = control.retrieveMovie(idMovie); //
@@ -576,15 +599,21 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         showsList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int index = showsList.getSelectedIndex(); // show selected
-                System.out.println("showsListNumber: " + index);
-                Show selectedShow = control.getShows_al().get(index); // Select the show
-                int movie_id = control.retrieveMovieId((String)moviesList.getSelectedItem());
-                int room_id = selectedShow.getRoom_id();
-                LocalDateTime show_start = selectedShow.getShow_start();
-                Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
-                displayRoom(selectedRoom, movie_id, room_id, show_start);
-                displayStatus(selectedRoom);
+            	String show = (String) showsList.getSelectedItem();
+            	if(!(selectedShow == show)){
+            		selectedShow=show;
+	                int index = showsList.getSelectedIndex(); // show selected
+	                System.out.println("showsListNumber: " + index);
+	                Show selectedShow = control.getShows_al().get(index); // Select the show
+	                int movie_id = control.retrieveMovieId((String)moviesList.getSelectedItem());
+	                int room_id = selectedShow.getRoom_id();
+	                LocalDateTime show_start = selectedShow.getShow_start();
+	                Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+	                displayRoom(selectedRoom, movie_id, room_id, show_start);
+	                displayStatus(selectedRoom);
+	                givenSeats.clear();
+	                displayBooks();
+            	}
             }
         });
 
