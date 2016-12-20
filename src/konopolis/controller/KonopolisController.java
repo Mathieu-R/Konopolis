@@ -6,6 +6,7 @@ import src.konopolis.view.KonopolisView;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,6 +196,22 @@ public class KonopolisController {
 	public void retrieveAllRooms() {
 	    model.retrieveAllRooms();
 	}
+
+    /**
+     * Retrieve all languages available
+     * @return, languages are put in an ArrayList of String
+     */
+	public ArrayList<String> retrieveAllLanguages() {
+	    return model.retrieveAllLanguages();
+    }
+
+    /**
+     * Create a date (LocalDateTime) from a String
+     */
+    public LocalDateTime makeDateFromString(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"); // pattern
+        return LocalDateTime.parse(date, formatter); // String => LocalDateTime (according to the pattern)
+    }
 
     /**
      * add a view to the controller
