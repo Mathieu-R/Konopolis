@@ -86,6 +86,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     
     boolean isWaiting=false;
     boolean isBlocked=false;
+    
+    private String selectedMovie;
 
 	//private int movie_id = 0;
 	//private int room_id = 0;
@@ -170,12 +172,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         control.retrieveTypes().forEach(type -> typesList.addItem(type));
 
         moviesList.setPreferredSize(new Dimension(300,25));
-        moviesList.setActionCommand("Movies"); // Action for ActionListener
         moviesList.setSelectedIndex(0);
 
         // Create a default show ComboBox
         showsList.setPreferredSize(new Dimension(300,25));
-        showsList.setActionCommand("Shows"); // Action for ActionListener
 
         typesList.setPreferredSize(new Dimension(300, 25));
 
@@ -206,8 +206,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         bookingPanel.setMinimumSize(new Dimension(300, 900));
         books.setEditable(false);
         books.setVisible(true);
-        bookBufferTable.add(books);
-        books.setFont(new Font("roboto",Font.BOLD,18));
+        books.setFont(new Font("Arial",Font.BOLD,18));
         bookBufferTable.setPreferredSize(new Dimension(300,900));
       
         //bookBufferTable.addColumn();
@@ -223,11 +222,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 			public void actionPerformed(ActionEvent arg0) {
 				for (Entry<Seat, String> entry : givenSeats.entrySet())
 		    	{
-		    	    makeBook(entry.getKey().getColumn(), entry.getKey().getRow() ,entry.getValue(),control.retrieveMovieId((String)moviesList.getSelectedItem()),control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
+		    	    makeBook(Math.addExact(entry.getKey().getColumn(), 1),Math.addExact(entry.getKey().getRow(), 1),entry.getValue(),control.retrieveMovieId((String)moviesList.getSelectedItem()),control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
 
 		    	}
-				 init();
-				
+				makeRoomMapping();
 			}
         	
         });
@@ -324,7 +322,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             showsList.addItem("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
         //Select the first item of the list
-        //showsList.setSelectedIndex(0);
+        showsList.setSelectedIndex(0);
     }
 
     private void displayDescription(Movie movie) {
@@ -557,24 +555,31 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         moviesList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource(); // get JComboBox
-                String title = comboBox.getSelectedItem().toString(); // get the title selected
-                int idMovie = control.retrieveMovieId(title); // retrieve movie id
-                System.out.println("FROM LISTENER => idMovie: " + idMovie);
-                Movie movie = control.retrieveMovie(idMovie); //
-                displayShows(movie);
-                displayDescription(movie);
+	              String title =(String) moviesList.getSelectedItem(); // get the title selected
+	             if(!(selectedMovie==title)){  
+	                selectedMovie=title;
+	                int idMovie = control.retrieveMovieId(title); // retrieve movie id
+	                System.out.println("FROM LISTENER => idMovie: " + idMovie);
+	                Movie movie = control.retrieveMovie(idMovie); //
+	                displayShows(movie);
+	                displayDescription(movie);
+	                
+	                givenSeats.clear();
+	              }
+	              else{
+	            	//Nothing  
+	              }
+	                
             }
         });
 
         showsList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource(); // get the comboBox
-                int index = comboBox.getSelectedIndex(); // show selected
+                int index = showsList.getSelectedIndex(); // show selected
                 System.out.println("showsListNumber: " + index);
                 Show selectedShow = control.getShows_al().get(index); // Select the show
-                int movie_id = selectedShow.getMovie_id();
+                int movie_id = control.retrieveMovieId((String)moviesList.getSelectedItem());
                 int room_id = selectedShow.getRoom_id();
                 LocalDateTime show_start = selectedShow.getShow_start();
                 Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
