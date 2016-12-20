@@ -136,7 +136,6 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
                     control.addCustomer( // try to add the customer
                             Integer.parseInt(chosenSeat[0].trim()),
                             Integer.parseInt(chosenSeat[1].trim()),
-                            control.getCustomers_al().size() + 1, // next customer_id
                             room_id,
                             enteredType,
                             movie_id,
@@ -642,6 +641,11 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	public void update(Observable obs, Object obj) {
         //show((String) obj);
 		//init();
+	}
+
+	public void run() {
+		// TODO Auto-generated method stub
+		init();
 	}
 }
 

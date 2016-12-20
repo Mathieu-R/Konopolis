@@ -58,7 +58,7 @@ public class KonopolisModel extends Observable {
      * Create the connection to the DB (Konopolis)
      * @throws SQLException
      */
-    public void createConnection() {
+    public synchronized void createConnection() {
         try {
             this.conn = DriverManager.getConnection(DB_URL, USER, PWD);
         } catch (SQLException e) {
@@ -70,7 +70,7 @@ public class KonopolisModel extends Observable {
      * Create a statement
      * @throws SQLException
      */
-    public void createStatement() {
+    public synchronized void createStatement() {
 	   try {
            stmt = conn.createStatement();
        } catch (SQLException e) {
@@ -85,7 +85,7 @@ public class KonopolisModel extends Observable {
      * @return HashMap that contains the id => key and the title => value of the movies
      * @throws SQLException
      */
-    public LinkedHashMap<Integer, String> retrieveAllMoviesTitles() {
+    public synchronized LinkedHashMap<Integer, String> retrieveAllMoviesTitles() {
         LinkedHashMap<Integer, String> movies = new LinkedHashMap<Integer, String>(); // Local HashMap for movies
 
         String sql = "SELECT movie_id, title " +
@@ -126,7 +126,7 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      */
     
-    public Movie retrieveMovie(int movie_id) {
+    public synchronized Movie retrieveMovie(int movie_id) {
         Movie movie = null;
         
 	    String sql = "SELECT m.movie_id, mr.room_id, title, description, director," 
@@ -211,7 +211,7 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      * @throws TooMuchSeatsException
      */
-    public Room retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
+    public synchronized Room retrieveRoom(int movie__id, int room_id, LocalDateTime show__start) {
         Room room = null;
     	//rooms_al.clear();
         String sql = "SELECT movie_room_id, movie_id, room_id, rows, seats_by_row, show_start " 
@@ -265,7 +265,7 @@ public class KonopolisModel extends Observable {
      * @throws SQLException
      * @throws TooMuchSeatsException
      */
-    public void retrieveAllRooms() {
+    public synchronized void retrieveAllRooms() {
         rooms_al.clear();
 
         String sql = "SELECT room_id, rows, seats_by_row "
@@ -313,7 +313,7 @@ public class KonopolisModel extends Observable {
      * @param show_start
      * @throws SQLException
      */
-    public void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
+    public synchronized void retrieveCustomers(int room_id, int movie_id, LocalDateTime show_start) {
     	// customer_id should be unique key ?
     	// Supprimer le booléen isTaken de la BDD ? Done.
     	// Redondance entre les tables seats et customers ?
@@ -352,20 +352,24 @@ public class KonopolisModel extends Observable {
                 int column = rs.getInt("sColumn");
                 
                 //Look for the right Room => create an instance of customer and add it to the customers ArrayList
-                for (Room room : rooms_al) {
-                	if (room.getId() == room_id) { // Retrieve the right room
+                
+                Iterator<Room> iter = rooms_al.iterator();
+
+                while (iter.hasNext()) {
+                    Room ro = iter.next();
+                    if (ro.getId() == room_id) { // Retrieve the right room
                         try {
-                            customers_al.add(new Customer(column, row, room, customer_type, customer_id)); // The instance of customer book the seat
+                            customers_al.add(new Customer(column, row, ro, customer_type, customer_id)); // The instance of customer book the seat
                         } catch (SeatUnknownException e) {
                             e.getMessage();
                         } catch (SeatTakenException e) {
                             e.getMessage();
                         }
+                       
                         setChanged();
                         notifyObservers();
                 	}
-                }
-                
+                }               
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -378,7 +382,7 @@ public class KonopolisModel extends Observable {
         }
     }
     
-    public ArrayList<String> retrieveTypes() {
+    public synchronized ArrayList<String> retrieveTypes() {
         ArrayList<String> types = new ArrayList<String>();
         String selectTypes = "SELECT customer_type FROM tbcustomerstype";
 
@@ -417,7 +421,7 @@ public class KonopolisModel extends Observable {
      * @return customer_type_id
      * @throws SQLException
      */
-    public int retrieveCustomerTypeId(String type) {
+    public synchronized int retrieveCustomerTypeId(String type) {
         int customer_id = 0;
         PreparedStatement getCtId = null;
         ResultSet rs = null;
@@ -461,7 +465,7 @@ public class KonopolisModel extends Observable {
      * @return, int => the movie_room_id
      * @throws SQLException
      */
-    public int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
+    public synchronized int retrieveMovieRoomId(int movie_id, int room_id, LocalDateTime show_start) {
         int movie_room_id = 0;
         PreparedStatement getMrId = null;
 
@@ -500,7 +504,7 @@ public class KonopolisModel extends Observable {
 		return movie_room_id;
     }
     
-    public int retrieveLanguageId(String language) throws RuntimeException {
+    public synchronized int retrieveLanguageId(String language) throws RuntimeException {
         int language_id = 0;
         PreparedStatement getLgId = null;
     	String languageId = "SELECT language_id "
@@ -543,7 +547,7 @@ public class KonopolisModel extends Observable {
      * @return int, the genre id
      * @throws SQLException
      */
-    public int retrieveOrCreateGenreId(String genre) {
+    public synchronized int retrieveOrCreateGenreId(String genre) {
         int genre_id = 0;
         PreparedStatement getGrId = null;
         PreparedStatement addGr = null;
@@ -605,7 +609,7 @@ public class KonopolisModel extends Observable {
      * @return int, the cast id
      * @throws SQLException
      */
-    public int retrieveOrCreateCastId(String actor) {
+    public synchronized int retrieveOrCreateCastId(String actor) {
         int cast_id = 0;
         PreparedStatement getCtId = null;
         PreparedStatement addAc = null;
@@ -668,7 +672,7 @@ public class KonopolisModel extends Observable {
      * @param title
      * @return
      */
-    public int retrieveMovieId(String title) {
+    public synchronized int retrieveMovieId(String title) {
         int movie_id = 0;
         PreparedStatement getMvId = null;
 
@@ -715,7 +719,7 @@ public class KonopolisModel extends Observable {
      * @param price, the price of the movie
      * @param genres, an ArrayList of String that are the genres of the movie
      */
-    public void addMovie(/*int movie_id,*/ int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+    public synchronized void addMovie(/*int movie_id,*/ int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
     	PreparedStatement addMv = null;
 
     	String addMovie = "INSERT INTO tbmovies(title, description, director, time, language_id, price) "
@@ -769,7 +773,7 @@ public class KonopolisModel extends Observable {
      * @param movie_id, the id of the movie
      * @param genres, ArrayList of genres
      */
-    public void addGenres(int movie_id, ArrayList<String> genres) {
+    public synchronized void addGenres(int movie_id, ArrayList<String> genres) {
     	PreparedStatement addGr = null;
     	
     	this.createConnection();
@@ -813,7 +817,7 @@ public class KonopolisModel extends Observable {
      * @param room_id, the id of the room
      * @param shows_start, an ArrayList of Date that are the starts of every show
      */
-    public void addShows(int movie_id, int room_id, ArrayList<LocalDateTime> shows_start) {
+    public synchronized void addShows(int movie_id, int room_id, ArrayList<LocalDateTime> shows_start) {
     	PreparedStatement addSh = null;
     	
     	this.createConnection();
@@ -856,7 +860,7 @@ public class KonopolisModel extends Observable {
      * @param movie_id, the id of the movie
      * @param casting, an ArrayList of the movie casting
      */
-    public void addCasting(int movie_id, ArrayList<String> casting) {
+    public synchronized void addCasting(int movie_id, ArrayList<String> casting) {
     	PreparedStatement addCs = null;
     	
     	this.createConnection();
@@ -903,7 +907,7 @@ public class KonopolisModel extends Observable {
      * @param show_start
      *
      */
-    public void addCustomer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
+    public synchronized void addCustomer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
         PreparedStatement addCt = null;
 
         String addSeat = "INSERT INTO tbcustomers(sRow, sColumn, movie_room_id, customer_type_id) "
@@ -1004,67 +1008,67 @@ public class KonopolisModel extends Observable {
      * Getters and Setters
      */
     
-    public String getDB_DRIVER() {
+    public synchronized String getDB_DRIVER() {
         return DB_DRIVER;
     }
 
-    public String getDB_URL() {
+    public synchronized String getDB_URL() {
         return DB_URL;
     }
 
-    public String getUSER() {
+    public synchronized String getUSER() {
         return USER;
     }
 
-    public String getPWD() {
+    public synchronized String getPWD() {
         return PWD;
     }
     
-    public ArrayList<Movie> getMovies_al() {
+    public synchronized ArrayList<Movie> getMovies_al() {
 		return movies_al;
 	}
 
-	public void setMovies_al(ArrayList<Movie> movies_al) {
+	public synchronized void  setMovies_al(ArrayList<Movie> movies_al) {
 		this.movies_al = movies_al;
 	}
 
-	public ArrayList<Show> getShows_al() {
+	public synchronized ArrayList<Show> getShows_al() {
 		return shows_al;
 	}
 
-	public void setShows_al(ArrayList<Show> shows_al) {
+	public synchronized void setShows_al(ArrayList<Show> shows_al) {
 		this.shows_al = shows_al;
 	}
 
-	public ArrayList<Customer> getCustomers_al() {
+	public synchronized ArrayList<Customer> getCustomers_al() {
 		return customers_al;
 	}
 
-	public void setCustomers_al(ArrayList<Customer> customers_al) {
+	public synchronized void  setCustomers_al(ArrayList<Customer> customers_al) {
 		this.customers_al = customers_al;
 	}
 
-	public ArrayList<Room> getRooms_al() {
+	public synchronized ArrayList<Room> getRooms_al() {
 		return rooms_al;
 	}
 
-	public void setRooms_al(ArrayList<Room> rooms_al) {
+	public synchronized void setRooms_al(ArrayList<Room> rooms_al) {
 		this.rooms_al = rooms_al;
 	}
 
-	public Connection getConn() {
+	public synchronized Connection getConn() {
 		return conn;
 	}
 
-	public void setConn(Connection conn) {
+	public synchronized void setConn(Connection conn) {
 		this.conn = conn;
 	}
 
-	public Statement getStmt() {
+	public synchronized Statement getStmt() {
 		return stmt;
 	}
 
-	public void setStmt(Statement stmt) {
+	public synchronized void setStmt(Statement stmt) {
 		this.stmt = stmt;
 	}
 	
