@@ -61,7 +61,7 @@ public class Customer {
 			case 'V': this.reduction = 0.7;
 			    break;
 		}
-		Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+		//Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 
 	}
 
@@ -74,7 +74,7 @@ public class Customer {
 		this.type = type.charAt(0); // First charachter of the type
 		this.reduction = reduction;
 
-		Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+		//Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 	}
 
 	public static int getCurrentId() {

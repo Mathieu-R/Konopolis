@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * @author nathan
- *
+ * @author Nathan & Mathieu R.
  */
 public class KonopolisViewGUI extends KonopolisView implements Observer {
 
@@ -63,10 +62,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     private JSpinner price;
     private JButton addMovie = new JButton("Ajouter un film");
 
-    private ImageIcon emptySit = new ImageIcon("img/emptySit.png");
-    private ImageIcon takenSit = new ImageIcon("img/takenSit.png");
-    private ImageIcon selectionSeat = new ImageIcon("img/waitingSit.png");
-    private ImageIcon waitingSeat = new ImageIcon("img/selectionSit.png");
+    JLabel loadingAdmin;
+
+    private ImageIcon emptySeat = new ImageIcon("img/emptySeat.png");
+    private ImageIcon takenSeat = new ImageIcon("img/takenSeat.png");
+    private ImageIcon waitingSeat = new ImageIcon("img/waitingSeat.png");
+    private ImageIcon selectionSeat = new ImageIcon("img/selectionSeat.png");
 
 	public KonopolisViewGUI(KonopolisModel model, KonopolisController control) {
 		super(model, control);
@@ -84,6 +85,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         new Thread(this).start();
 	}
 
+    /**
+     * Create the frame and all his panels
+     */
 	public void init() {
 	    // Create main Frame
         frame = new JFrame("Konopolis"); // Title
@@ -125,7 +129,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         addEventListeners(); // Launch the events listeners
 	}
 
-	public void makeToolbar() {
+    /**
+     * Create the toolbar where the lists of movies, shows and clients will be displayed
+     */
+	private void makeToolbar() {
         // Define the toolbar
         toolbar.setSize(400, 200);
         toolbar.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -139,17 +146,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         displayMovies();
 
         moviesList.setPreferredSize(new Dimension(300,25));
-        //moviesList.setActionCommand("Movies"); // Action for ActionListener
         moviesList.setSelectedIndex(0);
 
         // Create a default show ComboBox
         showsList.setPreferredSize(new Dimension(300,25));
-        //showsList.setActionCommand("Shows"); // Action for ActionListener
 
         typesList.setPreferredSize(new Dimension(300, 25));
-
-        // Define config button
-        //config.setActionCommand("Config");
 
         // Add Label, ComboBoxs + Button at the toolbar
         toolbar.add(selectAMovie);
@@ -159,7 +161,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         toolbar.add(config);
     }
 
-    public void makeDescriptionPanel() {
+    /**
+     * Create a panel who will contain the descriptiion of the selected movie
+     */
+    private void makeDescriptionPanel() {
         // Define descriptionPanel
         //descriptionPanel.setForeground(Color.white);
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.PAGE_AXIS));
@@ -169,7 +174,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         descriptionPanel.setMinimumSize(new Dimension(250, 900));
     }
 
-    public void makeBookingPanel() {
+    /**
+     * Create a panel where all the current selections will be displayed
+     */
+    private void makeBookingPanel() {
         JPanel bookingBuffer = new JPanel(new BorderLayout());
         bookingPanel.setBackground(Color.lightGray);
         bookingPanel.setPreferredSize(new Dimension(300, 500));
@@ -187,7 +195,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         bookingPanel.add(bookingBuffer);
     }
 
-    public void makeStatusBar() {
+    /**
+     * Create the bar of status
+     */
+    private void makeStatusBar() {
         statusbar.setBackground(Color.LIGHT_GRAY);
         statusbar.setBorder(BorderFactory.createLineBorder(Color.black));
 
@@ -206,10 +217,13 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         msgUser.setPreferredSize(new Dimension(600,20));
         msgUser.setBackground(Color.LIGHT_GRAY);
 
-        //JPanel statusbar = new JPanel();
         statusbar.add(msgUser,BorderLayout.LINE_START);
     }
 
+    /**
+     * Draw the room following the movie selected.
+     * If there is no movies in the list,the logo of the software will be displayed
+     */
     public void makeRoomMapping() {
         // Icon when there is no show selected
         displayRoom.setIcon(new ImageIcon("img/Konopolis_1.0.jpg"));
@@ -246,53 +260,53 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         password = new JTextField();
         password.setPreferredSize(new Dimension(300, 30));
         login = new JButton("Se connecter");
+        loadingAdmin = new JLabel(new ImageIcon("img/loading3.gif"));
+
         authPanel.add(banner);
         authPanel.add(usernameLabel);
         authPanel.add(username);
         authPanel.add(passwordLabel);
         authPanel.add(password);
         authPanel.add(login);
+        authPanel.add(loadingAdmin);
         authDialog.add(authPanel);
         authDialog.setVisible(false);
+        loadingAdmin.setVisible(false);
     }
 
+    /**
+     * Create a window where the user must authentify himself to make configurations
+     */
     private void makeNewMovieDialog() {
 
-        movieDialog = new JDialog(frame, "Ajouter un film");
-        movieDialog.setMinimumSize(new Dimension(900, 900));
-        movieDialog.setForeground(Color.white);
-        movieDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-        movieDialog.setLocationRelativeTo(null);
-        JPanel moviePanel = new JPanel(new GridLayout(0, 1));
+        movieDialog = new JDialog(frame, "Ajouter un film"); // Dialogue box
+        movieDialog.setMinimumSize(new Dimension(900, 900)); // Size
+        movieDialog.setForeground(Color.white); // Background
+        movieDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE); // Hide on close
+        movieDialog.setLocationRelativeTo(null); // centered
+        JPanel moviePanel = new JPanel(new GridLayout(0, 1)); // New panel
 
         JLabel titleLabel = new JLabel("Titre du film: ");
-        //titleLabel.setPreferredSize(new Dimension(80, 30));
 
         title = new JTextField();
         title.setPreferredSize(new Dimension(700, 30));
         title.setMinimumSize(new Dimension(700, 30));
 
         JLabel descriptionLabel = new JLabel("Description: ");
-        //descriptionLabel.setPreferredSize(new Dimension(60, 30));
 
         description = new JTextArea();
         description.setPreferredSize(new Dimension(700, 100));
 
         JLabel genresLabel = new JLabel("Genres (séparés par une virgule): "); // some
-        //genresLabel.setPreferredSize(new Dimension(200, 30));
 
         genres = new JTextField();
         genres.setPreferredSize(new Dimension(700, 30));
 
         JLabel datesLabel = new JLabel("Dates de séance (veuillez suivre ce pattern: dd-MM-yyyy HH:mm) : "); // some
-        //datesLabel.setPreferredSize(new Dimension(400, 30));
-        //datesLabel.setMinimumSize(new Dimension(400, 30));
 
         dates = new JTextField();
-        //genres.setPreferredSize(new Dimension(300, 30));
 
         JLabel roomsLabel = new JLabel("Choisissez une salle: ");
-        //roomsLabel.setPreferredSize(new Dimension(130, 30));
 
         rooms = new JComboBox();
         control.retrieveAllRooms();
@@ -301,36 +315,29 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         }
 
         JLabel directorLabel = new JLabel("Choisissez un réalisateur: ");
-        //descriptionLabel.setPreferredSize(new Dimension(130, 30));
 
         director = new JTextField();
         director.setPreferredSize(new Dimension(700, 30));
 
         JLabel actorsLabel = new JLabel("Acteurs: ");
-        //actorsLabel.setPreferredSize(new Dimension(80, 30));
 
         actors = new JTextField();
-        //actors.setPreferredSize(new Dimension(700, 30));
 
         JLabel timeLabel = new JLabel("Durée (en minutes): ");
-        //timeLabel.setPreferredSize(new Dimension(110, 30));
 
         time = new JTextField();
-        //time.setPreferredSize(new Dimension(700, 30));
 
         JLabel languagesLabel = new JLabel("Langue: ");
-        //languagesLabel.setPreferredSize(new Dimension(80, 30));
 
         languages = new JComboBox();
         control.retrieveAllLanguages().forEach(languages::addItem);
 
         JLabel priceLabel = new JLabel("Prix (en €): ");
-        //priceLabel.setPreferredSize(new Dimension(100, 30));
 
         SpinnerNumberModel priceSpinnerModel = new SpinnerNumberModel(10, 1, 30, 1);
         price = new JSpinner(priceSpinnerModel);
-        //price.setPreferredSize(new Dimension(300, 30));
 
+        // Add every elements to the panel
         moviePanel.add(titleLabel);
         moviePanel.add(title);
         moviePanel.add(descriptionLabel);
@@ -353,8 +360,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         moviePanel.add(price);
         moviePanel.add(addMovie);
 
+        // Add the panel to the JDialog
         movieDialog.add(moviePanel);
-        movieDialog.setVisible(false);
+        movieDialog.setVisible(false); // Hide the JDialog
     }
 
     /**
@@ -370,19 +378,23 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     /**
      * Fill the ComboBox of Shows
+     * @param: The movie of which you want to have the shows
      */
     private void displayShows(Movie movie) {
 
-        showsList.removeAllItems(); // BUG TO FIX !
+        showsList.removeAllItems(); // BUG FIXED
 
-        for(Show sh: movie.getShows()){
-            System.out.println(sh.getShow_start());
+        for(Show sh: movie.getShows()){ // Show the shows list
+            //System.out.println(sh.getShow_start());
             showsList.addItem("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
-        //Select the first item of the list
-        showsList.setSelectedIndex(0);
+        showsList.setSelectedIndex(0); // Select the first item of the list
     }
 
+    /**
+     * Add the description to the descriptionPanel
+     * @param movie: The movie object of which you want a description
+     */
     private void displayDescription(Movie movie) {
         descriptionPanel.removeAll();
         // Title
@@ -404,8 +416,6 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         descriptionPanel.add(director);
 
         // Acteurs
-        //JLabel actors = new JLabel("Acteurs principaux: ");
-        //descriptionPanel.add(actors);
         for (String actor : movie.getCasting()){
             JLabel curActor = new JLabel(actor);
             curActor.setForeground(Color.white);
@@ -432,15 +442,19 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         descriptionPanel.add(duration);
 
         // Price
-        JLabel price = new JLabel("Prix: " + movie.getPrice() +"€");
+        JLabel price = new JLabel("Prix: " + movie.getPrice() + "€");
         price.setForeground(Color.white);
         descriptionPanel.add(price);
-
-
     }
 
     /**
      * Display the room at the moment of the show
+     * All the parameters are used to identify a specific show of the database
+     *
+     * @param selectedRoom  the room to display
+     * @param movie_id: the movie who is shown
+     * @param room_id: the id of the room where the movie gonna be shown
+     * @param show_start: the time when the movie start
      */
     private void displayRoom(Room selectedRoom, int movie_id, int room_id, LocalDateTime show_start) {
         int size = 0;
@@ -463,51 +477,48 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         mappingRoom.setLayout(new GridLayout(rows, columns));
         mappingRoom.setPreferredSize(new Dimension(rows * size, columns * size));
 
-        //JButton[][] grid = new JButton[selectedRoom.getRows()][selectedRoom.getSeatsByRow()]; // grid of JButtons
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < columns; x++) {
                 // Button
                 JButton seat = new JButton();
-                seat.setOpaque(true);
-                seat.setBorderPainted(false);
+                seat.setOpaque(true); // Opaque
+                seat.setBorderPainted(false); // No painted border
                 seat.setContentAreaFilled(false);
-                seat.setActionCommand("Book");
 
-
-                if (selectedRoom.getSeats().get(y).get(x).isTaken()) {
-                    seat.setIcon(takenSit);
-                } else {
-                    //seat.setBackground(Color.BLACK);
-                    seat.setIcon(emptySit);
+                if (selectedRoom.getSeats().get(y).get(x).isTaken()) { // If the room is taken
+                    seat.setIcon(takenSeat);
+                } else { // Otherwise
+                    seat.setIcon(emptySeat);
                 }
 
                 // Event Listener
                 int finalX = x;
                 int finalY = y;
-                seat.addMouseListener(new MouseAdapter() {
+                seat.addMouseListener(new MouseAdapter() { // Mouse events
                     @Override
-                    public void mouseEntered(MouseEvent e) {
-                        if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken()) && !(seat.getIcon().equals(waitingSeat))) {
-                            //System.out.println("mouseentered");
-                            seat.setIcon(selectionSeat);
+                    public void mouseEntered(MouseEvent e) { // When mouse is over the seat
+                        // If the seat is not taken nor clicked
+                        if (seat.getIcon().equals(emptySeat)) {
+                            seat.setIcon(waitingSeat);
                         }
                     }
 
                     @Override
-                    public void mouseExited(MouseEvent e) {
-                        if(seat.getIcon().equals(selectionSeat) && !(seat.getIcon().equals(waitingSeat))) {
-                            seat.setIcon(emptySit);
+                    public void mouseExited(MouseEvent e) { // When mouse exit the "over state"
+                        // If the seat is selected or
+                        if(seat.getIcon().equals(waitingSeat)) {
+                            seat.setIcon(emptySeat);
                         }
                     }
                 });
 
-                seat.addActionListener(e -> {
-                    if (seat.getIcon().equals(emptySit)) {
-                        seat.setIcon(waitingSeat);
+                seat.addActionListener(e -> { // on click on a seat
+                    if (seat.getIcon().equals(waitingSeat)) {
+                        seat.setIcon(selectionSeat);
                         String type = typesList.getSelectedItem().toString();
                         addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
-                    } else if (seat.getIcon().equals(waitingSeat)) {
-                        seat.setIcon(emptySit);
+                    } else if (seat.getIcon().equals(selectionSeat)) {
+                        seat.setIcon(emptySeat);
                         removeFromBookBuffer(finalX, finalY);
                     }
                 });
@@ -515,70 +526,155 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 				mappingRoom.add(seat);
             }
         }
-        mappingRoom.repaint();
+        mappingRoom.repaint(); // Repaint
         mappingRoom.revalidate();
-        // Add the Map to the Jframe
-        frame.add(mappingRoom, BorderLayout.CENTER);
+        frame.add(mappingRoom, BorderLayout.CENTER);  // Add the Map to the Jframe
     }
 
+    /**
+     * Display the status of the room
+     * @param selectedRoom, the room (of a show) selected
+     */
     private void displayStatus(Room selectedRoom) {
-        String roomStatus = (selectedRoom.getSeatsLeft() == 0) ? "Fermé" : "Libre";
+        String roomStatus = (selectedRoom.getSeatsLeft() == 0) ? "Fermé" : "Libre"; // If no seats left "Fermé" otherwise "Libre"
         JLabel roomStatusLabel = new JLabel("Status: " + roomStatus);
         JLabel totSeats = new JLabel("Places totales: " + selectedRoom.getTotSeats());
         JLabel seatsLeft = new JLabel("Places restantes: " + selectedRoom.getSeatsLeft());
 
         statusbar.removeAll();
-        statusbar.add(roomStatusLabel);
-        statusbar.add(totSeats);
-        statusbar.add(seatsLeft);
+        statusbar.add(roomStatusLabel); // status
+        statusbar.add(totSeats); // total seats
+        statusbar.add(seatsLeft); // seats left
     }
 
+    /**
+     * Add ticket to a buffer (before booking)
+     * @param x, seat of the row
+     * @param y, row
+     * @param type, type of the people
+     * @param movie_id, id of the movie
+     * @param room_id, if of the room
+     * @param show_start, beginning date of the show
+     */
     private void addToBookBuffer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
-        System.out.println("x: " + x + " <=> " + "y: " + y);
-        givenSeats.put(new Seat(x + 1, y + 1), type);
-        System.out.println("adding to buffer");
+        givenSeats.put(new Seat(x + 1, y + 1), type); // add to buffer
         String listBooks = "";
-        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) {
-            listBooks += "Siège " + entry.getKey().getRow() + ", " + entry.getKey().getColumn() + " <=> client: " + entry.getValue() + "\n";
+        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Write the list of booking
+            listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", " + entry.getKey().getColumn() + "\n";
         }
         books.setText(listBooks);
-        frame.validate();
-        frame.repaint();
+        books.validate();
+        books.repaint();
     }
 
+    /**
+     * Remove a ticket from buffer
+     * @param x, the seat of the row
+     * @param y, the row
+     */
     private void removeFromBookBuffer(int x, int y) {
-        givenSeats.remove(new Seat(x + 1, y + 1));
+        givenSeats.remove(new Seat(x + 1, y + 1)); // remove from the buffer
         //books.removeAll();
         String listBooks = "";
-        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) {
+        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Rewrite the list of booking
             listBooks += "Siège " + Math.addExact( (int) entry.getKey().getRow(), 1) + "," + Math.addExact( (int) entry.getKey().getColumn(), 1) + " client:" + entry.getValue() + "\n";
         }
         books.setText(listBooks);
+        books.validate();
+        books.repaint();
     }
 
+    /**
+     * Order the tickets
+     * @param x, row of the seat
+     * @param y, row
+     * @param type, type of the people
+     * @param movie_id, id of the movie
+     * @param room_id, id of the room
+     * @param show_start, beginning date of the show
+     */
     private void makeBook(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
-        control.addCustomer(x, y, 0, room_id, type, movie_id, show_start);
+        try {
+            control.addCustomer(x, y, 0, room_id, type, movie_id, show_start);
+            SplashScreen splash = new SplashScreen(600, new ImageIcon("img/giphy.gif"), 400, 400);
+            books.setText(""); // Erase the booking panel content
+            books.validate();
+            books.repaint();
+            showsListHandler(); // refresh the room and its status
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog( // popup dialog box that show an error message
+                frame, // reference frame
+                e.getMessage() + " (Siège: " + x + ", " + y + " )", // message to show
+                "Erreur: Commande de tickets",
+                JOptionPane.ERROR_MESSAGE // error message
+            );
+        }
+
     }
 
+    /**
+     * Display the authentication JDialog
+     */
     private void displayAuth() {
         authDialog.setVisible(true);
     }
 
+    /**
+     * Authentify an admin
+     */
     private void auth() {
         try {
+            loadingAdmin.setVisible(true);
             control.authUser(username.getText().trim(), password.getText().trim());
-            toolbar.add(movieConfigButton);
+            toolbar.add(movieConfigButton); // if admin is authentified => add movie config button
             toolbar.repaint();
             toolbar.revalidate();
-            authDialog.setVisible(false);
+            authDialog.setVisible(false); // hide auth dialog
         } catch (InvalidUserException e) {
-            authDialog.add(new JLabel(e.getMessage()));
+            authDialog.add(new JLabel(e.getMessage())); // add label to auth dialog box
+        } finally {
+            loadingAdmin.setVisible(false);
         }
 
     }
 
+    /**
+     * Handle the click on a show of the list
+     * @param e, ActionEvent => event when we click
+     */
+    private void showsListHandler(ActionEvent e) {
+        JComboBox comboBox = (JComboBox) e.getSource(); // get the comboBox
+        // show selected, sometimes, index == -1 instead 0 (for first element) so we hardcode it
+        int index = (comboBox.getSelectedIndex() < 0) ? 0 : comboBox.getSelectedIndex();
+        Show selectedShow = control.getShows_al().get(index); // Select the show
+        int movie_id = selectedShow.getMovie_id();
+        int room_id = selectedShow.getRoom_id();
+        LocalDateTime show_start = selectedShow.getShow_start();
+        Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+        displayRoom(selectedRoom, movie_id, room_id, show_start); // display the room
+        displayStatus(selectedRoom); // display the status of the room
+    }
+
+    /**
+     * Refresh the room and its status
+     */
+    private void showsListHandler() {
+        // show selected, sometimes, index == -1 instead 0 (for first element) so we hardcode it
+        int index = (showsList.getSelectedIndex() < 0) ? 0 : showsList.getSelectedIndex();
+        Show selectedShow = control.getShows_al().get(index); // Select the show
+        int movie_id = selectedShow.getMovie_id();
+        int room_id = selectedShow.getRoom_id();
+        LocalDateTime show_start = selectedShow.getShow_start();
+        Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+        displayRoom(selectedRoom, movie_id, room_id, show_start); // display the room
+        displayStatus(selectedRoom); // display the status of the room
+    }
+
+    /**
+     * Event listeners
+     */
     private void addEventListeners() {
-        moviesList.addActionListener(new ActionListener() {
+        moviesList.addActionListener(new ActionListener() { // When we click on a movie in the list
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox comboBox = (JComboBox) e.getSource(); // get JComboBox
@@ -586,45 +682,35 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 if (!selectedMovie.equals(title)) { // if movie is not selected
                     selectedMovie = title;
                     int idMovie = control.retrieveMovieId(title); // retrieve movie id
-                    System.out.println("FROM LISTENER => idMovie: " + idMovie);
-                    Movie movie = control.retrieveMovie(idMovie); //
-                    displayDescription(movie);
-                    displayShows(movie);
+                    Movie movie = control.retrieveMovie(idMovie); // retrieve movie
+                    displayDescription(movie); // display the description
+                    displayShows(movie); // display the shows
                 }
             }
         });
 
-        showsList.addActionListener(new ActionListener() {
+        showsList.addActionListener(new ActionListener() { // When we click on a show in the list
             @Override
             public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource(); // get the comboBox
-                int index = (comboBox.getSelectedIndex() < 0) ? 0 : comboBox.getSelectedIndex(); // show selected
-                System.out.println("showsListNumber: " + index);
-                Show selectedShow = control.getShows_al().get(index); // Select the show
-                int movie_id = selectedShow.getMovie_id();
-                int room_id = selectedShow.getRoom_id();
-                LocalDateTime show_start = selectedShow.getShow_start();
-                Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
-                displayRoom(selectedRoom, movie_id, room_id, show_start);
-                displayStatus(selectedRoom);
+                showsListHandler(e);
             }
         });
 
-        config.addActionListener(new ActionListener() {
+        config.addActionListener(new ActionListener() { // When we click on the auth button
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayAuth();
             }
         });
 
-        login.addActionListener(new ActionListener() {
+        login.addActionListener(new ActionListener() { // When we try to login
             @Override
             public void actionPerformed(ActionEvent e) {
                 auth();
             }
         });
 
-        confirm.addActionListener(new ActionListener(){
+        confirm.addActionListener(new ActionListener(){ // When we click on confirm button (to order some tickets)
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) {
@@ -634,25 +720,25 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             }
         });
 
-        movieConfigButton.addActionListener(new ActionListener() {
+        movieConfigButton.addActionListener(new ActionListener() { // When we click on "add a movie" button
             @Override
             public void actionPerformed(ActionEvent e) {
                 movieDialog.setVisible(true);
             }
         });
 
-        addMovie.addActionListener(new ActionListener() {
+        addMovie.addActionListener(new ActionListener() { // When we add a movie
             @Override
             public void actionPerformed(ActionEvent e) {
                 ArrayList<LocalDateTime> showsAl = new ArrayList<LocalDateTime>();
-                for(String date : dates.getText().split(",")) {
+                for(String date : dates.getText().split(",")) { // construct the ArrayList of shows
                    showsAl.add(control.makeDateFromString(date.trim()));
                 }
 
-                ArrayList<String> castingAl = new ArrayList<String>(Arrays.asList(actors.getText().trim().split(",")));
-                ArrayList<String> genresAl = new ArrayList<String>(Arrays.asList(genres.getText().trim().split(",")));
+                ArrayList<String> castingAl = new ArrayList<String>(Arrays.asList(actors.getText().trim().split(","))); // construct the ArrayList of actors
+                ArrayList<String> genresAl = new ArrayList<String>(Arrays.asList(genres.getText().trim().split(","))); // construct the ArrayList of genres
 
-                control.addMovie(
+                control.addMovie( // add the movie
                         Movie.getCurrentId() + 1, // next movie id
                         rooms.getSelectedIndex() + 1,
                         title.getText().trim(),
@@ -665,7 +751,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         (int) price.getValue(),
                         genresAl
                 );
-                movieDialog.setVisible(false);
+                movieDialog.setVisible(false); // hide the movie JDialog
+                displayMovies(); // refresh the list of movies //TODO
             }
         });
     }
