@@ -239,7 +239,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
 		    	}
 				
-				splash = new SplashScreen(1000,new ImageIcon("img/giphy.gif"),400,400);
+				splash = new SplashScreen(750,new ImageIcon("img/giphy.gif"),400,400);
 	            displaySeats();
 	            
 	            mappingRoom.validate();
@@ -469,7 +469,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 seat.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseEntered(MouseEvent e) {
-                        if (!(selectedRoom.getSeats().get(finalY).get(finalX).isTaken()) && !(seat.getIcon().equals(waitingSeat))) {
+                        if (seat.getIcon().equals(emptySit)) {
                             seat.setIcon(selectionSeat);
                             isEmpty=true;
                         }else if(seat.getIcon().equals(waitingSeat)){
@@ -503,8 +503,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     }
                  
                     public void mouseClicked(MouseEvent e){
-                    	if(!isWaiting && !isBlocked){
-                    		
+                    	if(isEmpty){
                     		seat.setIcon(waitingSeat);
                     		givenSeats.put(new Seat(finalY,finalX),(String)typesList.getSelectedItem());
                     		isWaiting=true;
@@ -512,12 +511,16 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     		displayBooks();
                     		
                     	}else if(isWaiting){
+                    		
                     		seat.setIcon(emptySit);
                     		givenSeats.remove(new Seat(finalY,finalX));
                     		isWaiting=false;
                     		displayBooks();
+                    		
                     	}else if(isBlocked){
+                    		
                     		isWaiting=false;
+                    		
                     		//Do nothing
                     	}            	
                     }
