@@ -36,6 +36,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
      * 3 choices : Movie list, configuration and close the programm
      */
 	public void init() {
+	    clear(); // clear the console
         int step1 = 0;
 
         show("**************************");

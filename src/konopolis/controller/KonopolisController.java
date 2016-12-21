@@ -297,9 +297,4 @@ public class KonopolisController {
         this.booking = booking;
     }
 
-    public static void main(String[] args) {
-        KonopolisController controller = new KonopolisController(new KonopolisModel());
-        controller.makeDateFromString("20-02-2017 13:00");
-    }
-
 }
