@@ -89,7 +89,6 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     boolean isEmpty=false;
     
     private String selectedMovie;
-    private String selectedShow;
     
     Thread test;
 
@@ -237,7 +236,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		    	    makeBook(Math.addExact(entry.getKey().getColumn(), 1),Math.addExact(entry.getKey().getRow(), 1),entry.getValue(),control.retrieveMovieId((String)moviesList.getSelectedItem()),control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
 
 		    	}
-				books.setText("");
+				 
+	            displaySeats();
+	            mappingRoom.validate();
+	            mappingRoom.repaint();
+	            
 				
 			}
         	
@@ -532,8 +535,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 				mappingRoom.add(seat);
             }
         }
+        mappingRoom.validate();
         mappingRoom.repaint();
-        mappingRoom.revalidate();
         // Add the Map to the Jframe
         frame.add(mappingRoom, BorderLayout.CENTER);
     }
@@ -639,10 +642,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     	System.out.println(books.getText());
     }
     
-    public synchronized void displaySeats(){
-    	String show = (String) showsList.getSelectedItem();
-    	if(!(selectedShow == show)){
-    		selectedShow=show;
+    public  void displaySeats(){
+    		String show = (String) showsList.getSelectedItem();
             int index = showsList.getSelectedIndex(); // show selected
             System.out.println("showsListNumber: " + index);
             Show selectedShow = control.getShows_al().get(index); // Select the show
@@ -654,7 +655,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             displayStatus(selectedRoom);
             givenSeats.clear();
             displayBooks();
-    	}
+            frame.validate();
+            frame.repaint();
+    	
     }
     
     public void update(Observable arg0, Object arg1) {
