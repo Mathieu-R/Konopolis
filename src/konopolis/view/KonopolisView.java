@@ -7,7 +7,7 @@ import java.util.Observer;
 /**
  * @author nathan
  */
-public abstract class KonopolisView implements Observer {
+public abstract class KonopolisView implements Observer, Runnable {
 	
 	protected KonopolisController control;
 	protected KonopolisModel model;

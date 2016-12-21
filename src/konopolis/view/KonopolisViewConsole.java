@@ -28,7 +28,7 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 	public KonopolisViewConsole(KonopolisModel model, KonopolisController control){
 		super(model,control);
         sc = new Scanner(System.in);
-        init();
+        new Thread(this).start();
 	}
 
     /**
@@ -653,5 +653,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
         //show((String) obj);
 		//init();
 	}
+
+    @Override
+    public void run() {
+        init();
+    }
 }
 

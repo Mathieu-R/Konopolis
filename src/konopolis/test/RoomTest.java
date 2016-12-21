@@ -2,6 +2,7 @@ package src.konopolis.test;
 
 import java.util.ArrayList;
 
+import org.junit.Test;
 import src.konopolis.model.*;
 
 import static org.junit.Assert.*;
@@ -164,5 +165,29 @@ public class RoomTest {
                 assertFalse(seat.isTaken()); // All the seats should be available
             }
         }
+    }
+
+    @Test
+    public void getSeatsLeft() {
+        Room room1 = null;
+        Room room2 = null;
+        try {
+            room1 = new Room(10, 10, 1);
+            room2 = new Room(5,5,2);
+        } catch (TooMuchSeatsException e) {
+            e.printStackTrace();
+        }
+        try {
+            room1.giveSeat(1, 1);
+            room2.giveSeat(1,1);
+            room2.giveSeat(4,1);
+            room2.giveSeat(5,5);
+        } catch (SeatUnknownException e) {
+            e.printStackTrace();
+        } catch (SeatTakenException e) {
+            e.printStackTrace();
+        }
+        assertEquals(99, room1.getSeatsLeft()); // It should have 99 seats left
+        assertEquals(22, room2.getSeatsLeft()); // It should have 22 seats left
     }
 }

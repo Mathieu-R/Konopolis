@@ -6,6 +6,7 @@ import src.konopolis.view.KonopolisView;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class KonopolisController {
     /*
      * authentify a user
      */
-    public boolean authUser(String username,String password) throws InvalidUserException {
+    public synchronized boolean authUser(String username,String password) throws InvalidUserException {
         return model.authUser(username, password);
     }
 
@@ -43,7 +44,7 @@ public class KonopolisController {
      * Retrieve all the movies titles
      * @return HashMap of all the movies titles
      */
-	public LinkedHashMap<Integer, String> retrieveAllMoviesTitles() {
+	public synchronized LinkedHashMap<Integer, String> retrieveAllMoviesTitles() {
 	    return this.moviesTitles = model.retrieveAllMoviesTitles();
 	}
 
@@ -52,10 +53,13 @@ public class KonopolisController {
      * @param movie_id
      * @return movie, a Movie instance
      */
-	public Movie retrieveMovie(int movie_id) {
+	public synchronized Movie retrieveMovie(int movie_id) {
 		return model.retrieveMovie(movie_id);
 	}
 
+	public synchronized int retrieveMovieId(String title) {
+	    return model.retrieveMovieId(title);
+    }
     /**
      * Retrieve a room where a movie is broadcasted (for a show given)
      * @param movie_id
@@ -63,7 +67,7 @@ public class KonopolisController {
      * @param show_start
      * @return room, a Room instance
      */
-	public Room retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
+	public synchronized Room retrieveRoom(int movie_id, int room_id, LocalDateTime show_start) {
 		return model.retrieveRoom(movie_id, room_id, show_start);
 	}
 
@@ -78,7 +82,7 @@ public class KonopolisController {
      * @param movie_id
      * @param show_start
      */
-	public void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
+	public synchronized void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
 		double reduction = 0.0;
 
 		// We create the new customer
@@ -114,7 +118,7 @@ public class KonopolisController {
     /**
      * Retrieve all the type of people available
      */
-	public ArrayList<String> retrieveTypes() {
+	public synchronized ArrayList<String> retrieveTypes() {
 	    return types = model.retrieveTypes();
     }
 
@@ -122,7 +126,7 @@ public class KonopolisController {
      * Check if the type of people entered by the user exist
      * @param type
      */
-	public boolean checkType(String type) {
+	public synchronized boolean checkType(String type) {
 	    if (!types.contains(type.trim())) { // If the type does not exist
             System.out.println("Ce type de personne n'existe pas");
             return false;
@@ -135,11 +139,11 @@ public class KonopolisController {
      * month - 1 because month is "0 based" so it begins from 0 but the user begin by 1.
      * @return LocalDateTime, a LocalDateTime constructed from the parameters passed in the function
      */
-	public LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
+	public synchronized LocalDateTime makeDate(int day, int month, int year, int hours, int minutes) {
         return LocalDateTime.of(year, month, day, hours, minutes);
     }
 
-    public String dateInFrench(LocalDateTime date) {
+    public synchronized String dateInFrench(LocalDateTime date) {
 	    String[] days = {"Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"};
         String[] months = {"Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"};
 	    final int dayName = date.getDayOfWeek().getValue(); // day of week in number (1 -> 7)
@@ -167,7 +171,7 @@ public class KonopolisController {
      * @param price
      * @param genres
      */
-	public void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+	public synchronized void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
 		ArrayList<Show> shows = new ArrayList<Show>();
 
 		try {
@@ -189,15 +193,31 @@ public class KonopolisController {
     /**
      * Retrieve all the rooms available
      */
-	public void retrieveAllRooms() {
+	public synchronized void retrieveAllRooms() {
 	    model.retrieveAllRooms();
 	}
+
+    /**
+     * Retrieve all languages available
+     * @return, languages are put in an ArrayList of String
+     */
+	public synchronized ArrayList<String> retrieveAllLanguages() {
+	    return model.retrieveAllLanguages();
+    }
+
+    /**
+     * Create a date (LocalDateTime) from a String
+     */
+    public synchronized LocalDateTime makeDateFromString(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"); // pattern
+        return LocalDateTime.parse(date, formatter); // String => LocalDateTime (according to the pattern)
+    }
 
     /**
      * add a view to the controller
      * @param view, a view (console, gui,...)
      */
-	public void addView(KonopolisView view) {
+	public synchronized void addView(KonopolisView view) {
 		this.view = view;
 	}
 
@@ -207,74 +227,79 @@ public class KonopolisController {
      * @param date, the date in a Date type
      * @return, the date in LocalDateTime type
      */
-    private LocalDateTime dateToLocalDateTime(java.util.Date date) {
+    private synchronized LocalDateTime dateToLocalDateTime(java.util.Date date) {
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
 	/* Getters and Setters */
 
-    public ArrayList<Movie> getMovies_al() {
+    public synchronized ArrayList<Movie> getMovies_al() {
         return model.getMovies_al();
     }
 
-    public ArrayList<Room> getRooms_al() {
+    public synchronized ArrayList<Room> getRooms_al() {
         return model.getRooms_al();
     }
 
-    public ArrayList<Show> getShows_al() {
+    public synchronized ArrayList<Show> getShows_al() {
         return model.getShows_al();
     }
 
-    public ArrayList<Customer> getCustomers_al() {
+    public synchronized ArrayList<Customer> getCustomers_al() {
         return model.getCustomers_al();
     }
 
-    public KonopolisModel getModel() {
+    public synchronized KonopolisModel getModel() {
         return model;
     }
 
-    public void setModel(KonopolisModel model) {
+    public synchronized void setModel(KonopolisModel model) {
         this.model = model;
     }
 
-    public ArrayList<String> getTypes() {
+    public synchronized ArrayList<String> getTypes() {
         return types;
     }
 
-    public void setTypes(ArrayList<String> types) {
+    public synchronized void setTypes(ArrayList<String> types) {
         this.types = types;
     }
 
-    public KonopolisView getView() {
+    public synchronized KonopolisView getView() {
         return view;
     }
 
-    public void setView(KonopolisView view) {
+    public synchronized void setView(KonopolisView view) {
         this.view = view;
     }
 
-    public LinkedHashMap<Integer, String> getMoviesTitles() {
+    public synchronized LinkedHashMap<Integer, String> getMoviesTitles() {
         return moviesTitles;
     }
 
-    public void setMoviesTitles(LinkedHashMap<Integer, String> moviesTitles) {
+    public synchronized void setMoviesTitles(LinkedHashMap<Integer, String> moviesTitles) {
         this.moviesTitles = moviesTitles;
     }
 
-    public double getTotal() {
+    public synchronized double getTotal() {
         return total;
     }
 
-    public void setTotal(double total) {
+    public synchronized void setTotal(double total) {
         this.total = total;
     }
 
-    public HashMap<String, Double> getBooking() {
+    public synchronized HashMap<String, Double> getBooking() {
         return booking;
     }
 
-    public void setBooking(HashMap<String, Double> booking) {
+    public synchronized void setBooking(HashMap<String, Double> booking) {
         this.booking = booking;
+    }
+
+    public static void main(String[] args) {
+        KonopolisController controller = new KonopolisController(new KonopolisModel());
+        controller.makeDateFromString("20-02-2017 13:00");
     }
 
 }
