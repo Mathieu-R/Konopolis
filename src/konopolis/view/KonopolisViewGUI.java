@@ -373,17 +373,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      */
     private void displayShows(Movie movie) {
 
-        showsList.removeAllItems(); // BUG FIX
+        showsList.removeAllItems(); // BUG TO FIX !
 
         for(Show sh: movie.getShows()){
             System.out.println(sh.getShow_start());
             showsList.addItem("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
         //Select the first item of the list
-        //showsList.setSelectedIndex(0);
+        showsList.setSelectedIndex(0);
     }
 
     private void displayDescription(Movie movie) {
+        descriptionPanel.removeAll();
         // Title
         JLabel title = new JLabel("<html><u>" + movie.getTitle() + "</u></html>");
         title.setHorizontalAlignment(SwingConstants.CENTER); // align-center
@@ -589,8 +590,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     int idMovie = control.retrieveMovieId(title); // retrieve movie id
                     System.out.println("FROM LISTENER => idMovie: " + idMovie);
                     Movie movie = control.retrieveMovie(idMovie); //
-                    displayShows(movie);
                     displayDescription(movie);
+                    displayShows(movie);
                 }
             }
         });
@@ -599,7 +600,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox comboBox = (JComboBox) e.getSource(); // get the comboBox
-                int index = comboBox.getSelectedIndex(); // show selected
+                int index = (comboBox.getSelectedIndex() < 0) ? 0 : comboBox.getSelectedIndex(); // show selected
                 System.out.println("showsListNumber: " + index);
                 Show selectedShow = control.getShows_al().get(index); // Select the show
                 int movie_id = selectedShow.getMovie_id();
