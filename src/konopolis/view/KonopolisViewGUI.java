@@ -81,9 +81,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     
     JTable bookBufferTable = new JTable(new DefaultTableModel()); // Table => Buffer of booking
     private ArrayList<ArrayList<Object>> dataCustomer = new ArrayList<ArrayList<Object>>();
-    
+    //A collection ho will contains all the selected seats
     private HashMap<Seat,String> givenSeats= new HashMap<Seat,String>();
-    
+    //Flag who will be used to determine the state of the currrent seat
     private boolean isWaiting=false;
     private boolean isBlocked=false;
     private boolean isEmpty=false;
@@ -91,15 +91,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     private SplashScreen splash;
     
     private String selectedMovie;
-    
+    //Create a thread to launch the application asynchronous
     Thread test;
-
-	//private int movie_id = 0;
-	//private int room_id = 0;
-	//private int show_id = 0;
-	//private String enteredType = "";
-	//private LocalDateTime show_start;
-	//private Room selectedRoom;
 
     private ImageIcon emptySit = new ImageIcon("img/emptySit.png");
     private ImageIcon takenSit = new ImageIcon("img/takenSit.png");
@@ -123,7 +116,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         this.test.start();
 	}
 
-	
+	/**
+	 * Create the frame and all his panels
+	 */
 	public void init() {
 		
 	    // Create main Frame
@@ -164,6 +159,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         //displayShows(0);
         addEventListeners(); // Launch the events listeners
 	}
+	
+	/**
+	 * Create the toolbar where the lists of movies,shows and clients will be displayed
+	 */
 
 	public void makeToolbar() {
         // Define the toolbar
@@ -197,6 +196,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         toolbar.add(typesList);
         toolbar.add(config);
     }
+	/**
+	 * Create a panel who will contain the descriptiion of the selected movie
+	 */
 
     public void makeDescriptionPanel() {
         // Define descriptionPanel
@@ -212,6 +214,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         Movie movie = control.retrieveMovie(idMovie);
         displayDescription(movie);
     }
+    /**
+     * Create a panel where all the current selections will be displayed
+     */
 
     public void makeBookingPanel() {
         bookingPanel.setBackground(Color.lightGray);
@@ -239,17 +244,18 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
 		    	}
 				
-				splash = new SplashScreen(750,new ImageIcon("img/giphy.gif"),400,400);
-	            displaySeats();
+				splash = new SplashScreen(600,new ImageIcon("img/giphy.gif"),400,400);
 	            
-	            mappingRoom.validate();
-	            mappingRoom.repaint();
+				displaySeats();
+				books.setText("");
 	            
-				
 			}
         	
         });
     }
+    /**
+     * Create the bar of status
+     */
 
     public void makeStatusBar() {
         statusbar.setBackground(Color.LIGHT_GRAY);
@@ -274,6 +280,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         //JPanel statusbar = new JPanel();
         statusbar.add(msgUser,BorderLayout.LINE_START);
     }
+    /**
+     * Draw the room following the movie selected.
+     * If there is no movies in the list,the logo of the software will be displayed
+     */
 
     public void makeRoomMapping() {
         // Icon when there is no show selected
@@ -307,6 +317,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	    }
     }
 
+    /**
+     * Create a window where the user must authentify himself to make configurations
+     */
+    
     private void makeAuthDialog() {
         authDialog = new JDialog(frame, "Connection");
         authDialog.setMinimumSize(new Dimension(500, 300));
@@ -340,16 +354,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         authDialog.setVisible(false);
     }
 
-    private void makeConfigDialog() {
-
-    }
-
-    private void makeNewMovieDialog() {
-
-    }
 
     /**
      * Fill the ComboBox of Shows
+     * @param: The movie of which you want to have the shows
      */
     private void displayShows(Movie movie) {
 
@@ -362,6 +370,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         //Select the first item of the list
         showsList.setSelectedIndex(0);
     }
+    
+    /**
+     * Add the description to the descriptionPanel
+     * @param movie: The movie object of which you want a description
+     */
 
     private void displayDescription(Movie movie) {
         // Title
@@ -420,6 +433,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     /**
      * Display the room at the moment of the show
+     * All the parameters are used to identify a specific show of the database
+     * 
+     * @param selectedRoom  the room to display
+     * @param movie_id: the movie who is shown
+     * @param room_id: the id of the room where the movie gonna be shown
+     * @param show_start: the time when the movie start
      */
     private void displayRoom(Room selectedRoom, int movie_id, int room_id, LocalDateTime show_start) {
     	
@@ -503,6 +522,14 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     }
                  
                     public void mouseClicked(MouseEvent e){
+                    	
+                    	try {
+							Thread.sleep(400);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                    	
                     	if(isEmpty){
                     		seat.setIcon(waitingSeat);
                     		givenSeats.put(new Seat(finalY,finalX),(String)typesList.getSelectedItem());
@@ -514,6 +541,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     		
                     		seat.setIcon(emptySit);
                     		givenSeats.remove(new Seat(finalY,finalX));
+                    		isEmpty=true;
                     		isWaiting=false;
                     		displayBooks();
                     		
@@ -522,7 +550,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     		isWaiting=false;
                     		
                     		//Do nothing
-                    	}            	
+                    	}  
+                    	
                     }
                 });
 
@@ -595,6 +624,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
     }*/
 
+    /**
+     * Creating all the events of the differents lists
+     */
     private void addEventListeners() {
         moviesList.addActionListener(new ActionListener() {
             @Override
@@ -638,17 +670,22 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             }
         });*/
     }
-    
+    /**
+     * Display the selected books on the descriptionPanel
+     */
     public void displayBooks(){
     	String listBooks="";
     	for (Entry<Seat, String> entry : givenSeats.entrySet())
     	{
     	    listBooks+="Siège "+Math.addExact((int)entry.getKey().getRow(),1) +","+Math.addExact((int)entry.getKey().getColumn(),1)+" client:"+entry.getValue()+"\n";
     	}
+    	listBooks+="\n"+givenSeats.size();
     	books.setText(listBooks);
-    	System.out.println(books.getText());
+    	
     }
-    
+    /**
+     * Display the seats of the current Room
+     */
     public  void displaySeats(){
     		String show = (String) showsList.getSelectedItem();
             int index = showsList.getSelectedIndex(); // show selected
@@ -675,7 +712,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
 	public void run() {
 	
-		System.out.println("GUI démarrée");
+		
 		init();
 	}
 }
