@@ -1059,7 +1059,7 @@ public class KonopolisModel extends Observable {
      * @param show, the date and time in a String type
      * @return LocalDateTime, the date and time in a LocalDateTime type
      */
-    private LocalDateTime stringToLocalDateTime(String show) {
+    private synchronized LocalDateTime stringToLocalDateTime(String show) {
     	// Formatters for date + time
     	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		// start of the show
@@ -1075,7 +1075,7 @@ public class KonopolisModel extends Observable {
      * @param show, the date in a Date type 
      * @return, the date in LocalDateTime type
      */
-    private LocalDateTime dateToLocalDateTime(Date show) {
+    private synchronized LocalDateTime dateToLocalDateTime(Date show) {
     	Instant instant = Instant.ofEpochMilli(show.getTime());
     	return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
@@ -1111,71 +1111,71 @@ public class KonopolisModel extends Observable {
      */
 
 
-    public String getDB_DRIVER() {
+    public synchronized String getDB_DRIVER() {
         return DB_DRIVER;
     }
 
-    public String getDB_URL() {
+    public synchronized String getDB_URL() {
         return DB_URL;
     }
 
-    public void setDB_URL(String DB_URL) {
+    public synchronized void setDB_URL(String DB_URL) {
         this.DB_URL = DB_URL;
     }
 
-    public String getUSER() {
+    public synchronized String getUSER() {
         return USER;
     }
 
-    public String getPWD() {
+    public synchronized String getPWD() {
         return PWD;
     }
     
-    public ArrayList<Movie> getMovies_al() {
+    public synchronized ArrayList<Movie> getMovies_al() {
 		return movies_al;
 	}
 
-	public void setMovies_al(ArrayList<Movie> movies_al) {
+	public synchronized void setMovies_al(ArrayList<Movie> movies_al) {
 		this.movies_al = movies_al;
 	}
 
-	public ArrayList<Show> getShows_al() {
+	public synchronized ArrayList<Show> getShows_al() {
 		return shows_al;
 	}
 
-	public void setShows_al(ArrayList<Show> shows_al) {
+	public synchronized void setShows_al(ArrayList<Show> shows_al) {
 		this.shows_al = shows_al;
 	}
 
-	public ArrayList<Customer> getCustomers_al() {
+	public synchronized ArrayList<Customer> getCustomers_al() {
 		return customers_al;
 	}
 
-	public void setCustomers_al(ArrayList<Customer> customers_al) {
+	public synchronized void setCustomers_al(ArrayList<Customer> customers_al) {
 		this.customers_al = customers_al;
 	}
 
-	public ArrayList<Room> getRooms_al() {
+	public synchronized ArrayList<Room> getRooms_al() {
 		return rooms_al;
 	}
 
-	public void setRooms_al(ArrayList<Room> rooms_al) {
+	public synchronized void setRooms_al(ArrayList<Room> rooms_al) {
 		this.rooms_al = rooms_al;
 	}
 
-	public Connection getConn() {
+	public synchronized Connection getConn() {
 		return conn;
 	}
 
-	public void setConn(Connection conn) {
+	public synchronized void setConn(Connection conn) {
 		this.conn = conn;
 	}
 
-	public Statement getStmt() {
+	public synchronized Statement getStmt() {
 		return stmt;
 	}
 
-	public void setStmt(Statement stmt) {
+	public synchronized void setStmt(Statement stmt) {
 		this.stmt = stmt;
 	}
 	

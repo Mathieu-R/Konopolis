@@ -40,7 +40,7 @@ public class Customer {
 			case 'V': this.reduction = 0.7;
 			    break;
 		}
-		Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
+		//Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 
 	}
 

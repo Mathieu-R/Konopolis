@@ -136,21 +136,20 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         JLabel selectAMovie = new JLabel("Sélectionnez un film: "); // Label
 
         // Fill the Combobox with movie's titles | types
-        control.retrieveAllMoviesTitles().entrySet().forEach(movie -> moviesList.addItem(movie.getValue()));
-        control.retrieveTypes().forEach(type -> typesList.addItem(type));
+        displayMovies();
 
         moviesList.setPreferredSize(new Dimension(300,25));
-        moviesList.setActionCommand("Movies"); // Action for ActionListener
+        //moviesList.setActionCommand("Movies"); // Action for ActionListener
         moviesList.setSelectedIndex(0);
 
         // Create a default show ComboBox
         showsList.setPreferredSize(new Dimension(300,25));
-        showsList.setActionCommand("Shows"); // Action for ActionListener
+        //showsList.setActionCommand("Shows"); // Action for ActionListener
 
         typesList.setPreferredSize(new Dimension(300, 25));
 
         // Define config button
-        config.setActionCommand("Config");
+        //config.setActionCommand("Config");
 
         // Add Label, ComboBoxs + Button at the toolbar
         toolbar.add(selectAMovie);
@@ -171,19 +170,20 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     }
 
     public void makeBookingPanel() {
-        JPanel bookingBuffer = new JPanel(new FlowLayout());
+        JPanel bookingBuffer = new JPanel(new BorderLayout());
         bookingPanel.setBackground(Color.lightGray);
-        bookingPanel.setPreferredSize(new Dimension(300, 900));
-        bookingPanel.setMinimumSize(new Dimension(300, 900));
+        bookingPanel.setPreferredSize(new Dimension(300, 500));
+        bookingPanel.setMaximumSize(new Dimension(300, 500));
 
         books.setPreferredSize(new Dimension(300, 500));
-        books.setMinimumSize(new Dimension(300, 500));
+        books.setMaximumSize(new Dimension(300, 500));
         books.setEditable(false);
         books.setVisible(true);
         books.setFont(new Font("Arial", Font.BOLD,18));
 
-        bookingBuffer.add(books);
-        bookingBuffer.add(confirm);
+        bookingBuffer.setMaximumSize(new Dimension(290, 500));
+        bookingBuffer.add(new JScrollPane(books)); // scroll
+        bookingBuffer.add(confirm, BorderLayout.SOUTH);
         bookingPanel.add(bookingBuffer);
     }
 
@@ -263,35 +263,36 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         movieDialog.setForeground(Color.white);
         movieDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         movieDialog.setLocationRelativeTo(null);
-        JPanel moviePanel = new JPanel(new FlowLayout());
+        JPanel moviePanel = new JPanel(new GridLayout(0, 1));
 
         JLabel titleLabel = new JLabel("Titre du film: ");
-        titleLabel.setPreferredSize(new Dimension(100, 30));
+        //titleLabel.setPreferredSize(new Dimension(80, 30));
 
         title = new JTextField();
-        title.setPreferredSize(new Dimension(300, 30));
-        title.setMinimumSize(new Dimension(100, 50));
+        title.setPreferredSize(new Dimension(700, 30));
+        title.setMinimumSize(new Dimension(700, 30));
 
-        JLabel descriptionLabel = new JLabel("Mot de passe: ");
-        descriptionLabel.setPreferredSize(new Dimension(100, 30));
+        JLabel descriptionLabel = new JLabel("Description: ");
+        //descriptionLabel.setPreferredSize(new Dimension(60, 30));
 
         description = new JTextArea();
-        description.setPreferredSize(new Dimension(300, 30));
+        description.setPreferredSize(new Dimension(700, 100));
 
-        JLabel genresLabel = new JLabel("Genres: "); // some
-        genresLabel.setPreferredSize(new Dimension(100, 30));
+        JLabel genresLabel = new JLabel("Genres (séparés par une virgule): "); // some
+        //genresLabel.setPreferredSize(new Dimension(200, 30));
 
         genres = new JTextField();
-        genres.setPreferredSize(new Dimension(300, 30));
+        genres.setPreferredSize(new Dimension(700, 30));
 
         JLabel datesLabel = new JLabel("Dates de séance (veuillez suivre ce pattern: dd-MM-yyyy HH:mm) : "); // some
-        datesLabel.setPreferredSize(new Dimension(100, 30));
+        //datesLabel.setPreferredSize(new Dimension(400, 30));
+        //datesLabel.setMinimumSize(new Dimension(400, 30));
 
         dates = new JTextField();
-        genres.setPreferredSize(new Dimension(300, 30));
+        //genres.setPreferredSize(new Dimension(300, 30));
 
         JLabel roomsLabel = new JLabel("Choisissez une salle: ");
-        roomsLabel.setPreferredSize(new Dimension(100, 30));
+        //roomsLabel.setPreferredSize(new Dimension(130, 30));
 
         rooms = new JComboBox();
         control.retrieveAllRooms();
@@ -300,35 +301,35 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         }
 
         JLabel directorLabel = new JLabel("Choisissez un réalisateur: ");
-        descriptionLabel.setPreferredSize(new Dimension(100, 30));
+        //descriptionLabel.setPreferredSize(new Dimension(130, 30));
 
         director = new JTextField();
-        director.setPreferredSize(new Dimension(300, 30));
+        director.setPreferredSize(new Dimension(700, 30));
 
         JLabel actorsLabel = new JLabel("Acteurs: ");
-        actorsLabel.setPreferredSize(new Dimension(100, 30));
+        //actorsLabel.setPreferredSize(new Dimension(80, 30));
 
         actors = new JTextField();
-        actors.setPreferredSize(new Dimension(300, 30));
+        //actors.setPreferredSize(new Dimension(700, 30));
 
         JLabel timeLabel = new JLabel("Durée (en minutes): ");
-        timeLabel.setPreferredSize(new Dimension(100, 30));
+        //timeLabel.setPreferredSize(new Dimension(110, 30));
 
         time = new JTextField();
-        time.setPreferredSize(new Dimension(300, 30));
+        //time.setPreferredSize(new Dimension(700, 30));
 
         JLabel languagesLabel = new JLabel("Langue: ");
-        languagesLabel.setPreferredSize(new Dimension(100, 30));
+        //languagesLabel.setPreferredSize(new Dimension(80, 30));
 
         languages = new JComboBox();
         control.retrieveAllLanguages().forEach(languages::addItem);
 
         JLabel priceLabel = new JLabel("Prix (en €): ");
-        priceLabel.setPreferredSize(new Dimension(100, 30));
+        //priceLabel.setPreferredSize(new Dimension(100, 30));
 
         SpinnerNumberModel priceSpinnerModel = new SpinnerNumberModel(10, 1, 30, 1);
         price = new JSpinner(priceSpinnerModel);
-        price.setPreferredSize(new Dimension(300, 30));
+        //price.setPreferredSize(new Dimension(300, 30));
 
         moviePanel.add(titleLabel);
         moviePanel.add(title);
@@ -350,9 +351,21 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         moviePanel.add(languages);
         moviePanel.add(priceLabel);
         moviePanel.add(price);
+        moviePanel.add(addMovie);
 
         movieDialog.add(moviePanel);
         movieDialog.setVisible(false);
+    }
+
+    /**
+     * Fill the ComboBox of Movies
+     */
+    private void displayMovies() {
+	    // Remove everything from combobox => the case it's a refresh of the list
+        typesList.removeAll();
+        // Fill the Combobox with movie's titles | types
+        control.retrieveAllMoviesTitles().entrySet().forEach(movie -> moviesList.addItem(movie.getValue()));
+        control.retrieveTypes().forEach(type -> typesList.addItem(type));
     }
 
     /**
@@ -360,7 +373,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      */
     private void displayShows(Movie movie) {
 
-        showsList.removeAllItems();
+        showsList.removeAllItems(); // BUG FIX
 
         for(Show sh: movie.getShows()){
             System.out.println(sh.getShow_start());
@@ -556,6 +569,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         try {
             control.authUser(username.getText().trim(), password.getText().trim());
             toolbar.add(movieConfigButton);
+            toolbar.repaint();
+            toolbar.revalidate();
             authDialog.setVisible(false);
         } catch (InvalidUserException e) {
             authDialog.add(new JLabel(e.getMessage()));
@@ -632,7 +647,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<LocalDateTime> showsAl = new ArrayList<LocalDateTime>();
                 for(String date : dates.getText().split(",")) {
-                   showsAl.add(control.makeDateFromString(date));
+                   showsAl.add(control.makeDateFromString(date.trim()));
                 }
 
                 ArrayList<String> castingAl = new ArrayList<String>(Arrays.asList(actors.getText().trim().split(",")));
@@ -651,6 +666,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         (int) price.getValue(),
                         genresAl
                 );
+                movieDialog.setVisible(false);
             }
         });
     }
