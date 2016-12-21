@@ -502,11 +502,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 });
 
                 seat.addActionListener(e -> {
-                    if (!(seat.getIcon().equals(takenSit))) {
+                    if (seat.getIcon().equals(emptySit)) {
                         seat.setIcon(waitingSeat);
-
                         String type = typesList.getSelectedItem().toString();
-                        System.out.println(type);
                         addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
                     } else if (seat.getIcon().equals(waitingSeat)) {
                         seat.setIcon(emptySit);
