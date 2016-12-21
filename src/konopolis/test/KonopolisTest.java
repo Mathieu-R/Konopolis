@@ -5,7 +5,7 @@ import konopolis.model.KonopolisModel;
 import konopolis.view.KonopolisView;
 import konopolis.view.KonopolisViewConsole;
 import konopolis.view.KonopolisViewGUI;
-
+import java.awt.SplashScreen;
 /**
  * @author nathan
  */
@@ -16,6 +16,7 @@ public class KonopolisTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		 
 		
 		// Model instance
 		KonopolisModel konMod = new KonopolisModel();

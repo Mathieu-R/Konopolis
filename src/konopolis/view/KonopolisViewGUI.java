@@ -84,9 +84,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     
     private HashMap<Seat,String> givenSeats= new HashMap<Seat,String>();
     
-    boolean isWaiting=false;
-    boolean isBlocked=false;
-    boolean isEmpty=false;
+    private boolean isWaiting=false;
+    private boolean isBlocked=false;
+    private boolean isEmpty=false;
+    
+    private SplashScreen splash;
     
     private String selectedMovie;
     
@@ -236,8 +238,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 		    	    makeBook(Math.addExact(entry.getKey().getColumn(), 1),Math.addExact(entry.getKey().getRow(), 1),entry.getValue(),control.retrieveMovieId((String)moviesList.getSelectedItem()),control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
 
 		    	}
-				 
+				
+				splash = new SplashScreen(1000,new ImageIcon("img/giphy.gif"),400,400);
 	            displaySeats();
+	            
 	            mappingRoom.validate();
 	            mappingRoom.repaint();
 	            
