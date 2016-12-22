@@ -206,9 +206,6 @@ public class KonopolisModel extends Observable {
 			        + "natural join tbmoviesrooms as mr "
 			        + "where m.movie_id = ? "
 	    			+ "limit 1"; // we only want the first result => temp. fix, otherwise, we get 2 same results
-	    
-	    			// What about 2 rooms for one same movie ?
-	    			// Consider Group By
         
         this.createConnection();
         ResultSet rs = null; // Execute the sql query and put the results in the results set

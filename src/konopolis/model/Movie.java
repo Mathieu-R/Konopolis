@@ -36,7 +36,7 @@ public class Movie {
     
 	public Movie(int id, String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
 				 int time, String language, double price) {
-		currentId++;
+		//currentId++;
         this.id = id;
 		this.title = title;
 		this.description = description;

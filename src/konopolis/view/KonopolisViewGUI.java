@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 /**
@@ -373,11 +374,27 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      * Fill the ComboBox of Movies
      */
     private void displayMovies() {
-	    // Remove everything from combobox => the case it's a refresh of the list
-        //moviesList.removeAll();
         // Fill the Combobox with movie's titles | types
         control.retrieveAllMoviesTitles().entrySet().forEach(movie -> moviesList.addItem(movie.getValue()));
         control.retrieveTypes().forEach(type -> typesList.addItem(type));
+        /*frame.revalidate();
+        frame.repaint(); // refresh movies list
+        frame.pack();*/
+        moviesList.addActionListener(new ActionListener() { // When we click on a movie in the list
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                givenSeats.clear();
+                JComboBox comboBox = (JComboBox) e.getSource(); // get JComboBox
+                String title = comboBox.getSelectedItem().toString(); // get the title selected
+                if (!selectedMovie.equals(title)) { // if movie is not selected
+                    selectedMovie = title;
+                    int idMovie = control.retrieveMovieId(title); // retrieve movie id
+                    Movie movie = control.retrieveMovie(idMovie); // retrieve movie
+                    displayDescription(movie); // display the description
+                    displayShows(movie); // display the shows
+                }
+            }
+        });
     }
 
     /**
@@ -587,6 +604,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         for (Movie movie : model.getMovies_al()) {
             if (movie.getId() == movie_id) {
                 moviePrice = movie.getPrice();
+                break;
             }
         }
 
@@ -629,7 +647,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 income += reducedPrice;
             }
             books.setText(listBooks + "\n" + income + "€");
-            books.validate();
+            books.revalidate();
             books.repaint();
         } else {
             books.setText("");
@@ -671,7 +689,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      */
     private void auth() {
         loadingAdmin.setVisible(true);
-        authDialog.validate();
+        authDialog.revalidate();
         authDialog.repaint();
         try {
             control.authUser(username.getText().trim(), password.getText().trim());
@@ -727,6 +745,13 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         int room_id = selectedShow.getRoom_id();
         LocalDateTime show_start = selectedShow.getShow_start();
         Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+        if (selectedRoom == null) { // when we add a movie, room == null. We want to avoid that
+            for (Room room : control.getRooms_al()) {
+                if (room.getId() == room_id) {
+                    selectedRoom = room;
+                }
+            }
+        }
         displayRoom(selectedRoom, movie_id, room_id, show_start); // display the room
         displayStatus(selectedRoom); // display the status of the room
     }
@@ -735,7 +760,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      * Event listeners
      */
     private void addEventListeners() {
-        moviesList.addActionListener(new ActionListener() { // When we click on a movie in the list
+        /*moviesList.addActionListener(new ActionListener() { // When we click on a movie in the list
             @Override
             public void actionPerformed(ActionEvent e) {
                 JComboBox comboBox = (JComboBox) e.getSource(); // get JComboBox
@@ -748,11 +773,15 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     displayShows(movie); // display the shows
                 }
             }
-        });
+        });*/
 
         showsList.addActionListener(new ActionListener() { // When we click on a show in the list
             @Override
             public void actionPerformed(ActionEvent e) {
+                givenSeats.clear();
+                books.setText("");
+                books.revalidate();
+                books.repaint();
                 showsListHandler(e);
             }
         });
@@ -821,14 +850,25 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
                 ArrayList<LocalDateTime> showsAl = new ArrayList<LocalDateTime>();
                 for(String date : dates.getText().split(",")) { // construct the ArrayList of shows
-                   showsAl.add(control.makeDateFromString(date.trim()));
+                    try {
+                        LocalDateTime LDTdate = control.makeDateFromString(date.trim());
+                        showsAl.add(LDTdate);
+                    } catch (DateTimeParseException errParse) { // If error on parsing date
+                        JOptionPane.showMessageDialog( // popup dialog box that show an error message
+                                frame, // reference frame
+                                "Erreur sur le format de la date ! Format requis (dd-MM-yyyy HH:mm)", // message
+                                "Erreur: format de la date", // title of window
+                                JOptionPane.ERROR_MESSAGE // error message
+                        );
+                        return;
+                    }
                 }
 
                 ArrayList<String> castingAl = new ArrayList<String>(Arrays.asList(actors.getText().trim().split(","))); // construct the ArrayList of actors
                 ArrayList<String> genresAl = new ArrayList<String>(Arrays.asList(genres.getText().trim().split(","))); // construct the ArrayList of genres
 
                 control.addMovie( // add the movie
-                        Movie.getCurrentId() + 1, // next movie id
+                        //Movie.getCurrentId() + 1, // next movie id
                         rooms.getSelectedIndex() + 1,
                         title.getText().trim(),
                         description.getText().trim(),
@@ -841,7 +881,11 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         genresAl
                 );
                 movieDialog.setVisible(false); // hide the movie JDialog
-                moviesList = new JComboBox<String>();
+                //init();
+                for (ActionListener al : moviesList.getActionListeners()) {
+                    moviesList.removeActionListener(al);
+                }
+                moviesList.removeAllItems();
                 typesList.removeAllItems();
                 displayMovies(); // refresh the list of movies
             }
