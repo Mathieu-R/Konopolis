@@ -394,10 +394,14 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      */
     private void displayMovies() {
 	    // Remove everything from combobox => the case it's a refresh of the list
-        typesList.removeAll();
+    	
+    	 moviesList = new JComboBox();
+         typesList = new JComboBox();
         // Fill the Combobox with movie's titles | types
         control.retrieveAllMoviesTitles().entrySet().forEach(movie -> moviesList.addItem(movie.getValue()));
         control.retrieveTypes().forEach(type -> typesList.addItem(type));
+        
+       
     }
 
     /**
@@ -605,10 +609,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     private void addToBookBuffer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
         givenSeats.put(new Seat(x + 1, y + 1), type); // add to buffer
         String listBooks = "";
-        String title = (String)moviesList.getSelectedItem();
-        int idMovie = control.retrieveMovieId(title);
-        Movie selectMovie= control.retrieveMovie(idMovie);
-        double reduction;
+        Movie selectMovie= control.retrieveMovie(movie_id);
         switch(type){
         	case "VIP": custList.put(new Seat(x + 1, y + 1),new Customer("VIP"));
         		break;
