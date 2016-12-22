@@ -308,7 +308,7 @@ public class KonopolisModel extends Observable {
             	for (Movie movie : movies_al) { // We search the right room (the one with the right id)
             		if (movie.getId() == movie_id) try {
                         room = new Room(rows, seats_by_row, movie, id); // New Room => we initialize all the room (empty for now !)
-                        rooms_al.add(room);
+                        if (!(rooms_al.contains(room))) rooms_al.add(room);
                     } catch (TooMuchSeatsException e) {
             		    // SetChanged ? // notifyObserver ?
                         setChanged();
