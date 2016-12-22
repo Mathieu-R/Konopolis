@@ -7,7 +7,7 @@ import src.konopolis.view.KonopolisView;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -74,13 +74,13 @@ public class KonopolisController {
     /**
      * Create a new customer object
      * If it is created, we add the customer to the db
-     * @param x
-     * @param y
-     * @param customer_id
-     * @param room_id
-     * @param type
-     * @param movie_id
-     * @param show_start
+     * @param x, seat of the row
+     * @param y, row
+     * @param customer_id, id of customer
+     * @param room_id, id of room
+     * @param type, type of customer
+     * @param movie_id, id of the movie
+     * @param show_start, beginning date of the show
      */
 	public synchronized void addCustomer(int x, int y, int customer_id, int room_id, String type, int movie_id, LocalDateTime show_start) {
 		double reduction = 0.0;
@@ -159,7 +159,6 @@ public class KonopolisController {
     /**
      * A a movie to the db
      * Create a new Movie object
-     * @param movie_id
      * @param room_id
      * @param title
      * @param description
@@ -171,8 +170,8 @@ public class KonopolisController {
      * @param price
      * @param genres
      */
-	public synchronized void addMovie(int movie_id, int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
-		ArrayList<Show> shows = new ArrayList<Show>();
+	public synchronized void addMovie(/*int movie_id,*/ int room_id, String title, String description, String director, ArrayList<LocalDateTime> shows_start, ArrayList<String> casting, int time, String language, double price, ArrayList<String> genres) {
+		//ArrayList<Show> shows = new ArrayList<Show>();
 
 		try {
             model.addMovie(room_id, title, description, director, shows_start, casting, time, language, price, genres);
@@ -180,11 +179,11 @@ public class KonopolisController {
             // We create an instance of Show Class
             // That we put in the ArrayList shows
             // This ArrayList will be added to the Movie instance
-            for (LocalDateTime show_start: shows_start) {
+            /*for (LocalDateTime show_start: shows_start) {
                 // show_start, show_end, movie_id, room_id
                 shows.add(new Show(show_start, show_start.plus(time, ChronoUnit.MINUTES), movie_id, room_id));
-            }
-            model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
+            }*/
+            //model.getMovies_al().add(new Movie(movie_id, title, description, genres, shows, director, casting, time, language, price));
         } catch (RuntimeException e) {
 		    throw new RuntimeException(e);
         }
@@ -208,7 +207,7 @@ public class KonopolisController {
     /**
      * Create a date (LocalDateTime) from a String
      */
-    public synchronized LocalDateTime makeDateFromString(String date) {
+    public synchronized LocalDateTime makeDateFromString(String date) throws DateTimeParseException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"); // pattern
         return LocalDateTime.parse(date, formatter); // String => LocalDateTime (according to the pattern)
     }

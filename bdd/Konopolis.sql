@@ -3,10 +3,6 @@ CREATE table tbAdmins (
 	hash VARCHAR(255) NOT NULL
 );
 
-CREATE table tbIncomes (
-	incomes DOUBLE PRIMARY KEY
-);
-
 CREATE table tbLanguages (
   language_id int auto_increment PRIMARY KEY NOT NULL,
   language char(30) NOT NULL
@@ -14,14 +10,14 @@ CREATE table tbLanguages (
 
 CREATE table tbMovies (
 	movie_id int auto_increment PRIMARY KEY NOT NULL,
-	title CHAR(30) NOT NULL,
+	title CHAR(50) NOT NULL,
 	description MEDIUMTEXT NOT NULL,
 	director CHAR(30) NOT NULL,
 	time int NOT NULL,
 	language_id int NOT NULL,
 	price double NOT NULL,
 	CONSTRAINT mvUnique UNIQUE (title),
-  	FOREIGN KEY (language_id) REFERENCES tbLanguages(language_id) ON UPDATE CASCADE
+  FOREIGN KEY (language_id) REFERENCES tbLanguages(language_id) ON UPDATE CASCADE
 );
 
 CREATE table tbGenres (

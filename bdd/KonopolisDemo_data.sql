@@ -81,7 +81,7 @@ CREATE TABLE `tbcustomerstype` (
 
 LOCK TABLES `tbcustomerstype` WRITE;
 /*!40000 ALTER TABLE `tbcustomerstype` DISABLE KEYS */;
-INSERT INTO `tbcustomerstype` VALUES (1,'Junior',0.3),(2,'Etudiant',0.4),(3,'Senior',0.5),(4,'VIP',0.7);
+INSERT INTO `tbcustomerstype` VALUES (1,'Junior',0.3),(2,'Etudiant',0.4),(3,'Senior',0.5),(4,'VIP',0.7),(5,'Normal',0.0);
 /*!40000 ALTER TABLE `tbcustomerstype` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,20 +100,6 @@ LOCK TABLES `tbgenres` WRITE;
 /*!40000 ALTER TABLE `tbgenres` DISABLE KEYS */;
 INSERT INTO `tbgenres` VALUES (1,'Action'),(2,'Comédie'),(3,'Drame');
 /*!40000 ALTER TABLE `tbgenres` ENABLE KEYS */;
-UNLOCK TABLES;
-
-DROP TABLE IF EXISTS `tbincomes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tbincomes` (
-  `incomes` double NOT NULL,
-  PRIMARY KEY (`incomes`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-LOCK TABLES `tbincomes` WRITE;
-/*!40000 ALTER TABLE `tbincomes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tbincomes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `tblanguages`;
@@ -137,7 +123,7 @@ DROP TABLE IF EXISTS `tbmovies`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tbmovies` (
   `movie_id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` char(30) NOT NULL,
+  `title` char(50) NOT NULL,
   `description` mediumtext NOT NULL,
   `director` char(30) NOT NULL,
   `time` int(11) NOT NULL,

@@ -9,8 +9,17 @@ public class Customer {
 	private Room room;
 	private double reduction = 0.0;
 	private char type;
-	private int age;
+	private String fullType;
 
+	/**
+	 * Constructor that add a customer according its place in a room. The customer has an id
+	 * @param x, seat of the row
+	 * @param y, row
+	 * @param room, the room
+	 * @param id, id of the customer
+     * @throws SeatUnknownException
+     * @throws SeatTakenException
+	 */
 	public Customer(int x, int y, Room room, int id) throws SeatUnknownException, SeatTakenException {
 		currentId++;
 		this.id = id;
@@ -19,9 +28,18 @@ public class Customer {
         reduction = 0.0;
 
 		this.room.giveSeat(x, y);
-		Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 	}
 
+	/**
+	 * Constructor that add a customer according its place in a room. The customer has an id and a type
+	 * @param x, seat of the row
+	 * @param y, row
+	 * @param room, the room
+	 * @param type, the type of the customer
+	 * @param id, id of the customer
+	 * @throws SeatUnknownException
+	 * @throws SeatTakenException
+	 */
 	public Customer(int x, int y, Room room, String type, int id) throws SeatUnknownException, SeatTakenException {
 		currentId++;
 		this.id = id;
@@ -39,11 +57,21 @@ public class Customer {
 			    break;
 			case 'V': this.reduction = 0.7;
 			    break;
+			case 'N': this.reduction = 0.0;
+				break;
 		}
-		//Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 
 	}
 
+	/**
+	 * Constructor that add a customer according its place in a room. The customer has a type but no id
+	 * @param x, the seat of the row
+	 * @param y, the row
+	 * @param room, the room
+	 * @param type, the type of the customer (Senior, VIP,...)
+	 * @throws SeatUnknownException
+	 * @throws SeatTakenException
+	 */
 	public Customer(int x, int y, Room room, String type) throws SeatUnknownException, SeatTakenException {
 		currentId++;
 		this.room = room;
@@ -60,11 +88,44 @@ public class Customer {
 			    break;
 			case 'V': this.reduction = 0.7;
 			    break;
+			case 'N': this.reduction = 0.0;
+				break;
 		}
-		//Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
-
 	}
 
+	/**
+	 * Construcor that create a customer only to calculate the reduction, nothing else
+	 * @param type, the type of the customer
+	 */
+	public Customer(String type) {
+	    this.fullType = type;
+		this.type = type.charAt(0); // First charachter of the type
+
+		switch(this.type) {
+			case 'J': this.reduction = 0.5;
+				break;
+			case 'E': this.reduction = 0.3;
+				break;
+			case 'S': this.reduction = 0.4;
+				break;
+			case 'V': this.reduction = 0.7;
+				break;
+			case 'N': this.reduction = 0.0;
+				break;
+		}
+	}
+
+	/**
+	 * Constructor that add a customer according its place in a room. The customer has an id, a type and a reduction
+	 * @param x, the seat of the row
+	 * @param y, the row
+	 * @param room, the room
+	 * @param type, the type of the customer (Senior, VIP,...)
+	 * @param reduction, the reduction of the seat
+	 * @param id, its id
+	 * @throws SeatUnknownException
+	 * @throws SeatTakenException
+	 */
 	public Customer(int x, int y, Room room, String type, double reduction, int id) throws SeatUnknownException, SeatTakenException {
 		currentId++;
 		this.id = id;
@@ -74,7 +135,6 @@ public class Customer {
 		this.type = type.charAt(0); // First charachter of the type
 		this.reduction = reduction;
 
-		//Room.setIncome(Room.getIncome() + this.room.getMovie().getPrice() * this.reduction);
 	}
 
 	public static int getCurrentId() {
@@ -117,19 +177,18 @@ public class Customer {
 		this.type = type;
 	}
 
-	public int getAge() {
-		return age;
-	}
+    public String getFullType() {
+        return fullType;
+    }
 
-	public void setAge(int age) {
-		this.age = age;
-	}
+    public void setFullType(String fullType) {
+        this.fullType = fullType;
+    }
 
-	@Override
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + age;
 		result = prime * result + type;
 		return result;
 	}
@@ -143,12 +202,8 @@ public class Customer {
 		if (getClass() != obj.getClass())
 			return false;
 		Customer other = (Customer) obj;
-		if (age != other.age)
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+        return type == other.type;
+    }
 
     @Override
     public String toString() {
@@ -156,7 +211,6 @@ public class Customer {
                 ", reduction=" + reduction +
                 ", type=" + type +
                 ", room=" + room +
-                ", age=" + age +
                 '}';
     }
 }
