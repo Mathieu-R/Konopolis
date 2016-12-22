@@ -409,7 +409,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         showsList.removeAllItems(); // BUG FIXED
 
         for(Show sh: movie.getShows()){ // Show the shows list
-            //System.out.println(sh.getShow_start());
+
             showsList.addItem("Salle n°" + sh.getRoom_id() + " - " + control.dateInFrench(sh.getShow_start()));
         }
         showsList.setSelectedIndex(0); // Select the first item of the list
@@ -537,13 +537,35 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 });
 
                 seat.addActionListener(e -> { // on click on a seat
-                    if (seat.getIcon().equals(waitingSeat)) {
-                        seat.setIcon(selectionSeat);
+                	
+                	if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Senior") == 0)  {
+                        seat.setIcon(new ImageIcon("img/seniorSit.png"));
+                       
                         String type = typesList.getSelectedItem().toString();
                         addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
-                    } else if (seat.getIcon().equals(selectionSeat)) {
-                        seat.setIcon(emptySeat);
-                        removeFromBookBuffer(finalX, finalY);
+                    }else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Normal") == 0)  {
+                        seat.setIcon(new ImageIcon("img/normalSit.png"));
+                    
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    }else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Junior") == 0)  {
+                        seat.setIcon(new ImageIcon("img/juniorSit.png"));
+                      
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    }else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Etudiant") == 0)  {
+                        seat.setIcon(new ImageIcon("img/etuSit.png"));
+                        String type = typesList.getSelectedItem().toString();
+                      
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    }else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("VIP") == 0)  {
+                        seat.setIcon(new ImageIcon("img/vipSit.png"));
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    }else if(seat.getIcon().equals(takenSeat)){
+                        //Rien
+                    }else{seat.setIcon(emptySeat);
+                    removeFromBookBuffer(finalX, finalY);
                     }
                 });
                 // Add to the Map
@@ -607,9 +629,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             income+=selectMovie.getPrice()-selectMovie.getPrice()*custList.get(entry.getKey()).getReduction();
          
         }
-        books.setText(listBooks);
+        books.setText(listBooks+"\n");
        
-        books.append("\n"+income+"€");
+        books.append(income+"€");
         books.validate();
         books.repaint();
     }
@@ -635,8 +657,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         }
         
        
-        books.setText(listBooks);
-        books.append("\n"+income+"€");
+        books.setText(listBooks+"\n");
+        books.append(income+"€");
         books.validate();
         books.repaint();
     }
