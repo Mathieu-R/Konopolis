@@ -343,9 +343,10 @@ public class KonopolisViewConsole extends KonopolisView implements Observer{
 
         try {
             // Eventually, we try to add the movie to the db
-            // Movie.getCurrentId() + 1 => next id of the movie
-            control.addMovie(Movie.getCurrentId() + 1, idRoom, title, description, director, dates_show, casting, time, language, price, genres);
+            control.addMovie(idRoom, title, description, director, dates_show, casting, time, language, price, genres);
+            show("film ajouté");
         } catch (RuntimeException e) {
+            show(e.getMessage());
             //update(null, e);
         }
 
