@@ -257,7 +257,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         username.setMinimumSize(new Dimension(100, 50));
         JLabel passwordLabel = new JLabel("Mot de passe: ");
         passwordLabel.setPreferredSize(new Dimension(100, 30));
-        password = new JTextField();
+        password = new JPasswordField();
         password.setPreferredSize(new Dimension(300, 30));
         login = new JButton("Se connecter");
         loadingAdmin = new JLabel(new ImageIcon("img/loading3.gif"));
@@ -295,6 +295,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         JLabel descriptionLabel = new JLabel("Description: ");
 
         description = new JTextArea();
+        description.setWrapStyleWord(true);
+        description.setLineWrap(true);
         description.setPreferredSize(new Dimension(700, 100));
 
         JLabel genresLabel = new JLabel("Genres (séparés par une virgule): "); // some
@@ -370,7 +372,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      */
     private void displayMovies() {
 	    // Remove everything from combobox => the case it's a refresh of the list
-        typesList.removeAll();
+        //moviesList.removeAll();
         // Fill the Combobox with movie's titles | types
         control.retrieveAllMoviesTitles().entrySet().forEach(movie -> moviesList.addItem(movie.getValue()));
         control.retrieveTypes().forEach(type -> typesList.addItem(type));
@@ -560,7 +562,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         givenSeats.put(new Seat(x + 1, y + 1), type); // add to buffer
         String listBooks = "";
         for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Write the list of booking
-            listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", " + entry.getKey().getColumn() + "\n";
+            listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", rangée " + entry.getKey().getColumn() + "\n";
         }
         books.setText(listBooks);
         books.validate();
@@ -576,8 +578,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         givenSeats.remove(new Seat(x + 1, y + 1)); // remove from the buffer
         //books.removeAll();
         String listBooks = "";
-        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Rewrite the list of booking
-            listBooks += "Siège " + Math.addExact( (int) entry.getKey().getRow(), 1) + "," + Math.addExact( (int) entry.getKey().getColumn(), 1) + " client:" + entry.getValue() + "\n";
+        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Write the list of booking
+            listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", rangée " + entry.getKey().getColumn() + "\n";
         }
         books.setText(listBooks);
         books.validate();
@@ -597,6 +599,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         try {
             control.addCustomer(x, y, 0, room_id, type, movie_id, show_start);
             SplashScreen splash = new SplashScreen(600, new ImageIcon("img/giphy.gif"), 400, 400);
+            givenSeats.clear(); // Clear the buffer
             books.setText(""); // Erase the booking panel content
             books.validate();
             books.repaint();
@@ -623,8 +626,10 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      * Authentify an admin
      */
     private void auth() {
+        loadingAdmin.setVisible(true);
+        authDialog.validate();
+        authDialog.repaint();
         try {
-            loadingAdmin.setVisible(true);
             control.authUser(username.getText().trim(), password.getText().trim());
             toolbar.add(movieConfigButton); // if admin is authentified => add movie config button
             toolbar.repaint();
@@ -632,6 +637,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             authDialog.setVisible(false); // hide auth dialog
         } catch (InvalidUserException e) {
             authDialog.add(new JLabel(e.getMessage())); // add label to auth dialog box
+            authDialog.validate();
+            authDialog.repaint();
         } finally {
             loadingAdmin.setVisible(false);
         }
@@ -651,6 +658,13 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         int room_id = selectedShow.getRoom_id();
         LocalDateTime show_start = selectedShow.getShow_start();
         Room selectedRoom = control.retrieveRoom(movie_id, room_id, show_start); // Select the room and its customers
+        if (selectedRoom == null) { // when we add a movie, room == null. We want to avoid that
+            for (Room room : control.getRooms_al()) {
+                if (room.getId() == room_id) {
+                    selectedRoom = room;
+                }
+            }
+        }
         displayRoom(selectedRoom, movie_id, room_id, show_start); // display the room
         displayStatus(selectedRoom); // display the status of the room
     }
@@ -752,7 +766,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         genresAl
                 );
                 movieDialog.setVisible(false); // hide the movie JDialog
-                displayMovies(); // refresh the list of movies //TODO
+                moviesList.removeAllItems();
+                displayMovies(); // refresh the list of movies
             }
         });
     }
