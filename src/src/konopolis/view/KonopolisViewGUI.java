@@ -658,6 +658,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             books.validate();
             books.repaint();
             showsListHandler(); // refresh the room and its status
+           
         } catch (Exception e) {
             JOptionPane.showMessageDialog( // popup dialog box that show an error message
                 frame, // reference frame
@@ -775,6 +776,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                     makeBook(entry.getKey().getRow(), entry.getKey().getColumn(), entry.getValue(), control.retrieveMovieId((String)moviesList.getSelectedItem()), control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
                 }
                 income=0;
+                custList.clear();
+                givenSeats.clear();
             }
         });
 
