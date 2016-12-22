@@ -466,7 +466,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         descriptionPanel.add(duration);
 
         // Price
-        JLabel price = new JLabel("Prix: " + movie.getPrice() + "â‚¬");
+        JLabel price = new JLabel("Prix: " + movie.getPrice() + " €");
         price.setForeground(Color.white);
         descriptionPanel.add(price);
     }
@@ -650,17 +650,22 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         int idMovie = control.retrieveMovieId(title);
         Movie selectMovie= control.retrieveMovie(idMovie);
        income=0;
-        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Rewrite the list of booking
-        	listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", " + entry.getKey().getColumn() +",Prix:"+(selectMovie.getPrice()-selectMovie.getPrice()*custList.get(entry.getKey()).getReduction())+ "€\n";
-            income+=selectMovie.getPrice()-selectMovie.getPrice()*custList.get(entry.getKey()).getReduction();
-        	
-        }
-        
+       if(givenSeats.size()>0){
+	        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Rewrite the list of booking
+	        	listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", " + entry.getKey().getColumn() +",Prix:"+(selectMovie.getPrice()-selectMovie.getPrice()*custList.get(entry.getKey()).getReduction())+ "€\n";
+	            income+=selectMovie.getPrice()-selectMovie.getPrice()*custList.get(entry.getKey()).getReduction();
+	        	
+	        }
+	        books.setText(listBooks+"\n");
+	        books.append(income+"€");
+	        books.validate();
+	        books.repaint();
+       }else{
+    	   books.setText("");
+	        
+       }
        
-        books.setText(listBooks+"\n");
-        books.append(income+"€");
-        books.validate();
-        books.repaint();
+       
     }
 
     /**
