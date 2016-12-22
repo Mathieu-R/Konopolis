@@ -15,13 +15,10 @@ public class Room {
     private int seatsByRow;
     private ArrayList<ArrayList<Seat>> seats = new ArrayList<ArrayList<Seat>>();
     private Movie movie;
-    private static double income = 0.0; // Revenus du cin�ma
 
     /**
      * Constructors
      */
-
-
 
     /**
      * Constructor without movie
@@ -201,14 +198,6 @@ public class Room {
         this.movie = movie;
     }
 
-    public static double getIncome() {
-        return income;
-    }
-
-    public static void setIncome(double income) {
-        Room.income = income;
-    }
-
     /**
      * HashCode and Equals
      */
@@ -249,6 +238,5 @@ public class Room {
                 ", movie=" + movie +
                 '}';
     }
-
 
 }

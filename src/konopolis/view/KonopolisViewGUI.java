@@ -40,7 +40,9 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 	private JTextField password;
 	private JButton login;
 
-    private HashMap<Seat,String> givenSeats= new HashMap<Seat,String>();
+    private HashMap<Seat, Customer> givenSeats= new HashMap<Seat, Customer>();
+    double income = 0;
+
     private JTextArea books = new JTextArea(20,10);
     private JButton confirm = new JButton("confirmer");
 
@@ -187,7 +189,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         books.setMaximumSize(new Dimension(300, 500));
         books.setEditable(false);
         books.setVisible(true);
-        books.setFont(new Font("Arial", Font.BOLD,18));
+        books.setFont(new Font("Arial", Font.BOLD,15));
 
         bookingBuffer.setMaximumSize(new Dimension(290, 500));
         bookingBuffer.add(new JScrollPane(books)); // scroll
@@ -304,7 +306,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         genres = new JTextField();
         genres.setPreferredSize(new Dimension(700, 30));
 
-        JLabel datesLabel = new JLabel("Dates de séance (veuillez suivre ce pattern: dd-MM-yyyy HH:mm) : "); // some
+        JLabel datesLabel = new JLabel("Dates de séance (veuillez suivre ce pattern: dd-MM-yyyy HH:mm - séparés par une virgule) : "); // some
 
         dates = new JTextField();
 
@@ -321,7 +323,7 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         director = new JTextField();
         director.setPreferredSize(new Dimension(700, 30));
 
-        JLabel actorsLabel = new JLabel("Acteurs: ");
+        JLabel actorsLabel = new JLabel("Acteurs (séparés par une virgule): ");
 
         actors = new JTextField();
 
@@ -515,13 +517,31 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                 });
 
                 seat.addActionListener(e -> { // on click on a seat
-                    if (seat.getIcon().equals(waitingSeat)) {
-                        seat.setIcon(selectionSeat);
+                    if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Senior") == 0)  {
+                        seat.setIcon(new ImageIcon("img/seniorSeat.png"));
                         String type = typesList.getSelectedItem().toString();
                         addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
-                    } else if (seat.getIcon().equals(selectionSeat)) {
+                    } else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Normal") == 0)  {
+                        seat.setIcon(new ImageIcon("img/normalSeat.png"));
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    } else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Junior") == 0)  {
+                        seat.setIcon(new ImageIcon("img/juniorSeat.png"));
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    } else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("Etudiant") == 0)  {
+                        seat.setIcon(new ImageIcon("img/etuSeat.png"));
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    } else if (seat.getIcon().equals(waitingSeat) && typesList.getSelectedItem().toString().compareTo("VIP") == 0) {
+                        seat.setIcon(new ImageIcon("img/vipSeat.png"));
+                        String type = typesList.getSelectedItem().toString();
+                        addToBookBuffer(finalX, finalY, type, movie_id, room_id, show_start);
+                    } else if (!(seat.getIcon().equals(emptySeat)) && !(seat.getIcon().equals(takenSeat))) {
                         seat.setIcon(emptySeat);
-                        removeFromBookBuffer(finalX, finalY);
+                        String type = typesList.getSelectedItem().toString();
+                        removeFromBookBuffer(finalX, finalY, type, movie_id);
+
                     }
                 });
                 // Add to the Map
@@ -559,12 +579,24 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      * @param show_start, beginning date of the show
      */
     private void addToBookBuffer(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
-        givenSeats.put(new Seat(x + 1, y + 1), type); // add to buffer
+        givenSeats.put(new Seat(x + 1, y + 1), new Customer(type)); // add to buffer
+        double moviePrice = 0.0;
         String listBooks = "";
-        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Write the list of booking
-            listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", rangée " + entry.getKey().getColumn() + "\n";
+
+        // Price
+        for (Movie movie : model.getMovies_al()) {
+            if (movie.getId() == movie_id) {
+                moviePrice = movie.getPrice();
+            }
         }
-        books.setText(listBooks);
+
+        income = 0.0;
+        for (Map.Entry<Seat, Customer> entry : givenSeats.entrySet()) { // Write the list of booking
+            double reducedPrice = (moviePrice - (moviePrice * entry.getValue().getReduction()));
+            listBooks += "[" + entry.getValue().getFullType() + "] Siège " + entry.getKey().getRow() + ", rangée " + entry.getKey().getColumn() + ", Prix: " + reducedPrice + "€" + "\n";
+            income += reducedPrice;
+        }
+        books.setText(listBooks + "\n" + income + "€");
         books.validate();
         books.repaint();
     }
@@ -573,20 +605,38 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
      * Remove a ticket from buffer
      * @param x, the seat of the row
      * @param y, the row
+     * @param type, type of the people
+     * @param movie_id, id of the movie
      */
-    private void removeFromBookBuffer(int x, int y) {
-        givenSeats.remove(new Seat(x + 1, y + 1)); // remove from the buffer
-        //books.removeAll();
+    private void removeFromBookBuffer(int x, int y, String type, int movie_id) {
+        givenSeats.remove(new Seat(x + 1, y + 1)); // remove from the buffer by key
         String listBooks = "";
-        for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) { // Write the list of booking
-            listBooks += "[" + entry.getValue() + "] Siège " + entry.getKey().getRow() + ", rangée " + entry.getKey().getColumn() + "\n";
+        income = 0.0; // affect income variable to 0
+
+        double moviePrice = 0.0;
+
+        // Price
+        for (Movie movie : model.getMovies_al()) {
+            if (movie.getId() == movie_id) {
+                moviePrice = movie.getPrice();
+            }
         }
-        books.setText(listBooks);
-        books.validate();
-        books.repaint();
+
+        if (givenSeats.size() > 0) {
+            for (Map.Entry<Seat, Customer> entry : givenSeats.entrySet()) { // Write the list of booking
+                double reducedPrice = (moviePrice - (moviePrice * entry.getValue().getReduction()));
+                listBooks += "[" + entry.getValue().getFullType() + "] Siège " + entry.getKey().getRow() + ", rangée " + entry.getKey().getColumn() + ", Prix: " + reducedPrice + "€" + "\n";
+                income += reducedPrice;
+            }
+            books.setText(listBooks + "\n" + income + "€");
+            books.validate();
+            books.repaint();
+        } else {
+            books.setText("");
+        }
     }
 
-    /**
+    /*
      * Order the tickets
      * @param x, row of the seat
      * @param y, row
@@ -598,12 +648,6 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
     private void makeBook(int x, int y, String type, int movie_id, int room_id, LocalDateTime show_start) {
         try {
             control.addCustomer(x, y, 0, room_id, type, movie_id, show_start);
-            SplashScreen splash = new SplashScreen(600, new ImageIcon("img/giphy.gif"), 400, 400);
-            givenSeats.clear(); // Clear the buffer
-            books.setText(""); // Erase the booking panel content
-            books.validate();
-            books.repaint();
-            showsListHandler(); // refresh the room and its status
         } catch (Exception e) {
             JOptionPane.showMessageDialog( // popup dialog box that show an error message
                 frame, // reference frame
@@ -636,9 +680,12 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
             toolbar.revalidate();
             authDialog.setVisible(false); // hide auth dialog
         } catch (InvalidUserException e) {
-            authDialog.add(new JLabel(e.getMessage())); // add label to auth dialog box
-            authDialog.validate();
-            authDialog.repaint();
+            JOptionPane.showMessageDialog( // popup dialog box that show an error message
+                    frame, // reference frame
+                    e.getMessage(), // message to show
+                    "Erreur: Authentification", // title of window
+                    JOptionPane.ERROR_MESSAGE // error message
+            );
         } finally {
             loadingAdmin.setVisible(false);
         }
@@ -726,11 +773,17 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
 
         confirm.addActionListener(new ActionListener(){ // When we click on confirm button (to order some tickets)
             @Override
-            public void actionPerformed(ActionEvent arg0) {
-                for (Map.Entry<Seat, String> entry : givenSeats.entrySet()) {
-                    makeBook(entry.getKey().getRow(), entry.getKey().getColumn(), entry.getValue(), control.retrieveMovieId((String)moviesList.getSelectedItem()), control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
+            public void actionPerformed(ActionEvent e) {
+                for (Map.Entry<Seat, Customer> entry : givenSeats.entrySet()) {
+                    makeBook(entry.getKey().getRow(), entry.getKey().getColumn(), entry.getValue().getFullType(), control.retrieveMovieId((String)moviesList.getSelectedItem()), control.getShows_al().get(showsList.getSelectedIndex()).getRoom_id(), control.getShows_al().get(showsList.getSelectedIndex()).getShow_start());
                 }
-                //init();
+                SplashScreen splash = new SplashScreen(600, new ImageIcon("img/giphy.gif"), 400, 400);
+                income = 0.0; // set back the total of booking to 0
+                givenSeats.clear(); // Clear the buffer
+                books.setText(""); // Erase the booking panel content
+                books.validate();
+                books.repaint();
+                showsListHandler(); // refresh the room and its status
             }
         });
 
@@ -744,6 +797,28 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
         addMovie.addActionListener(new ActionListener() { // When we add a movie
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean error = false;
+
+                // Fields validation
+                if (title.getText().trim().equals("")) error = true;
+                if (description.getText().trim().equals("")) error = true;
+                if (director.getText().trim().equals("")) error = true;
+                if (dates.getText().trim().equals("")) error = true;
+                if (actors.getText().trim().equals("")) error = true;
+                if (genres.getText().trim().equals("")) error = true;
+                if (time.getText().trim().equals("")) error = true;
+
+                // If error on one or more fields
+                if (error) {
+                    JOptionPane.showMessageDialog( // popup dialog box that show an error message
+                            frame, // reference frame
+                            "Erreur sur un ou plusieurs champs !", // message
+                            "Erreur: Ajout de film", // title of window
+                            JOptionPane.ERROR_MESSAGE // error message
+                    );
+                    return;
+                }
+
                 ArrayList<LocalDateTime> showsAl = new ArrayList<LocalDateTime>();
                 for(String date : dates.getText().split(",")) { // construct the ArrayList of shows
                    showsAl.add(control.makeDateFromString(date.trim()));
@@ -766,7 +841,8 @@ public class KonopolisViewGUI extends KonopolisView implements Observer {
                         genresAl
                 );
                 movieDialog.setVisible(false); // hide the movie JDialog
-                moviesList.removeAllItems();
+                moviesList = new JComboBox<String>();
+                typesList.removeAllItems();
                 displayMovies(); // refresh the list of movies
             }
         });
