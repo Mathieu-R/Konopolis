@@ -1,11 +1,11 @@
 package src.konopolis.model;
 
 public class TooMuchSeatsException extends Exception {
-    public TooMuchSeatsException() {
-        super();
-    }
+  public TooMuchSeatsException() {
+    super();
+  }
 
-    public TooMuchSeatsException(String message) {
-        super(message);
-    }
+  public TooMuchSeatsException(String message) {
+    super(message);
+  }
 }

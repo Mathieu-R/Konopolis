@@ -7,164 +7,167 @@ import java.util.ArrayList;
  */
 
 public class Movie {
-	private static int currentId = 0;
-	private int id;
-	private String title;
-	private String description;
-	private ArrayList<String> genres;
-    private ArrayList<Show> shows = new ArrayList<Show>();
-	private String director;
-	private ArrayList<String> casting;
-	private int time;
-	private String language;
-    private double price;
-	
-	/* constructor */
-    public Movie(String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
-		int time, String language, double price) {
-	    this.id = currentId++;
-		this.title = title;
-		this.description = description;
-		this.genres = genres;
-		this.shows = shows;
-		this.director = director;
-		this.casting = casting;
-		this.time = time;
-		this.language = language;
-		this.price = price;
-	}
-    
-	public Movie(int id, String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director, ArrayList<String> casting,
-				 int time, String language, double price) {
-		//currentId++;
-        this.id = id;
-		this.title = title;
-		this.description = description;
-		this.genres = genres;
-		this.shows = shows;
-		this.director = director;
-		this.casting = casting;
-		this.time = time;
-		this.language = language;
-		this.price = price;
-	}
+  private static int currentId = 0;
+  private int id;
+  private String title;
+  private String description;
+  private ArrayList<String> genres;
+  private ArrayList<Show> shows = new ArrayList<Show>();
+  private String director;
+  private ArrayList<String> casting;
+  private int time;
+  private String language;
+  private double price;
 
-	
-	/* All Getters and Setters */
+  /* constructor */
+  public Movie(String title, String description, ArrayList<String> genres, ArrayList<Show> shows, String director,
+      ArrayList<String> casting,
+      int time, String language, double price) {
+    this.id = currentId++;
+    this.title = title;
+    this.description = description;
+    this.genres = genres;
+    this.shows = shows;
+    this.director = director;
+    this.casting = casting;
+    this.time = time;
+    this.language = language;
+    this.price = price;
+  }
 
-	public static int getCurrentId() {
-		return currentId;
-	}
+  public Movie(int id, String title, String description, ArrayList<String> genres, ArrayList<Show> shows,
+      String director, ArrayList<String> casting,
+      int time, String language, double price) {
+    // currentId++;
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.genres = genres;
+    this.shows = shows;
+    this.director = director;
+    this.casting = casting;
+    this.time = time;
+    this.language = language;
+    this.price = price;
+  }
 
-	public static void setCurrentId(int currentId) {
-		Movie.currentId = currentId;
-	}
+  /* All Getters and Setters */
 
-	public int getId() {
-		return id;
-	}
+  public static int getCurrentId() {
+    return currentId;
+  }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+  public static void setCurrentId(int currentId) {
+    Movie.currentId = currentId;
+  }
 
-	public String getTitle() {
-		return title;
-	}
+  public int getId() {
+    return id;
+  }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  public void setId(int id) {
+    this.id = id;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getTitle() {
+    return title;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setTitle(String title) {
+    this.title = title;
+  }
 
-	public ArrayList<String> getGenres() {
-		return genres;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setGenres(ArrayList<String> genres) {
-		this.genres = genres;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public ArrayList<Show> getShows() {
-		return shows;
-	}
+  public ArrayList<String> getGenres() {
+    return genres;
+  }
 
-	public void setShows(ArrayList<Show> shows) {
-		this.shows = shows;
-	}
+  public void setGenres(ArrayList<String> genres) {
+    this.genres = genres;
+  }
 
-	public String getDirector() {
-		return director;
-	}
+  public ArrayList<Show> getShows() {
+    return shows;
+  }
 
-	public void setDirector(String director) {
-		this.director = director;
-	}
+  public void setShows(ArrayList<Show> shows) {
+    this.shows = shows;
+  }
 
-	public ArrayList<String> getCasting() {
-		return casting;
-	}
+  public String getDirector() {
+    return director;
+  }
 
-	public void setCasting(ArrayList<String> casting) {
-		this.casting = casting;
-	}
+  public void setDirector(String director) {
+    this.director = director;
+  }
 
-	public int getTime() {
-		return time;
-	}
+  public ArrayList<String> getCasting() {
+    return casting;
+  }
 
-	public void setTime(int time) {
-		this.time = time;
-	}
+  public void setCasting(ArrayList<String> casting) {
+    this.casting = casting;
+  }
 
-	public String getLanguage() {
-		return language;
-	}
+  public int getTime() {
+    return time;
+  }
 
-	public void setLanguage(String language) {
-		this.language = language;
-	}
+  public void setTime(int time) {
+    this.time = time;
+  }
 
-	public double getPrice() {
-		return price;
-	}
+  public String getLanguage() {
+    return language;
+  }
 
-	public void setPrice(double price) {
-		this.price = price;
-	}
+  public void setLanguage(String language) {
+    this.language = language;
+  }
 
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  public double getPrice() {
+    return price;
+  }
 
-        Movie movie = (Movie) o;
+  public void setPrice(double price) {
+    this.price = price;
+  }
 
-        if (!title.equals(movie.title)) return false;
-        return description.equals(movie.description);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
-    }
+    Movie movie = (Movie) o;
 
-    @Override
-    public int hashCode() {
-        int result = title.hashCode();
-        result = 31 * result + description.hashCode();
-        return result;
-    }
+    if (!title.equals(movie.title))
+      return false;
+    return description.equals(movie.description);
 
-	@Override
-	public String toString() {
-		return "Movie [title=" + title + ", description=" + description + ", genres=" + genres + ", shows=" + shows
-				+ ", director=" + director + ", casting=" + casting + ", time=" + time + ", language=" + language
-				+ ", price=" + price + "]";
-	}
+  }
 
-    
+  @Override
+  public int hashCode() {
+    int result = title.hashCode();
+    result = 31 * result + description.hashCode();
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Movie [title=" + title + ", description=" + description + ", genres=" + genres + ", shows=" + shows
+        + ", director=" + director + ", casting=" + casting + ", time=" + time + ", language=" + language
+        + ", price=" + price + "]";
+  }
+
 }

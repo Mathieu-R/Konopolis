@@ -5,7 +5,7 @@ CREATE table tbAdmins (
 
 CREATE table tbLanguages (
   language_id int auto_increment PRIMARY KEY NOT NULL,
-  language char(30) NOT NULL
+  language CHAR(30) NOT NULL
 );
 
 CREATE table tbMovies (

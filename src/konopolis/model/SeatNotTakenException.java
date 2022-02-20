@@ -1,11 +1,11 @@
 package src.konopolis.model;
 
 public class SeatNotTakenException extends Exception {
-    public SeatNotTakenException() {
-        super();
-    }
+  public SeatNotTakenException() {
+    super();
+  }
 
-    public SeatNotTakenException(String message) {
-        super(message);
-    }
+  public SeatNotTakenException(String message) {
+    super(message);
+  }
 }

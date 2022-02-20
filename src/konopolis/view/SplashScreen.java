@@ -4,56 +4,56 @@ import java.awt.*;
 import javax.swing.*;
 
 public class SplashScreen extends JWindow implements Runnable {
-	  
-	private int duration;
-	private ImageIcon img; // Image
-	private int width; // Width
-	private int height; // Height
 
-	public SplashScreen(int duration, ImageIcon img, int width, int height) {
-		this.duration = duration;
-		this.img = img;
-		this.width = width;
-		this.height = height;
-		new Thread(this).start();
-	}
+  private int duration;
+  private ImageIcon img; // Image
+  private int width; // Width
+  private int height; // Height
 
-	// A simple little method to show a title screen in the center
-	// of the screen for the amount of time given in the constructor
-	public void showSplash() {
-		JPanel content = (JPanel) getContentPane();
-		content.setBackground(Color.white);
+  public SplashScreen(int duration, ImageIcon img, int width, int height) {
+    this.duration = duration;
+    this.img = img;
+    this.width = width;
+    this.height = height;
+    new Thread(this).start();
+  }
 
-		// Set the window's bounds, centering the window
-		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-		int x = (screen.width - this.width) / 2;
-		int y = (screen.height - this.height) / 2;
-		setBounds(x, y, this.width, this.height);
+  // A simple little method to show a title screen in the center
+  // of the screen for the amount of time given in the constructor
+  public void showSplash() {
+    JPanel content = (JPanel) getContentPane();
+    content.setBackground(Color.white);
 
-		// Build the splash screen
-		JLabel label = new JLabel(img);
+    // Set the window's bounds, centering the window
+    Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+    int x = (screen.width - this.width) / 2;
+    int y = (screen.height - this.height) / 2;
+    setBounds(x, y, this.width, this.height);
 
-		content.add(label, BorderLayout.CENTER);
+    // Build the splash screen
+    JLabel label = new JLabel(img);
 
-		// Display it
-		setVisible(true);
+    content.add(label, BorderLayout.CENTER);
 
-		// Wait a little while, maybe while loading resources
-		try {
-			Thread.sleep(duration);
-		} catch (Exception e) {
+    // Display it
+    setVisible(true);
 
-		}
-		setVisible(false);
-	}
+    // Wait a little while, maybe while loading resources
+    try {
+      Thread.sleep(duration);
+    } catch (Exception e) {
 
-	public void showSplashAndExit() {
-		showSplash();
-		System.exit(0);
-	}
+    }
+    setVisible(false);
+  }
 
-	@Override
-	public void run() {
-		showSplash();
-	}
+  public void showSplashAndExit() {
+    showSplash();
+    System.exit(0);
+  }
+
+  @Override
+  public void run() {
+    showSplash();
+  }
 }
